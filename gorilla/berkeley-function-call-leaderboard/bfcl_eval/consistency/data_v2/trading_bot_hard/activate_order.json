@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "tool": "activate_order",
   "branches": [
     {
@@ -35,7 +35,8 @@
       "value_from": [],
       "external_from": [],
       "logic": "Sets the order status to the constant value 'Open'.",
-      "state_source_relations": []
+      "state_source_relations": [],
+      "target_identity_sources": []
     }
   ],
   "returns": [

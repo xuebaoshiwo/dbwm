@@ -34,7 +34,7 @@ OPERATIONS = {"set", "increment", "decrement", "append", "insert", "update", "de
 SOURCE_KINDS = {"state_direct", "arg_direct", "derived", "constant", "external"}
 TRANSFORMS = {"copy", "arithmetic", "format", "filter", "comparison", "selection", "aggregation", "collection", "unknown"}
 RECOVERABILITY = {"exact", "conditional", "partial", "none", "unknown"}
-CURRENT_SCHEMA_VERSION = "1.2"
+CURRENT_SCHEMA_VERSION = "1.3"
 REFERENCE_PREFIXES = ("$.args", "$.state_before", "$.state_after", "$.result")
 CJK_PATTERN = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 
@@ -73,7 +73,7 @@ SOURCE-OF-TRUTH RULES
 THE ONLY ALLOWED TOP-LEVEL SHAPE
 
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "tool": "exact target tool name",
   "branches": [],
   "mutations": [],
@@ -146,8 +146,9 @@ Create one mutation entry per persistent target path:
 
 {
   "branch": "branch id",
-  "target": "$.state_after path",
+  "target": "$.state_after.buckets['{entity.field}'].value",
   "operation": "set|increment|decrement|append|insert|update|delete",
+  "target_identity_sources": [{"placeholder": "entity.field", "path": "$.state_before.entities['{args.entity_id}'].field", "logic": "The dynamic target key is copied from the selected entity field."}],
   "value_from": ["$.state_before.x", "$.args.delta"],
   "state_source_relations": [{"path": "$.state_before.x", "transform": "arithmetic", "recoverability": "conditional", "given": [], "reason": "Subtract the known delta from the observed new value on the exact numeric domain."}],
   "external_from": ["optional time, randomness, or external service source"],
@@ -164,6 +165,29 @@ Mutation rules:
 - Include helper-driven changes, counters, generated records, and side effects
   that occur before returning.
 - If branches modify the same target differently, create separate entries.
+- Every dynamic placeholder in `target` whose concrete key is derived from
+  backend state must have one `target_identity_sources` entry. The entry's
+  `placeholder` is the name inside braces without braces, and `path` is the
+  complete $.state_before path whose value equals that key, e.g.
+  $.state_before.entities['{args.entity_id}'].field. Use an empty array when
+  the target key is a literal, a direct argument, or otherwise needs no state
+  identity proof. Do not put these identity paths into `value_from`: they
+  locate the target, while `value_from` describes the value computation.
+- Every mutation MUST include target_identity_sources, even when it is [].
+  An identity entry contains exactly placeholder, path, and logic. It is an
+  equality between the target key and the pre-call state value, NOT an inverse
+  inferred from the value written. Never invent a key observation or derive an
+  identity from the spelling of a local variable. Trace it through backend code.
+- Apply identity dependencies ONLY to dynamic keys in mutation.target. Do not
+  add entries for keys occurring only in value_from, returned source paths,
+  observation relations, or branch guards. Do not expand all branch.uses.
+- Direct argument keys use {args.name}; keys created by this call and exposed
+  in its result use {result.name}. Neither needs a pre-call state identity
+  anchor. For state-derived keys use a named alias and its explicit identity
+  path. Keep complete paths outside braces; do not nest path expressions inside
+  placeholders. A computed key without an equal pre-call state field cannot be
+  represented by this equality: report the unsupported case in warnings rather
+  than claiming a false identity relation.
 - For append/delete/update of a collection, include its old state in value_from
   when computing the resulting collection depends on existing contents. The
   operation name alone does not replace that state dependency.
@@ -329,8 +353,10 @@ when possible.
 FINAL SELF-CHECK
 
 - The top-level object has exactly the six required keys.
-- schema_version is 1.2. Every return field and mutation has the exact state
+- schema_version is 1.3. Every return field and mutation has the exact state
   source_relation coverage required above, with no branch-only dependencies.
+- Every mutation has `target_identity_sources`; each state-derived dynamic
+  target key is mapped to the path that supplies its concrete identity.
 - Every return field has state_observation_relations with justified post-state
   paths, inverses and consistent entity identities.
 - tool exactly matches the requested tool name.
@@ -517,15 +543,45 @@ def _validate_source_relations(item: dict[str, Any], paths: list[str], location:
         raise ValueError(f"{location}.{relation_key} coverage mismatch: missing={sorted(expected - found)}")
 
 
+def _validate_target_identities(mutation, location, result_fields):
+    entries = mutation.get("target_identity_sources")
+    if not isinstance(entries, list):
+        raise ValueError(f"{location}.target_identity_sources must be an array")
+    tokens = set(re.findall(r"\{([A-Za-z_][A-Za-z0-9_.]*)\}", mutation["target"]))
+    found = set()
+    for index, entry in enumerate(entries):
+        label = f"{location}.target_identity_sources[{index}]"
+        if not isinstance(entry, dict) or set(entry) != {"placeholder", "path", "logic"}:
+            raise ValueError(f"{label} must contain exactly placeholder, path, logic")
+        name = entry["placeholder"]
+        _require_string(name, f"{label}.placeholder")
+        if name not in tokens or name in found or name.startswith(("args.", "result.")):
+            raise ValueError(f"{label}.placeholder must uniquely identify a state-derived target key")
+        found.add(name)
+        _require_string(entry["path"], f"{label}.path")
+        if not entry["path"].startswith(("$.state_before.", "$.state_before[")):
+            raise ValueError(f"{label}.path must be a complete pre-call state path")
+        if name in re.findall(r"\{([A-Za-z_][A-Za-z0-9_.]*)\}", entry["path"]):
+            raise ValueError(f"{label}.path cannot use its own unresolved target key")
+        _require_string(entry["logic"], f"{label}.logic")
+    # Older catalogs use a bare local name for a generated ID returned by the
+    # same branch (e.g. {order_id}). Preserve that established result alias.
+    required = {name for name in tokens if not name.startswith(("args.", "result."))
+                and "$.result." + name not in result_fields}
+    if required - found:
+        raise ValueError(f"{location}.target_identity_sources missing target keys: {sorted(required - found)}")
+
+
 def validate_spec(spec: dict[str, Any], tool_name: str) -> None:
     if set(spec) != TOP_LEVEL_KEYS:
         missing = sorted(TOP_LEVEL_KEYS - set(spec))
         extra = sorted(set(spec) - TOP_LEVEL_KEYS)
         raise ValueError(f"Top-level keys mismatch; missing={missing}, extra={extra}")
-    if spec["schema_version"] not in {"1.0", "1.1", CURRENT_SCHEMA_VERSION}:
-        raise ValueError("schema_version must be '1.0', '1.1' or '1.2'")
+    if spec["schema_version"] not in {"1.0", "1.1", "1.2", CURRENT_SCHEMA_VERSION}:
+        raise ValueError("schema_version must be '1.0', '1.1', '1.2' or '1.3'")
     current = spec["schema_version"] != "1.0"
-    observations = spec["schema_version"] == CURRENT_SCHEMA_VERSION
+    observations = spec["schema_version"] in {"1.2", "1.3"}
+    identities = spec["schema_version"] == "1.3"
     if spec["tool"] != tool_name:
         raise ValueError(f"tool must be {tool_name!r}")
     for key in ("branches", "mutations", "returns", "warnings"):
@@ -564,6 +620,9 @@ def validate_spec(spec: dict[str, Any], tool_name: str) -> None:
             raise ValueError(f"{location} must be an object")
         required = {"branch", "target", "operation", "value_from", "logic"}
         allowed = required | {"external_from"} | ({"state_source_relations"} if current else set())
+        if identities:
+            required.add("target_identity_sources")
+            allowed.add("target_identity_sources")
         if not required <= set(mutation) or not set(mutation) <= allowed:
             raise ValueError(f"{location} has invalid keys")
         if mutation["branch"] not in branch_id_set:
@@ -587,6 +646,11 @@ def validate_spec(spec: dict[str, Any], tool_name: str) -> None:
             )
         _require_string(mutation["logic"], f"{location}.logic")
         _validate_source_relations(mutation, mutation["value_from"], location, required=current)
+        if identities:
+            result_fields = {field.get("path") for result in spec["returns"] if isinstance(result, dict)
+                             and result.get("branch") == mutation["branch"]
+                             for field in result.get("fields", []) if isinstance(field, dict)}
+            _validate_target_identities(mutation, location, result_fields)
 
     return_branches = set()
     for index, result in enumerate(spec["returns"]):

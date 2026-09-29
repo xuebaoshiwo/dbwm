@@ -27,6 +27,17 @@ def state_sources(mutation):
     return tuple(dict.fromkeys(source for source in mutation["value_from"] if state_path(source)))
 
 
+def target_identity_sources(mutation):
+    return tuple(dict.fromkeys(item["path"] for item in mutation.get(
+        "target_identity_sources", []
+    ) if state_path(item["path"])))
+
+
+def mutation_sources(mutation):
+    """Value inputs plus target-address inputs; never expand source-path keys."""
+    return tuple(dict.fromkeys((*state_sources(mutation), *target_identity_sources(mutation))))
+
+
 @dataclass(frozen=True)
 class KnownValue:
     anchor_id: int | None
@@ -92,13 +103,23 @@ class StateKnowledge:
         """Apply all effects, but never infer an effect with unknown state inputs."""
         statuses = []
         for index, mutation in enumerate(mutations):
-            missing = [source for source in state_sources(mutation)
+            missing = [source for source in mutation_sources(mutation)
                        if not any(temporal_covers(path, source) for path in proofs)]
+            missing_identities = [item for item in mutation.get("target_identity_sources", [])
+                                  if item["path"] in missing]
             statuses.append({"mutation_index": index, "target": mutation["target"],
-                             "sources_fixed": not missing, "missing_sources": missing})
+                             "sources_fixed": not missing, "missing_sources": missing,
+                             "missing_target_identities": missing_identities})
         for mutation, status in zip(mutations, statuses):
             target = before(mutation["target"])
             if not status["sources_fixed"]:
+                # An unresolved address can affect any child of its containing map.
+                # Audit side effects conservatively without scheduling more anchors.
+                for item in status["missing_target_identities"]:
+                    token = "{" + item["placeholder"] + "}"
+                    position = target.find(token)
+                    if position >= 0:
+                        target = target[:target.rfind("[", 0, position)]
                 self._set(target, None)
                 continue
             prior = self.get(target) or KnownValue(None, None)

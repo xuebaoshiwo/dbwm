@@ -32,7 +32,7 @@ in the design context; do not infer that every shortfall is already accepted.
 
 | File | Responsibility |
 | --- | --- |
-| `generate_tool_state_specs.py` | Generate schema-1.2 dependency JSON from a supplied backend and tool schema. |
+| `generate_tool_state_specs.py` | Generate schema-1.3 dependency JSON, including mutation-target identity sources, from a supplied backend and tool schema. |
 | `trading_bot_hard_symbolic.json` | Example domain catalog: specification paths, monitoring targets and reader refinements. |
 | `trading_bot_hard_lifecycle.json` | Example domain rules applied independently to every bound order. |
 | `lifecycle_rules.py` | Parse and evaluate the external lifecycle rules. |
@@ -86,5 +86,5 @@ registration is required; lifecycle transitions remain domain data.
 ## Verify
 
 ```powershell
-python -m unittest tests.test_backward_trajectory_sampling tests.test_generate_tool_state_specs tests.test_placeholder_trajectory_sampling -q
+python -m unittest tests.test_backward_trajectory_sampling tests.test_generate_tool_state_specs tests.test_placeholder_trajectory_sampling tests.test_target_identity_sampling -q
 ```

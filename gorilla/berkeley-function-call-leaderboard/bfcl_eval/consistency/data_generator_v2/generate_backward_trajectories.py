@@ -13,7 +13,7 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from bfcl_eval.consistency.data_generator_v2.backward_state_knowledge import (
-    StateKnowledge, before, covers, overlaps, state_path, state_sources, temporal_covers,
+    StateKnowledge, before, covers, overlaps, state_path, mutation_sources, temporal_covers,
 )
 from bfcl_eval.consistency.data_generator_v2.generate_tool_state_specs import (
     _write_json_atomic, validate_spec,
@@ -63,7 +63,7 @@ class Branch:
 
     def referenced_paths(self):
         return {path for rule in self.rules for path in (rule.source, *rule.requires)} | {
-            source for mutation in self.mutations for source in state_sources(mutation)
+            source for mutation in self.mutations for source in mutation_sources(mutation)
         }
 
     def touches(self, path):
@@ -114,8 +114,8 @@ class BackwardSampler:
         used_refinements = set()
         self.nodes = []
         for spec in specs.values():
-            if spec["schema_version"] not in {"1.1", "1.2"}:
-                raise ValueError("Backward sampling requires schema version 1.1 or 1.2")
+            if spec["schema_version"] not in {"1.1", "1.2", "1.3"}:
+                raise ValueError("Backward sampling requires schema version 1.1, 1.2 or 1.3")
             for index, branch in enumerate(spec["branches"]):
                 if not branch["id"].startswith("success_"):
                     continue
@@ -166,9 +166,13 @@ class BackwardSampler:
                 [node.branch, node.earlier, node.returns, node.mutations,
                  [vars(rule) for rule in node.rules]], source, path,
             )
+        mutations = substitute(node.mutations, bindings)
+        for mutation in mutations:
+            for item in mutation.get("target_identity_sources", []):
+                item["placeholder"] = bindings.get(item["placeholder"], item["placeholder"])
         return replace(
             node, branch=substitute(node.branch, bindings), earlier=substitute(node.earlier, bindings),
-            returns=substitute(node.returns, bindings), mutations=substitute(node.mutations, bindings),
+            returns=substitute(node.returns, bindings), mutations=mutations,
             rules=[replace(rule, source=substitute(rule.source, bindings),
                            result_field=substitute(rule.result_field, bindings),
                            requires=substitute(rule.requires, bindings),
@@ -560,7 +564,7 @@ class BackwardSampler:
             ) for source in missing):
                 return False
             known = self.closure(node, missing)
-            sources = state_sources(node.mutations[mutation_index]) if mutation_index is not None else ()
+            sources = mutation_sources(node.mutations[mutation_index]) if mutation_index is not None else ()
             return all(self.proof(known, source) or is_pending(source) or self._can_fix(
                 before(source), depth + 1
             ) for source in sources)
@@ -653,7 +657,7 @@ class BackwardSampler:
                 add_need(source, depth + 1, step_id)
             if mutation_index is not None:
                 mutation = node.mutations[mutation_index]
-                for source in state_sources(mutation):
+                for source in mutation_sources(mutation):
                     proof = self.proof(resolved, source)
                     if proof and proof["kind"] == "earlier_state":
                         proof = None
@@ -661,6 +665,8 @@ class BackwardSampler:
                         "path": source, "mutation_target": mutation["target"],
                         "resolution": "same_call_return" if proof else "earlier_chain",
                         "evidence": proof,
+                        "target_identity_relations": [copy.deepcopy(item)
+                            for item in mutation.get("target_identity_sources", []) if item["path"] == source],
                     })
                     if not proof:
                         add_need(source, depth + 1, step_id)
@@ -891,7 +897,7 @@ class BackwardSampler:
                 intrinsic = self.closure(node)
                 for mutation_index in node.matching_mutation_indices(path):
                     mutation = node.mutations[mutation_index]
-                    unfixed = sorted({source for source in state_sources(mutation)
+                    unfixed = sorted({source for source in mutation_sources(mutation)
                                       if not self.proof(intrinsic, source)
                                       and not any(covers(target, source) for target in paths.values())
                                       and not self._can_fix(before(source), 1)})
@@ -926,6 +932,7 @@ class BackwardSampler:
                     "Load the backend with long_context=False and keep that environment mode fixed throughout the trajectory.",
                     "Satisfy each selected branch condition and avoid every earlier branch.",
                     "Assign concrete keys to numbered placeholders, preserving their identities and each lifecycle instance's initial states.",
+                    "At each selected write, require every target_identity_relations path's pre-call value to equal the concrete key bound to its placeholder; verify this against observations, not only initial state.",
                     "Ground every retained side effect; unfixed_side_effects does not imply the affected state is derivable from observations.",
                     "Satisfy reversible-domain assumptions and additional reader conditions.",
                     "Instantiate time/random sources consistently with mutations and observations.",

@@ -1,6 +1,6 @@
 [
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "activate_order",
     "branches": [
       {
@@ -36,7 +36,8 @@
         "value_from": [],
         "external_from": [],
         "logic": "Sets the order status to the constant value 'Open'.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -129,7 +130,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "add_to_watchlist",
     "branches": [
       {
@@ -181,7 +182,8 @@
             "given": [],
             "reason": "The operation appends one item; drop the last item from the observed list."
           }
-        ]
+        ],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -237,7 +239,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "cancel_order",
     "branches": [
       {
@@ -282,7 +284,8 @@
         "value_from": [],
         "external_from": [],
         "logic": "Set the matching order's status field to the literal value 'Cancelled'.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -374,7 +377,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "execute_order",
     "branches": [
       {
@@ -538,7 +541,8 @@
             "given": [],
             "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_buy",
@@ -566,6 +570,13 @@
             ],
             "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
           }
+        ],
+        "target_identity_sources": [
+          {
+            "placeholder": "order.symbol",
+            "path": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "The target holding key is the symbol stored in the selected order."
+          }
         ]
       },
       {
@@ -574,7 +585,8 @@
         "operation": "set",
         "value_from": [],
         "logic": "Sets the filled order status to the constant Completed.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       },
       {
         "branch": "success_buy",
@@ -592,7 +604,8 @@
             "given": [],
             "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_sell_with_remaining_shares",
@@ -626,7 +639,8 @@
             "given": [],
             "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_sell_with_remaining_shares",
@@ -656,6 +670,13 @@
             ],
             "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
           }
+        ],
+        "target_identity_sources": [
+          {
+            "placeholder": "order.symbol",
+            "path": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "The target holding key is the symbol stored in the selected order."
+          }
         ]
       },
       {
@@ -664,7 +685,8 @@
         "operation": "set",
         "value_from": [],
         "logic": "Sets the filled order status to the constant Completed.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       },
       {
         "branch": "success_sell_with_remaining_shares",
@@ -682,7 +704,8 @@
             "given": [],
             "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_sell_position_closed",
@@ -716,7 +739,8 @@
             "given": [],
             "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_sell_position_closed",
@@ -742,6 +766,13 @@
             "given": [],
             "reason": "The deleted target is absent after the write and does not expose the prior quantity."
           }
+        ],
+        "target_identity_sources": [
+          {
+            "placeholder": "order.symbol",
+            "path": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "The target holding key is the symbol stored in the selected order."
+          }
         ]
       },
       {
@@ -750,7 +781,8 @@
         "operation": "set",
         "value_from": [],
         "logic": "Sets the filled order status to the constant Completed.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       },
       {
         "branch": "success_sell_position_closed",
@@ -768,7 +800,8 @@
             "given": [],
             "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
           }
-        ]
+        ],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -1287,7 +1320,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "filter_stocks_by_price",
     "branches": [
       {
@@ -1338,7 +1371,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "fund_account",
     "branches": [
       {
@@ -1383,7 +1416,8 @@
             "given": [],
             "reason": "Given the argument amount, reverse the addition/subtraction on the bounded currency domain."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_funded",
@@ -1405,7 +1439,8 @@
             "given": [],
             "reason": "The operation appends exactly one record; remove the last element of the observed list."
           }
-        ]
+        ],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -1459,7 +1494,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_account_info",
     "branches": [
       {
@@ -1573,7 +1608,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_available_stocks",
     "branches": [
       {
@@ -1659,7 +1694,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_current_time",
     "branches": [
       {
@@ -1694,7 +1729,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_holdings",
     "branches": [
       {
@@ -1769,7 +1804,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_market_status",
     "branches": [
       {
@@ -1814,7 +1849,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_order_details",
     "branches": [
       {
@@ -2295,7 +2330,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_order_history",
     "branches": [
       {
@@ -2386,7 +2421,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_stock_info",
     "branches": [
       {
@@ -2567,7 +2602,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_symbol_by_name",
     "branches": [
       {
@@ -2620,7 +2655,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_transaction_history",
     "branches": [
       {
@@ -2758,7 +2793,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "get_watchlist",
     "branches": [
       {
@@ -2876,7 +2911,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "notify_price_change",
     "branches": [
       {
@@ -2952,7 +2987,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "place_order",
     "branches": [
       {
@@ -3047,7 +3082,8 @@
             "given": [],
             "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_placed_pending_order",
@@ -3074,7 +3110,8 @@
             "given": [],
             "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
           }
-        ]
+        ],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -3308,7 +3345,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "remove_stock_from_watchlist",
     "branches": [
       {
@@ -3354,7 +3391,8 @@
             "given": [],
             "reason": "Removing an item loses its original position in the list."
           }
-        ]
+        ],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -3414,7 +3452,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "trading_get_login_status",
     "branches": [
       {
@@ -3459,7 +3497,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "trading_login",
     "branches": [
       {
@@ -3487,7 +3525,8 @@
         "value_from": [],
         "external_from": [],
         "logic": "Sets the persistent authenticated flag to True after a successful login.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -3544,7 +3583,7 @@
     ]
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "trading_logout",
     "branches": [
       {
@@ -3570,7 +3609,8 @@
         "value_from": [],
         "external_from": [],
         "logic": "The backend sets the persistent authenticated flag to the constant value False.",
-        "state_source_relations": []
+        "state_source_relations": [],
+        "target_identity_sources": []
       }
     ],
     "returns": [
@@ -3620,7 +3660,7 @@
     "warnings": []
   },
   {
-    "schema_version": "1.2",
+    "schema_version": "1.3",
     "tool": "withdraw_funds",
     "branches": [
       {
@@ -3682,7 +3722,8 @@
             "given": [],
             "reason": "Given the argument amount, reverse the addition/subtraction on the bounded currency domain."
           }
-        ]
+        ],
+        "target_identity_sources": []
       },
       {
         "branch": "success_withdrawal",
@@ -3704,7 +3745,8 @@
             "given": [],
             "reason": "The operation appends exactly one record; remove the last element of the observed list."
           }
-        ]
+        ],
+        "target_identity_sources": []
       }
     ],
     "returns": [

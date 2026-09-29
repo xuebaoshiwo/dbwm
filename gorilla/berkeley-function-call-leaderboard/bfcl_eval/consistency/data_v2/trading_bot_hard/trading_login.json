@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "tool": "trading_login",
   "branches": [
     {
@@ -27,7 +27,8 @@
       "value_from": [],
       "external_from": [],
       "logic": "Sets the persistent authenticated flag to True after a successful login.",
-      "state_source_relations": []
+      "state_source_relations": [],
+      "target_identity_sources": []
     }
   ],
   "returns": [

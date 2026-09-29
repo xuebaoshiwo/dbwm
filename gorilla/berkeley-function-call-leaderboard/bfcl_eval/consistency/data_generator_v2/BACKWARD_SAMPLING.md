@@ -134,7 +134,43 @@ Specifications in version 1.2 keep computational `state_source_relations` and
 add `state_observation_relations` to every return field. Both use `path`,
 `transform`, `recoverability`, `given`, and `reason`. Observation paths refer to
 post-call state; their inverses are independent and require only declared
-`given` co-values. Versions 1.1 and 1.2 are accepted by the sampler.
+`given` co-values. Versions 1.1, 1.2 and 1.3 are accepted by the sampler.
+
+Schema 1.3 requires `target_identity_sources` on every mutation (empty when
+unneeded). It describes only state-derived keys in that mutation's `target`:
+
+```json
+{
+  "placeholder": "order.symbol",
+  "path": "$.state_before.orders['{args.order_id}'].symbol",
+  "logic": "The target holding key equals the selected order's pre-call symbol."
+}
+```
+
+For a selected holdings writer, binding `{order.symbol}` to `{symbol_1}` also
+binds this entry's bare `placeholder` name to `symbol_1`. The entry's path uses
+that call's numbered order ID. The pre-call symbol joins the selected writer's
+ordinary source-fixing needs, with the same dependency-depth and reuse rules.
+It may be observed by the same call or by an earlier anchor. The output attaches
+`target_identity_relations` to its `write_source_requirements`: grounding and
+observation checking must enforce that the path's value at this call equals the
+concrete key assigned to `symbol_1`. Merely allocating the placeholder is not
+evidence of that equality. No concrete equality is evaluated by this planner.
+
+Identity entries are separate from `value_from` and `state_source_relations`;
+they do not claim that observing the written value reveals the key. Their paths
+must be complete pre-call state paths with values equal to the keys. Computed
+keys without such a state field need a future expression schema; do not claim a
+false equality. Direct argument keys and generated keys exposed in this call's
+result need no pre-call identity anchor. The existing `place_order` generated-ID
+alias remains supported and its post-call anchor behavior is preserved.
+
+Only selected mutation targets schedule these extra needs. Keys occurring only
+in mutation value sources, return sources, observation paths or guards do not.
+All side effects are still audited, without adding identity anchors for them:
+an unfixed target identity marks its containing map unknown, since the actual
+modified child is not established. Old 1.1/1.2 specifications retain their old
+behavior and do not provide this new guarantee; regenerate or migrate them.
 
 For example, a constant `place_order` status retains its original provenance
 and adds an exact observation of the new order:
@@ -156,7 +192,7 @@ and adds an exact observation of the new order:
 }
 ```
 
-`generate_tool_state_specs.py` generates version 1.2 for any supplied backend
+`generate_tool_state_specs.py` generates version 1.3 for any supplied backend
 and tool schema. Its prompt and validators contain no TradingBot-specific
 observation logic. `migrate_trading_bot_hard_sources.py` is the separate,
 backend-reviewed migration for the existing TradingBotHard files.

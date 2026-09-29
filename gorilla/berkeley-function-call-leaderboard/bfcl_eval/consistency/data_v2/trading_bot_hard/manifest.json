@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "generated_at": "2026-09-23T11:21:38.734564+00:00",
   "backend": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\eval_checker\\multi_turn_eval\\func_source_code\\trading_bot_hard.py",
   "tool_schema": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\data\\multi_turn_func_doc\\trading_bot_hard.json",
@@ -38,6 +38,7 @@
   "attempts": {},
   "failures": {},
   "source_relation_annotation": "deterministic_backend_review",
-  "source_relation_annotated_at": "2026-09-28T06:44:02.400706+00:00",
-  "post_state_observation_annotation": "deterministic_backend_review"
+  "source_relation_annotated_at": "2026-09-29T09:42:09.094457+00:00",
+  "post_state_observation_annotation": "deterministic_backend_review",
+  "target_identity_annotation": "deterministic_backend_review"
 }

@@ -47,8 +47,8 @@ class DependencyGraph:
     def __init__(self, specs):
         self.nodes = []
         for spec in specs.values():
-            if spec['schema_version'] not in {'1.1', '1.2'}:
-                raise ValueError('Rule planning requires complete 1.1 or 1.2 source relations')
+            if spec['schema_version'] not in {'1.1', '1.2', '1.3'}:
+                raise ValueError('Rule planning requires complete 1.1, 1.2 or 1.3 source relations')
             for branch in spec['branches']:
                 name = branch['id']
                 if name.startswith('success_'):

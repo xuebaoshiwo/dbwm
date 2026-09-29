@@ -1,6 +1,6 @@
 # Design context and session handoff
 
-Status recorded on 2026-09-28. Read this together with
+Status recorded on 2026-09-29. Read this together with
 [BACKWARD_SAMPLING.md](BACKWARD_SAMPLING.md) and the current implementation before
 changing behavior. Keep this file current when accepted decisions or known gaps
 change. A future session should treat the open issues below as unfinished work,
@@ -72,10 +72,28 @@ calls must recompute dependencies, observation intervals and write counts.
 
 ## Current implementation
 
+Schema 1.3 adds `target_identity_sources` to every mutation. Entries contain
+`placeholder`, a complete pre-call state `path`, and `logic`; they assert that
+the state value equals the dynamic target key. The TradingBotHard migration
+adds this relation to the three `execute_order` holdings mutations and empty
+lists elsewhere. No identity dependencies are added for keys occurring only in
+value sources, return sources, observation relations or branch guards.
+
+Only selected mutations add target identity paths to the existing dependency
+frontier. Binding updates both the entry's bare placeholder name and its path.
+The forward audit includes these requirements; unselected effects do not add
+anchors and unresolved addresses conservatively invalidate their containing
+map. Output `target_identity_relations` preserves the equality obligation for
+grounding and observation checking at the write's pre-call state. The sampler
+does not compute concrete keys or check numeric/string equality. Direct args
+and returned generated IDs keep their existing behavior. Versions 1.1/1.2 are
+still accepted with their original, weaker identity guarantees. The new generic
+prompt and validator require 1.3, but have not been verified with a live model.
+
 The active sampler is `generate_backward_trajectories.py`; domain dependency
 JSON is generated separately by `generate_tool_state_specs.py`.
 
-1. Load targets, schema-1.1/1.2 specifications and reader refinements; load any
+1. Load targets, schema-1.1/1.2/1.3 specifications and reader refinements; load any
    external lifecycle rules. Use success branches as distinct nodes.
 2. Allocate target placeholders and bind candidate calls before dependency
    analysis. Repeated selections produce independent monitoring chains.
@@ -99,7 +117,7 @@ same relation keys as `state_source_relations`: `path`, `transform`,
 require their explicitly declared co-values. Original source provenance stays
 intact. `exact` and `conditional` observations can establish anchors.
 
-All existing TradingBotHard tool specifications were migrated to schema 1.2.
+All existing TradingBotHard tool specifications were migrated to schema 1.3.
 The generic generator's prompt and validators support this schema for supplied
 backends; the separate migration script contains reviewed TradingBotHard facts.
 
@@ -195,10 +213,10 @@ The catalog includes these targets without a Python entity registry:
 Run from `gorilla/berkeley-function-call-leaderboard`:
 
 ```powershell
-python -m unittest tests.test_backward_trajectory_sampling tests.test_generate_tool_state_specs tests.test_placeholder_trajectory_sampling -q
+python -m unittest tests.test_backward_trajectory_sampling tests.test_generate_tool_state_specs tests.test_placeholder_trajectory_sampling tests.test_target_identity_sampling -q
 ```
 
-The current implementation verification passed 79
+The current implementation verification passed 93
 tests. The local suites cover observation phases, dependency fixing, shared
 writes, lifecycle rules, old schemas and generic non-trading post-state anchors.
 Placeholder tests cover independent non-trading instances, nested slots,

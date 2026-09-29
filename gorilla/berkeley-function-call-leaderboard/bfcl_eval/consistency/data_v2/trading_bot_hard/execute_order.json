@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "tool": "execute_order",
   "branches": [
     {
@@ -163,7 +163,8 @@
           "given": [],
           "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
         }
-      ]
+      ],
+      "target_identity_sources": []
     },
     {
       "branch": "success_buy",
@@ -191,6 +192,13 @@
           ],
           "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
         }
+      ],
+      "target_identity_sources": [
+        {
+          "placeholder": "order.symbol",
+          "path": "$.state_before.orders['{args.order_id}'].symbol",
+          "logic": "The target holding key is the symbol stored in the selected order."
+        }
       ]
     },
     {
@@ -199,7 +207,8 @@
       "operation": "set",
       "value_from": [],
       "logic": "Sets the filled order status to the constant Completed.",
-      "state_source_relations": []
+      "state_source_relations": [],
+      "target_identity_sources": []
     },
     {
       "branch": "success_buy",
@@ -217,7 +226,8 @@
           "given": [],
           "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
         }
-      ]
+      ],
+      "target_identity_sources": []
     },
     {
       "branch": "success_sell_with_remaining_shares",
@@ -251,7 +261,8 @@
           "given": [],
           "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
         }
-      ]
+      ],
+      "target_identity_sources": []
     },
     {
       "branch": "success_sell_with_remaining_shares",
@@ -281,6 +292,13 @@
           ],
           "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
         }
+      ],
+      "target_identity_sources": [
+        {
+          "placeholder": "order.symbol",
+          "path": "$.state_before.orders['{args.order_id}'].symbol",
+          "logic": "The target holding key is the symbol stored in the selected order."
+        }
       ]
     },
     {
@@ -289,7 +307,8 @@
       "operation": "set",
       "value_from": [],
       "logic": "Sets the filled order status to the constant Completed.",
-      "state_source_relations": []
+      "state_source_relations": [],
+      "target_identity_sources": []
     },
     {
       "branch": "success_sell_with_remaining_shares",
@@ -307,7 +326,8 @@
           "given": [],
           "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
         }
-      ]
+      ],
+      "target_identity_sources": []
     },
     {
       "branch": "success_sell_position_closed",
@@ -341,7 +361,8 @@
           "given": [],
           "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
         }
-      ]
+      ],
+      "target_identity_sources": []
     },
     {
       "branch": "success_sell_position_closed",
@@ -367,6 +388,13 @@
           "given": [],
           "reason": "The deleted target is absent after the write and does not expose the prior quantity."
         }
+      ],
+      "target_identity_sources": [
+        {
+          "placeholder": "order.symbol",
+          "path": "$.state_before.orders['{args.order_id}'].symbol",
+          "logic": "The target holding key is the symbol stored in the selected order."
+        }
       ]
     },
     {
@@ -375,7 +403,8 @@
       "operation": "set",
       "value_from": [],
       "logic": "Sets the filled order status to the constant Completed.",
-      "state_source_relations": []
+      "state_source_relations": [],
+      "target_identity_sources": []
     },
     {
       "branch": "success_sell_position_closed",
@@ -393,7 +422,8 @@
           "given": [],
           "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
         }
-      ]
+      ],
+      "target_identity_sources": []
     }
   ],
   "returns": [

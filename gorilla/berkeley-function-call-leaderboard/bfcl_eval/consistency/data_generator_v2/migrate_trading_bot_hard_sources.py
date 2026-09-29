@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -131,11 +132,32 @@ def observation_relations(tool, branch, field, mutations):
     return relations
 
 
+def target_identity_sources(tool, mutation):
+    """Describe dynamic mutation-target keys without mixing them into value_from."""
+    placeholders = re.findall(r"\{([A-Za-z_][A-Za-z0-9_.]*)\}", mutation["target"])
+    sources = []
+    for placeholder in placeholders:
+        if placeholder == "order.symbol" and tool == "execute_order":
+            sources.append({
+                "placeholder": placeholder,
+                "path": "$.state_before.orders['{args.order_id}'].symbol",
+                "logic": "The target holding key is the symbol stored in the selected order.",
+            })
+        elif placeholder == "order_id" and tool == "place_order":
+            # The bare generated-ID alias is already represented by the
+            # branch's $.result.order_id field; it needs no pre-call anchor.
+            continue
+        elif not placeholder.startswith(("args.", "result.")):
+            raise ValueError(f"Unclassified dynamic target identity: {tool} {mutation['target']} {{{placeholder}}}")
+    return sources
+
+
 def annotate(spec):
     tool = spec["tool"]
-    if spec["schema_version"] not in {"1.0", "1.1", CURRENT_SCHEMA_VERSION}:
+    if spec["schema_version"] not in {"1.0", "1.1", "1.2", CURRENT_SCHEMA_VERSION}:
         raise ValueError(f"Unsupported input version: {spec['schema_version']}")
     for mutation in spec["mutations"]:
+        mutation["target_identity_sources"] = target_identity_sources(tool, mutation)
         target = mutation["target"]
         if tool in {"fund_account", "withdraw_funds"} and target == "$.state_after.transaction_history":
             if "$.state_before.transaction_history" not in mutation["value_from"]:
@@ -196,6 +218,7 @@ def migrate(directory):
     manifest["source_relation_annotation"] = "deterministic_backend_review"
     manifest["source_relation_annotated_at"] = datetime.now(timezone.utc).isoformat()
     manifest["post_state_observation_annotation"] = "deterministic_backend_review"
+    manifest["target_identity_annotation"] = "deterministic_backend_review"
     _write_json_atomic(manifest_path, manifest)
     return {"tools": len(annotated), "mutations": sum(len(s["mutations"]) for s in annotated),
             "return_fields": sum(len(r["fields"]) for s in annotated for r in s["returns"])}

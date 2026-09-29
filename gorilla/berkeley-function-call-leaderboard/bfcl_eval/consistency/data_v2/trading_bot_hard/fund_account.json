@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "tool": "fund_account",
   "branches": [
     {
@@ -44,7 +44,8 @@
           "given": [],
           "reason": "Given the argument amount, reverse the addition/subtraction on the bounded currency domain."
         }
-      ]
+      ],
+      "target_identity_sources": []
     },
     {
       "branch": "success_funded",
@@ -66,7 +67,8 @@
           "given": [],
           "reason": "The operation appends exactly one record; remove the last element of the observed list."
         }
-      ]
+      ],
+      "target_identity_sources": []
     }
   ],
   "returns": [

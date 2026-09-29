@@ -48,7 +48,7 @@ class ToolStateSpecValidationTests(unittest.TestCase):
         self.assertEqual(len(specs), 24)
         for spec in specs:
             with self.subTest(tool=spec["tool"]):
-                self.assertEqual(spec["schema_version"], "1.2")
+                self.assertEqual(spec["schema_version"], "1.3")
                 validate_spec(spec, spec["tool"])
                 individual = json.loads((directory / f"{spec['tool']}.json").read_text(encoding="utf-8"))
                 self.assertEqual(spec, individual)
@@ -115,7 +115,8 @@ class ToolStateSpecValidationTests(unittest.TestCase):
         prompt = build_prompt("def create_record(): pass", [{"name": "create_record"}], {"name": "create_record"})
         self.assertIn("create_record", prompt)
         self.assertIn("state_observation_relations", SYSTEM_PROMPT)
-        self.assertIn('"schema_version": "1.2"', SYSTEM_PROMPT)
+        self.assertIn('"schema_version": "1.3"', SYSTEM_PROMPT)
+        self.assertIn("target_identity_sources", SYSTEM_PROMPT)
 
     def test_order_post_state_correspondences_match_backend_execution(self):
         from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.trading_bot_hard import TradingBot

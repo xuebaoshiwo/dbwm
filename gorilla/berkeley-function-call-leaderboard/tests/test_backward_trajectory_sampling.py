@@ -100,7 +100,9 @@ def assert_forward_sources(test, engine, result):
         referenced = node.referenced_paths() | {fixed["path"] for fixed in step["fixes"]}
         proofs = engine.closure(node, knowledge.known_paths(referenced))
         selected = step["selected_mutation_index"]
-        required = state_sources(node.mutations[selected]) if selected is not None else ()
+        selected_mutation = node.mutations[selected] if selected is not None else {}
+        required = set(state_sources(selected_mutation)) if selected is not None else set()
+        required.update(entry["path"] for entry in selected_mutation.get("target_identity_sources", []))
         test.assertEqual(set(required), {item["path"] for item in step["write_source_requirements"]})
         for source in required:
             test.assertTrue(engine.proof(proofs, source),
@@ -336,13 +338,17 @@ class BackwardSamplerTests(unittest.TestCase):
         target = "$.state_before.holdings['{order.symbol}']"
         engine = BackwardSampler(specs, {"holdings": {"path": target}}, reader_refinements=refinements)
         result = engine.build(max_writes=1, dependency_max_writes=0, min_length=1, max_length=5)
-        self.assertEqual([step["tool"] for step in result["steps"]],
-                         ["get_holdings", "execute_order", "get_holdings"])
-        writer = result["steps"][1]
+        writer = next(step for step in result["steps"] if step["tool"] == "execute_order")
+        identity_reader = next(step for step in result["steps"] if step["tool"] == "get_order_details")
+        self.assertLess(identity_reader["index"], writer["index"])
+        self.assertEqual(result["steps"][-1]["tool"], "get_holdings")
+        self.assertNotIn("get_account_info", {step["tool"] for step in result["steps"]})
         selected = writer["mutations"][writer["selected_mutation_index"]]
         self.assertEqual(selected["target"], "$.state_after.holdings['{order.symbol_1}']")
         self.assertNotIn("$.state_before.account_info.balance",
                          {item["path"] for item in writer["write_source_requirements"]})
+        identity = next(item for item in writer["write_source_requirements"] if item["path"].endswith(".symbol"))
+        self.assertEqual(identity["target_identity_relations"][0]["placeholder"], "order.symbol_1")
         balance = next(status for status in writer["mutation_knowledge"]
                        if status["target"] == "$.state_after.account_info.balance")
         self.assertFalse(balance["sources_fixed"])
