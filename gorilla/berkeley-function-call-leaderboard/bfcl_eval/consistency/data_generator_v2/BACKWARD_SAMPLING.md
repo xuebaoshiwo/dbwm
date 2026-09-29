@@ -217,14 +217,16 @@ bind that returned ID to later calls on the monitored order.
 - A return source can fix a target only when it covers the target (same path or
   ancestor), is exact/conditional, and its co-sources are fixed. Same-branch
   returns are solved to a fixed point before adding external anchors.
-- A writer selects one mutation whose target covers the selected field. Only
-  that mutation's persistent write sources need same-call fixing or an earlier
-  fixing chain. A fixing node only adds dependencies for its selected return
-  field. Other returns may help fix these sources, but neither unrelated
-  returns nor other mutations directly cause dependency anchors. This remains
-  true when a side effect writes another monitored target. Lifecycle filtering
-  does not add calls or source dependencies. All actual mutations and branch
-  conditions are retained.
+- A writer selects one mutation whose target is the selected field or one of
+  its descendants. An `insert` mutation targeting an ancestor also counts as a
+  writer because it initializes that descendant; other ancestor mutations do
+  not. Only that mutation's persistent write sources need same-call fixing or
+  an earlier fixing chain. A fixing node only adds dependencies for its
+  selected return field. Other returns may help fix these sources, but neither
+  unrelated returns nor other mutations directly cause dependency anchors.
+  This remains true when a side effect writes another monitored target.
+  Lifecycle filtering does not add calls or source dependencies. All actual
+  mutations and branch conditions are retained.
 - Depth-one sources may have 0..`dependency-max-writes` sampled writes before
   their anchor. If there is no eligible writer, no optional write is inserted.
   At depth two and deeper, immediately use a return field with a single

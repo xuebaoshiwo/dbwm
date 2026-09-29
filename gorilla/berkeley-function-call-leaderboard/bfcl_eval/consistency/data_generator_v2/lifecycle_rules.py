@@ -3,7 +3,9 @@
 from dataclasses import dataclass
 from functools import lru_cache
 
-from bfcl_eval.consistency.data_generator_v2.backward_state_knowledge import covers
+from bfcl_eval.consistency.data_generator_v2.backward_state_knowledge import (
+    covers, mutation_writes_path,
+)
 
 
 @dataclass(frozen=True)
@@ -77,7 +79,7 @@ def parse_lifecycle_rules(data, specs, targets):
             spec = specs.get(item["tool"])
             path = targets[name]["path"]
             if spec is None or not any(branch["id"] == item["branch"] for branch in spec["branches"]) or not any(
-                mutation["branch"] == item["branch"] and covers(mutation["target"], path)
+                mutation["branch"] == item["branch"] and mutation_writes_path(mutation, path)
                 for mutation in spec["mutations"]
             ):
                 raise ValueError(f"Lifecycle branch does not write {name}: {key}")

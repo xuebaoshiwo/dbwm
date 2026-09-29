@@ -19,6 +19,20 @@ def overlaps(left, right):
     return covers(left, right) or covers(right, left)
 
 
+def mutation_writes_path(mutation, monitored_path):
+    """Return whether a mutation is guaranteed to write ``monitored_path``.
+
+    A mutation of the monitored field or one of its descendants writes the
+    monitored region.  An ancestor target is only treated as writing the
+    descendant when the operation inserts that ancestor object, since an
+    ordinary replacement of a parent does not guarantee the descendant.
+    """
+    target = mutation["target"]
+    return covers(monitored_path, target) or (
+        mutation.get("operation") == "insert" and covers(target, monitored_path)
+    )
+
+
 def temporal_covers(parent, child):
     return parent.startswith("$.state_after") == child.startswith("$.state_after") and covers(parent, child)
 

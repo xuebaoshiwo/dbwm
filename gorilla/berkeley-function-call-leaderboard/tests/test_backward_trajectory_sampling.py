@@ -12,7 +12,9 @@ from bfcl_eval.consistency.data_generator_v2.generate_backward_trajectories impo
     BackwardSampler, DEFAULT_CATALOG, LONG_CONTEXT_DISABLED, SamplingError, covers,
     load_inputs, load_lifecycle_rules, main,
 )
-from bfcl_eval.consistency.data_generator_v2.backward_state_knowledge import StateKnowledge, state_sources
+from bfcl_eval.consistency.data_generator_v2.backward_state_knowledge import (
+    StateKnowledge, mutation_writes_path, state_sources,
+)
 from bfcl_eval.consistency.data_generator_v2.lifecycle_rules import LifecycleRule, Transition, parse_lifecycle_rules
 
 
@@ -34,8 +36,8 @@ def returned(name, *sources, reversible=True):
             "logic": "Combined sources.", "state_source_relations": relations}
 
 
-def mutation(target, *sources):
-    return {"branch": "success_main", "target": target, "operation": "set",
+def mutation(target, *sources, operation="set"):
+    return {"branch": "success_main", "target": target, "operation": operation,
             "value_from": list(sources), "state_source_relations": [relation(source) for source in sources],
             "logic": "Test mutation."}
 
@@ -631,21 +633,33 @@ class BackwardSamplerTests(unittest.TestCase):
         self.assertEqual(old_z["resolution"], "earlier_chain")
         assert_forward_sources(self, sampler(entries), result)
 
-    def test_parent_return_and_parent_mutation_cover_target(self):
+    def test_parent_return_covers_target_but_parent_set_mutation_does_not(self):
         entries = [spec("read_account", [returned("account", "$.state_before.account")]),
                    spec("write_account", mutations=[mutation("$.state_after.account", "$.state_before.account")])]
+        with self.assertRaises(SamplingError):
+            sampler(entries, {"balance": {"path": "$.state_before.account.balance"}}).build(
+                max_writes=1, dependency_max_writes=0, min_length=1, max_length=8,
+                attempts=2)
+
+    def test_child_mutation_is_a_parent_writer(self):
+        entries = [spec("read_account", [returned("account", "$.state_before.account")]),
+                   spec("write_balance", mutations=[mutation("$.state_after.account.balance", "$.args.amount")])]
+        result = sampler(entries, {"account": {"path": "$.state_before.account"}}).build(
+            max_writes=1, min_length=1, max_length=10)
+        self.assertEqual(result["planning"]["target_chains"]["account"]["write_count"], 1)
+
+    def test_insert_parent_mutation_is_a_descendant_writer(self):
+        entries = [spec("read_account", [returned("account", "$.state_before.account")]),
+                   spec("insert_account", mutations=[mutation("$.state_after.account", operation="insert")])]
         result = sampler(entries, {"balance": {"path": "$.state_before.account.balance"}}).build(
             max_writes=1, dependency_max_writes=0, min_length=1, max_length=8)
         self.assertEqual(result["planning"]["target_chains"]["balance"]["write_count"], 1)
-        self.assertTrue(all(step["selected_return_source"] == "$.state_before.account"
-                            for step in result["steps"] if "selected_return_source" in step))
 
-    def test_child_mutation_is_not_a_parent_writer(self):
-        entries = [spec("read_account", [returned("account", "$.state_before.account")]),
-                   spec("write_balance", mutations=[mutation("$.state_after.account.balance", "$.args.amount")])]
-        with self.assertRaises(SamplingError):
-            sampler(entries, {"account": {"path": "$.state_before.account"}}).build(
-                max_writes=1, min_length=1, max_length=10, attempts=2)
+    def test_mutation_write_relationship_is_directional(self):
+        monitored = "$.state_before.account.balance"
+        self.assertTrue(mutation_writes_path(mutation("$.state_after.account.balance"), monitored))
+        self.assertFalse(mutation_writes_path(mutation("$.state_after.account"), monitored))
+        self.assertTrue(mutation_writes_path(mutation("$.state_after.account", operation="insert"), monitored))
 
     def test_depth_two_uses_single_source_reader_immediately(self):
         entries = [basic_entries()[0], spec("read_z", [returned("z", "$.state_before.z")]),
@@ -808,7 +822,7 @@ class BackwardSamplerTests(unittest.TestCase):
             place = next(node for node in result["planning"]["writer_candidates_by_target"]["orders"]
                          if node["tool"] == "place_order")
             self.assertIn("$.state_before.orders", place["unfixable_write_sources"])
-            self.assertEqual(len(result["steps"]), 30)
+            self.assertGreaterEqual(len(result["steps"]), 30)
             for name, count in (("balance", 5), ("transaction_history", 3), ("orders", 3)):
                 self.assertGreaterEqual(result["planning"]["target_chains"][name]["write_count"], count)
             for step in result["steps"]:

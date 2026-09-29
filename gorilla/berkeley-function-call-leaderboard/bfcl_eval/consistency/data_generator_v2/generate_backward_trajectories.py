@@ -13,7 +13,8 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from bfcl_eval.consistency.data_generator_v2.backward_state_knowledge import (
-    StateKnowledge, before, covers, overlaps, state_path, mutation_sources, temporal_covers,
+    StateKnowledge, before, covers, mutation_sources, mutation_writes_path, overlaps,
+    state_path, temporal_covers,
 )
 from bfcl_eval.consistency.data_generator_v2.generate_tool_state_specs import (
     _write_json_atomic, validate_spec,
@@ -54,12 +55,11 @@ class Branch:
     bindings: dict[str, str] = field(default_factory=dict)
 
     def writes(self, path):
-        # A descendant write is not a whole-field write of its parent.
         return bool(self.matching_mutation_indices(path))
 
     def matching_mutation_indices(self, path):
         return [index for index, mutation in enumerate(self.mutations)
-                if covers(mutation["target"], path)]
+                if mutation_writes_path(mutation, path)]
 
     def referenced_paths(self):
         return {path for rule in self.rules for path in (rule.source, *rule.requires)} | {
@@ -406,10 +406,12 @@ class BackwardSampler:
             if entry.get("final_phase") == "after":
                 end += 1
             for step in kept[start:end]:
-                if self.step_node(step).writes(paths[name]):
+                node = self.step_node(step)
+                if node.writes(paths[name]):
                     entry["write_ids"].append(step["_id"])
-                    if all(status["sources_fixed"] for status in step["mutation_knowledge"]
-                           if covers(status["target"], paths[name])):
+                    if all(status["sources_fixed"]
+                           for mutation, status in zip(node.mutations, step["mutation_knowledge"])
+                           if mutation_writes_path(mutation, paths[name])):
                         entry["source_fixed_write_ids"].append(step["_id"])
                     step["write_targets"].append(name)
                     if "write" not in step["roles"]:
@@ -528,7 +530,7 @@ class BackwardSampler:
             for rule in self.lifecycle_rules.values():
                 template = before(rule.path or self.targets[rule.target]["path"])
                 for mutation in node.mutations:
-                    if covers(mutation["target"], template):
+                    if mutation_writes_path(mutation, template):
                         path = substitute(template, path_bindings(template, mutation["target"]))
                         if all(re.fullmatch(r".+_[1-9][0-9]*", token)
                                for token in PLACEHOLDER.findall(path)):
