@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.1",
+  "tool": "trading_logout",
+  "branches": [
+    {
+      "id": "fallback_already_logged_out",
+      "if": "not $.state_before.authenticated",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The user is not currently authenticated, so logout is a no-op and the backend returns a status message indicating that no user is logged in."
+    },
+    {
+      "id": "success_logged_out",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The user is authenticated, so the backend clears the authenticated flag and returns a successful logout status."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_logged_out",
+      "target": "$.state_after.authenticated",
+      "operation": "set",
+      "value_from": [],
+      "external_from": [],
+      "logic": "The backend sets the persistent authenticated flag to the constant value False.",
+      "state_source_relations": []
+    }
+  ],
+  "returns": [
+    {
+      "branch": "fallback_already_logged_out",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "No user is currently logged in",
+          "logic": "The backend returns a literal status message when logout is requested while no user is authenticated.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_logged_out",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Logged out successfully",
+          "logic": "The backend returns a literal status message after successfully clearing the authenticated state.",
+          "state_source_relations": []
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

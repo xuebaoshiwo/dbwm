@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "tool": "get_watchlist",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "Return an authentication error when the user is not authenticated."
+    },
+    {
+      "id": "success_long_context",
+      "if": "$.state_before.long_context == true",
+      "uses": [
+        "$.state_before.long_context"
+      ],
+      "description": "Return a copy of the watch list extended with an imported long-context constant when long_context is enabled."
+    },
+    {
+      "id": "success_standard",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Return the current watch list under the watchlist key."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "constant",
+          "value": [
+            "Error: User not authenticated. Please log in to view the watchlist."
+          ],
+          "logic": "The backend returns a Python list containing this exact error string when the user is not authenticated."
+        }
+      ]
+    },
+    {
+      "branch": "success_long_context",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.watch_list"
+          ],
+          "external_from": [
+            "WATCH_LIST_EXTENSION imported constant"
+          ],
+          "logic": "The backend copies the current watch_list state, extends the copy with the imported WATCH_LIST_EXTENSION constant, and returns the resulting list directly without wrapping it in an object."
+        }
+      ]
+    },
+    {
+      "branch": "success_standard",
+      "fields": [
+        {
+          "path": "$.result.watchlist",
+          "source_kind": "state_direct",
+          "source": "$.state_before.watch_list",
+          "logic": "The backend returns the current watch_list state under the watchlist key without modification."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema expects a response object with a watchlist array, but the unauthenticated branch returns a list containing an error string and the long_context branch returns a list rather than an object. Only the default success branch matches the schema shape.",
+      "schema_path": "$.response.type",
+      "backend_path": "$.result"
+    }
+  ]
+}

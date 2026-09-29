@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.2",
+  "tool": "get_transaction_history",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The backend rejects the request when the user is not authenticated and returns an error list without reading transaction history or date arguments."
+    },
+    {
+      "id": "success_filtered_history",
+      "if": "$.state_before.authenticated == true and $.state_before.long_context == false",
+      "uses": [
+        "$.state_before.authenticated",
+        "$.state_before.long_context"
+      ],
+      "description": "The authenticated user receives the transaction history filtered by the optional start_date and end_date arguments, with no long-context extension appended."
+    },
+    {
+      "id": "success_filtered_history_long_context",
+      "if": "$.state_before.authenticated == true and $.state_before.long_context == true",
+      "uses": [
+        "$.state_before.authenticated",
+        "$.state_before.long_context"
+      ],
+      "description": "The authenticated user receives the filtered transaction history with the imported TRANSACTION_HISTORY_EXTENSION appended because the backend long_context flag is enabled."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result[0].error",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to view transaction history.",
+          "logic": "The backend returns a single-item list containing this literal error message when authentication fails.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_filtered_history",
+      "fields": [
+        {
+          "path": "$.result.transaction_history",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.transaction_history",
+            "$.args.start_date",
+            "$.args.end_date"
+          ],
+          "external_from": [],
+          "logic": "The backend parses each transaction timestamp and keeps transactions whose timestamp falls between start_date and end_date, inclusive; a missing start_date is treated as datetime.min and a missing end_date as datetime.max.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.transaction_history",
+              "transform": "filter",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.transaction_history",
+              "transform": "filter",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "success_filtered_history_long_context",
+      "fields": [
+        {
+          "path": "$.result.transaction_history",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.transaction_history",
+            "$.args.start_date",
+            "$.args.end_date"
+          ],
+          "external_from": [
+            "TRANSACTION_HISTORY_EXTENSION"
+          ],
+          "logic": "The backend filters the state transaction_history by the date range and then appends the imported TRANSACTION_HISTORY_EXTENSION entries before returning the combined list.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.transaction_history",
+              "transform": "filter",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.transaction_history",
+              "transform": "filter",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The response schema expects an object with a transaction_history key, but the unauthenticated backend branch returns a list containing an error object instead of that object.",
+      "schema_path": "response",
+      "backend_path": "$.result"
+    },
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema does not document that authentication is required, but the backend checks authenticated state and returns an error when it is false."
+    },
+    {
+      "type": "dynamic_behavior",
+      "description": "The backend does not catch invalid date formats. If start_date or end_date is present but not in YYYY-MM-DD format, datetime.strptime raises ValueError instead of returning a structured error response."
+    },
+    {
+      "type": "ambiguous_state",
+      "description": "The backend reads an internal long_context flag not represented in the tool schema. When true, it appends TRANSACTION_HISTORY_EXTENSION entries to the returned transaction_history, producing behavior not described by the schema."
+    }
+  ]
+}

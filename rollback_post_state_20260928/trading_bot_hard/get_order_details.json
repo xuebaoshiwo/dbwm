@@ -1,0 +1,336 @@
+{
+  "schema_version": "1.1",
+  "tool": "get_order_details",
+  "branches": [
+    {
+      "id": "error_order_not_found",
+      "if": "not exists $.state_before.orders['{args.order_id}']",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}']"
+      ],
+      "description": "The requested order ID is not present in stored orders; the method returns an error with the list of existing order IDs."
+    },
+    {
+      "id": "error_keyerror_formatting",
+      "if": "$.state_before.long_context == true and KeyError occurs when formatting ORDER_DETAIL_EXTENSION values using $.state_before.orders['{args.order_id}'].symbol",
+      "uses": [
+        "$.state_before.long_context",
+        "$.state_before.orders['{args.order_id}'].symbol"
+      ],
+      "description": "In long-context mode, formatting an ORDER_DETAIL_EXTENSION placeholder with the order symbol raises KeyError; the method returns an error immediately."
+    },
+    {
+      "id": "success_long_context",
+      "if": "$.state_before.orders['{args.order_id}'] exists and $.state_before.long_context == true and no KeyError occurs while formatting ORDER_DETAIL_EXTENSION",
+      "uses": [
+        "$.state_before.long_context",
+        "$.state_before.orders['{args.order_id}']"
+      ],
+      "description": "The order exists and long-context mode is active; the method copies the order, appends formatted metadata, and returns it."
+    },
+    {
+      "id": "success_standard",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The order exists and long-context mode is false; the method returns the stored order object directly."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_order_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id",
+            "$.state_before.orders"
+          ],
+          "external_from": [],
+          "logic": "The error string concatenates the missing order ID argument and the list of all order IDs currently stored in state.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders",
+              "transform": "aggregation",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Only order IDs are formatted into the message; order contents are omitted."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "error_keyerror_formatting",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [],
+          "external_from": [
+            "ORDER_DETAIL_EXTENSION",
+            "KeyError exception text"
+          ],
+          "logic": "The formatting KeyError reports a missing template key, not the order symbol's value.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_long_context",
+      "fields": [
+        {
+          "path": "$.result.id",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].id",
+          "logic": "Copied unchanged from the stored order.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].order_type",
+          "logic": "Copied unchanged from the stored order.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.symbol",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].symbol",
+          "logic": "Copied unchanged from the stored order.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].symbol",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].price",
+          "logic": "Copied unchanged from the stored order.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].amount",
+          "logic": "Copied unchanged from the stored order.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].status",
+          "logic": "Copied unchanged from the stored order.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].filled_price",
+          "logic": "Copied unchanged from the stored order when the stored order includes a filled_price; otherwise this field is absent.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.metadata",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].symbol"
+          ],
+          "external_from": [
+            "ORDER_DETAIL_EXTENSION"
+          ],
+          "logic": "Constructed by formatting each ORDER_DETAIL_EXTENSION value with the order symbol.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].symbol",
+              "transform": "format",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The known metadata template embeds the symbol verbatim; extract it from a formatted entry."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "success_standard",
+      "fields": [
+        {
+          "path": "$.result.id",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].id",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].order_type",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.symbol",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].symbol",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].symbol",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].price",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].amount",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].status",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{args.order_id}'].filled_price",
+          "logic": "Read directly from the stored order object when the stored order includes a filled_price; otherwise this field is absent.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "In long-context mode, the backend adds a 'metadata' field to the returned order object; the tool schema does not declare this field.",
+      "schema_path": "$.response.properties.metadata",
+      "backend_path": "$.result.metadata"
+    },
+    {
+      "type": "schema_backend_mismatch",
+      "description": "Error branches return a top-level 'error' field; the tool schema only defines success fields.",
+      "schema_path": "$.response.properties.error",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

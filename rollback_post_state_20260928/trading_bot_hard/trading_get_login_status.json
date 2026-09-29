@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.1",
+  "tool": "trading_get_login_status",
+  "branches": [
+    {
+      "id": "success_get_login_status",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Unconditional success path that returns the current authentication status."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "success_get_login_status",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.authenticated",
+          "logic": "The method reads the backend's authenticated boolean state and returns it unchanged as the status field.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.authenticated",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

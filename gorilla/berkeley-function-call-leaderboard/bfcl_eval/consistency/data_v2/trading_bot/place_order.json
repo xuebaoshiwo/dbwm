@@ -1,0 +1,218 @@
+{
+  "schema_version": "1.0",
+  "tool": "place_order",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "not $.state_before.authenticated",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The user must be logged in before placing an order. If not authenticated, the backend returns an error immediately."
+    },
+    {
+      "id": "error_invalid_stock_symbol",
+      "if": "$.args.symbol not in $.state_before.stocks",
+      "uses": [
+        "$.args.symbol",
+        "$.state_before.stocks"
+      ],
+      "description": "The requested stock symbol must exist in the stocks state; otherwise the backend returns an invalid symbol error."
+    },
+    {
+      "id": "error_invalid_price_or_amount",
+      "if": "$.args.price <= 0 or $.args.amount <= 0",
+      "uses": [
+        "$.args.price",
+        "$.args.amount"
+      ],
+      "description": "Both price and amount must be positive; otherwise the backend rejects the order."
+    },
+    {
+      "id": "error_invalid_order_type",
+      "if": "case-insensitive $.args.order_type not in ['buy', 'sell']",
+      "uses": [
+        "$.args.order_type"
+      ],
+      "description": "The order type must be Buy or Sell, ignoring case; any other value returns an error."
+    },
+    {
+      "id": "error_insufficient_funds_for_buy",
+      "if": "case-insensitive $.args.order_type is Buy and ($.args.price * $.args.amount) > $.state_before.account_info.balance",
+      "uses": [
+        "$.args.order_type",
+        "$.args.price",
+        "$.args.amount",
+        "$.state_before.account_info.balance"
+      ],
+      "description": "For a Buy order, the total cost (limit price times amount) must not exceed the account balance."
+    },
+    {
+      "id": "error_insufficient_shares_for_sell",
+      "if": "case-insensitive $.args.order_type is Sell and $.state_before.holdings['{args.symbol}'] < $.args.amount",
+      "uses": [
+        "$.args.order_type",
+        "$.args.symbol",
+        "$.args.amount",
+        "$.state_before.holdings"
+      ],
+      "description": "For a Sell order, the user must hold at least the requested number of shares of the given symbol."
+    },
+    {
+      "id": "success_order_placed",
+      "if": "otherwise",
+      "uses": [],
+      "description": "All validation passes, the backend creates a new Pending order and increments the order counter."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_order_placed",
+      "target": "$.state_after.orders['{generated_order_id}']",
+      "operation": "insert",
+      "value_from": [
+        "$.state_before.order_counter",
+        "$.state_before.orders",
+        "$.args.order_type",
+        "$.args.symbol",
+        "$.args.price",
+        "$.args.amount"
+      ],
+      "external_from": [],
+      "logic": "Creates a new order object under a generated order ID. The ID is derived from state_before.order_counter and existing order keys; order_type is normalized to title case; symbol is copied; price is converted to float; amount is copied; status is set to the constant Pending."
+    },
+    {
+      "branch": "success_order_placed",
+      "target": "$.state_after.order_counter",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.order_counter",
+        "$.state_before.orders"
+      ],
+      "external_from": [],
+      "logic": "Updates the order counter to one greater than the generated order ID, after the new order has been inserted, to prepare for the next order."
+    }
+  ],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to place an order.",
+          "logic": "Backend returns a fixed error message when authentication is false."
+        }
+      ]
+    },
+    {
+      "branch": "error_invalid_stock_symbol",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.symbol"
+          ],
+          "logic": "Error message embeds the invalid stock symbol argument."
+        }
+      ]
+    },
+    {
+      "branch": "error_invalid_price_or_amount",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Price and amount must be positive values.",
+          "logic": "Backend returns a fixed error message when price or amount is non-positive."
+        }
+      ]
+    },
+    {
+      "branch": "error_invalid_order_type",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Order type must be Buy or Sell.",
+          "logic": "Backend returns a fixed error message when order_type is neither Buy nor Sell, ignoring case."
+        }
+      ]
+    },
+    {
+      "branch": "error_insufficient_funds_for_buy",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.price",
+            "$.args.amount",
+            "$.state_before.account_info.balance"
+          ],
+          "logic": "Error message is formatted with the computed total cost and the current account balance."
+        }
+      ]
+    },
+    {
+      "branch": "error_insufficient_shares_for_sell",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Insufficient shares to place the sell order.",
+          "logic": "Backend returns a fixed error message when holdings are insufficient for a Sell order."
+        }
+      ]
+    },
+    {
+      "branch": "success_order_placed",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "logic": "Generated order ID starts from order_counter and is incremented while the ID already exists in orders, so it is derived from those state fields."
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_type"
+          ],
+          "logic": "Backend normalizes the input order_type to title case using capitalize(); for example 'buy' becomes 'Buy'."
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Pending",
+          "logic": "Newly placed order always starts in Pending status."
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.price"
+          ],
+          "logic": "Backend converts the input price to float before returning it."
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "arg_direct",
+          "source": "$.args.amount",
+          "logic": "Amount is returned unchanged after validation."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema response only documents the success shape with order_id, order_type, status, price, and amount. The backend also returns an object with a single 'error' field on authentication, validation, or insufficient resource failures. A client relying only on the schema would not see those error fields."
+    }
+  ]
+}

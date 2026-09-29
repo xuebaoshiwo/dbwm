@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "tool": "get_market_status",
+  "branches": [
+    {
+      "id": "success_market_status",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Unconditionally read the current market status and return it."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "success_market_status",
+      "fields": [
+        {
+          "path": "$.result.market_status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.market_status",
+          "logic": "The backend returns the market_status field directly from instance state without transformation."
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

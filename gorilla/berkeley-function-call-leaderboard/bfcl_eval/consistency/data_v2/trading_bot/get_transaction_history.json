@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "tool": "get_transaction_history",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The user is not authenticated, so the method returns an error list and does not access transaction history."
+    },
+    {
+      "id": "success_transaction_history",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The user is authenticated. The method parses optional start_date and end_date arguments, filters transaction_history, optionally extends it in long-context mode, and returns the filtered result."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to view transaction history.",
+          "logic": "The actual returned value is a list containing one object with an error field. The error string is a hard-coded constant. This return type does not match the tool schema, which expects an object containing transaction_history."
+        }
+      ]
+    },
+    {
+      "branch": "success_transaction_history",
+      "fields": [
+        {
+          "path": "$.result.transaction_history",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.transaction_history",
+            "$.args.start_date",
+            "$.args.end_date",
+            "$.state_before.long_context"
+          ],
+          "external_from": [],
+          "logic": "Filters state_before.transaction_history by comparing each transaction timestamp with the parsed date range. start_date and end_date are parsed with datetime.strptime; if absent, datetime.min and datetime.max are used. When state_before.long_context is true, the local filtered list is extended with the constant TRANSACTION_HISTORY_EXTENSION list before being returned."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "On the unauthenticated path, the backend returns a list containing an error object, while the schema declares the response as an object with transaction_history.",
+      "schema_path": "$.result.transaction_history",
+      "backend_path": "$.result"
+    },
+    {
+      "type": "dynamic_behavior",
+      "description": "Invalid start_date or end_date strings are passed directly to datetime.strptime without error handling. A malformed date raises ValueError and bypasses the documented JSON return shape."
+    },
+    {
+      "type": "dynamic_behavior",
+      "description": "When the long_context attribute is true, the method unconditionally extends the filtered history with TRANSACTION_HISTORY_EXTENSION items. These items may not conform to the schema's transaction item fields."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "targets": {
+    "orders": {
+      "initial_states": ["Pending"],
+      "transitions": [
+        {"tool": "place_order", "branch": "success_placed_pending_order", "from": "Absent", "to": "Pending", "max_calls": 1},
+        {"tool": "activate_order", "branch": "success_activated", "from": "Pending", "to": "Open", "max_calls": 1},
+        {"tool": "execute_order", "branch": "success_buy", "from": "Open", "to": "Completed", "max_calls": 1},
+        {"tool": "execute_order", "branch": "success_sell_with_remaining_shares", "from": "Open", "to": "Completed", "max_calls": 1},
+        {"tool": "execute_order", "branch": "success_sell_position_closed", "from": "Open", "to": "Completed", "max_calls": 1},
+        {"tool": "cancel_order", "branch": "success_cancelled", "from": "Open", "to": "Cancelled", "max_calls": 1}
+      ]
+    }
+  }
+}

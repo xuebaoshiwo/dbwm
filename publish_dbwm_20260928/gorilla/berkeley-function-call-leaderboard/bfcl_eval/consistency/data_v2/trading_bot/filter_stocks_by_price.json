@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "tool": "filter_stocks_by_price",
+  "branches": [
+    {
+      "id": "success_filtered",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The method unconditionally executes a list comprehension that filters the requested stock symbols by price range and returns the filtered list."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "success_filtered",
+      "fields": [
+        {
+          "path": "$.result.filtered_stocks",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stocks",
+            "$.state_before.stocks['{symbol}'].price",
+            "$.args.min_price",
+            "$.args.max_price"
+          ],
+          "external_from": [],
+          "logic": "For each symbol in $.args.stocks, the backend reads its current price from $.state_before.stocks, defaulting to 0 if the symbol is absent, and includes the symbol if the price is greater than or equal to $.args.min_price and less than or equal to $.args.max_price."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "ambiguous_state",
+      "description": "When a symbol in $.args.stocks is not present in $.state_before.stocks, the backend uses a default price of 0. Such symbols may be included in the result if the price range includes 0. The schema does not specify the expected behavior for unknown symbols."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+**/.git/
+**/.git.backup/
+**/__pycache__/
+**/*.pyc
+*.log
+*.egg-info/
+.env
+.venv/

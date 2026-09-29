@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.2",
+  "tool": "get_watchlist",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "not $.state_before.authenticated",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "Backend rejects the request when the user is not authenticated and returns a plain list with an error string."
+    },
+    {
+      "id": "success_watchlist_long_context",
+      "if": "$.state_before.authenticated == true and $.state_before.long_context == true",
+      "uses": [
+        "$.state_before.authenticated",
+        "$.state_before.long_context"
+      ],
+      "description": "Authenticated user with long_context enabled receives a copied watch list extended with the imported WATCH_LIST_EXTENSION entries, returned as a plain list."
+    },
+    {
+      "id": "success_standard",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Authenticated user without long_context receives the watchlist as a dictionary under the key 'watchlist'."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "constant",
+          "value": [
+            "Error: User not authenticated. Please log in to view the watchlist."
+          ],
+          "logic": "The branch returns a one-element list containing the literal error message.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_watchlist_long_context",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.watch_list"
+          ],
+          "logic": "Returns a new list containing the current watchlist entries plus the WATCH_LIST_EXTENSION entries from the imported long-context constant.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "collection",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "Given the known appended extension and its length, remove that suffix to recover the source list."
+            }
+          ],
+          "external_from": [
+            "WATCH_LIST_EXTENSION imported constant"
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.watch_list",
+              "transform": "collection",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Given the known appended extension and its length, remove that suffix to recover the source list."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "success_standard",
+      "fields": [
+        {
+          "path": "$.result.watchlist",
+          "source_kind": "state_direct",
+          "source": "$.state_before.watch_list",
+          "logic": "Returns the current watchlist state directly under the key 'watchlist'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema describes the response as a dict with property 'watchlist' (array of strings), but the backend returns a plain list in the unauthenticated and long_context branches; only the final standard branch matches the schema shape.",
+      "schema_path": "$.result.watchlist",
+      "backend_path": "$.result"
+    }
+  ]
+}

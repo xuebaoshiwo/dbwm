@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "tool": "get_stock_info",
+  "branches": [
+    {
+      "id": "error_symbol_not_found",
+      "if": "$.args.symbol not in $.state_before.stocks",
+      "uses": [
+        "$.args.symbol",
+        "$.state_before.stocks"
+      ],
+      "description": "Returns an error when the requested stock symbol is not present in the stocks state."
+    },
+    {
+      "id": "success_long_context",
+      "if": "$.state_before.long_context == true",
+      "uses": [
+        "$.state_before.long_context"
+      ],
+      "description": "When long_context mode is enabled, returns a shallow copy of the stock with MA(5) and MA(20) replaced by imported extension constants."
+    },
+    {
+      "id": "success_standard",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Returns the stock data directly from the stocks state for the requested symbol."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_symbol_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "Constructs an error message by embedding the requested symbol in a formatted string."
+        }
+      ]
+    },
+    {
+      "branch": "success_long_context",
+      "fields": [
+        {
+          "path": "$.result.price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}'].price",
+          "logic": "Copied unchanged from the stored stock information."
+        },
+        {
+          "path": "$.result.percent_change",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}'].percent_change",
+          "logic": "Copied unchanged from the stored stock information."
+        },
+        {
+          "path": "$.result.volume",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}'].volume",
+          "logic": "Copied unchanged from the stored stock information."
+        },
+        {
+          "path": "$.result['MA(5)']",
+          "source_kind": "external",
+          "external_from": [
+            "imported constant MA_5_EXTENSION"
+          ],
+          "logic": "Replaces the MA(5) value in the copied stock with an imported module-level extension constant."
+        },
+        {
+          "path": "$.result['MA(20)']",
+          "source_kind": "external",
+          "external_from": [
+            "imported constant MA_20_EXTENSION"
+          ],
+          "logic": "Replaces the MA(20) value in the copied stock with an imported module-level extension constant."
+        }
+      ]
+    },
+    {
+      "branch": "success_standard",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}']",
+          "logic": "Returns the stored stock information dict unchanged."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The backend returns an 'error' field for unknown symbols, but the tool schema only defines success fields price, percent_change, volume, MA(5), and MA(20).",
+      "schema_path": "$.response",
+      "backend_path": "$.result.error"
+    },
+    {
+      "type": "dynamic_behavior",
+      "description": "In long_context mode, the backend overwrites MA(5) and MA(20) with imported extension constants whose runtime type and value are not defined in this source snippet, so they may not match the schema's float type.",
+      "schema_path": "$.response['MA(5)']",
+      "backend_path": "$.result['MA(5)']"
+    }
+  ]
+}

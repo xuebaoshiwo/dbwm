@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.2",
+  "tool": "cancel_order",
+  "branches": [
+    {
+      "id": "error_order_not_found",
+      "if": "$.args.order_id not in $.state_before.orders",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders"
+      ],
+      "description": "The requested order ID does not exist in the orders map; the backend returns a not-found error without mutating state."
+    },
+    {
+      "id": "error_order_completed",
+      "if": "$.state_before.orders['{args.order_id}'].status == \"Completed\"",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].status"
+      ],
+      "description": "The order exists and is already Completed; the backend rejects cancellation without mutating state."
+    },
+    {
+      "id": "error_order_cancelled",
+      "if": "$.state_before.orders['{args.order_id}'].status == \"Cancelled\"",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].status"
+      ],
+      "description": "The order exists and is already Cancelled; the backend rejects cancellation without mutating state."
+    },
+    {
+      "id": "success_cancelled",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The order exists and its status is neither Completed nor Cancelled, so the backend sets its status to Cancelled and returns the order ID and new status."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_cancelled",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "external_from": [],
+      "logic": "Set the matching order's status field to the literal value 'Cancelled'.",
+      "state_source_relations": []
+    }
+  ],
+  "returns": [
+    {
+      "branch": "error_order_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id"
+          ],
+          "external_from": [],
+          "logic": "Formats an error message containing the requested order ID and literal text indicating the order was not found.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_order_completed",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id"
+          ],
+          "external_from": [],
+          "logic": "Formats an error message containing the requested order ID and literal text indicating the order is already completed.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_order_cancelled",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id"
+          ],
+          "external_from": [],
+          "logic": "Formats an error message containing the requested order ID and literal text indicating the order is already cancelled.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_cancelled",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Cancelled",
+          "logic": "Returns the literal new order status produced by the cancellation operation.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema advertises response fields order_id and status, but backend error branches return only an 'error' field not present in the schema.",
+      "schema_path": "response.properties.order_id",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

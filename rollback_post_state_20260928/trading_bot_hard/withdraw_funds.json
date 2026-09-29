@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.1",
+  "tool": "withdraw_funds",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The backend rejects the withdrawal before any other checks because the user is not authenticated."
+    },
+    {
+      "id": "error_market_closed",
+      "if": "$.state_before.market_status != \"Open\"",
+      "uses": [
+        "$.state_before.market_status"
+      ],
+      "description": "The backend rejects the withdrawal because transactions are only allowed while the market is Open."
+    },
+    {
+      "id": "error_transaction_amount_must_be_positive",
+      "if": "$.args.amount <= 0",
+      "uses": [
+        "$.args.amount"
+      ],
+      "description": "The backend rejects the withdrawal because the requested amount is not greater than zero."
+    },
+    {
+      "id": "error_insufficient_funds",
+      "if": "$.args.amount > $.state_before.account_info.balance",
+      "uses": [
+        "$.args.amount",
+        "$.state_before.account_info.balance"
+      ],
+      "description": "The backend rejects the withdrawal because the requested amount exceeds the current account balance."
+    },
+    {
+      "id": "success_withdrawal",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The authenticated user requests a positive amount that is available, so the backend deducts the balance and records a withdrawal transaction."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_withdrawal",
+      "target": "$.state_after.account_info.balance",
+      "operation": "decrement",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.args.amount"
+      ],
+      "external_from": [],
+      "logic": "The account balance is reduced by the requested withdrawal amount.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.account_info.balance",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [],
+          "reason": "Given the argument amount, reverse the addition/subtraction on the bounded currency domain."
+        }
+      ]
+    },
+    {
+      "branch": "success_withdrawal",
+      "target": "$.state_after.transaction_history",
+      "operation": "append",
+      "value_from": [
+        "$.state_before.transaction_history",
+        "$.args.amount"
+      ],
+      "external_from": [
+        "randomness and time via _generate_transaction_timestamp"
+      ],
+      "logic": "A new withdrawal transaction record is appended to the transaction history with type \"withdrawal\", the requested amount, and a generated timestamp.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.transaction_history",
+          "transform": "collection",
+          "recoverability": "conditional",
+          "given": [],
+          "reason": "The operation appends exactly one record; remove the last element of the observed list."
+        }
+      ]
+    }
+  ],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to make a transaction.",
+          "logic": "The backend returns a literal error message when authentication fails.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_market_closed",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Market is closed. Transactions are not allowed.",
+          "logic": "The backend returns a literal error message when the market is not Open.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_transaction_amount_must_be_positive",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Transaction amount must be positive.",
+          "logic": "The backend returns a literal error message when the requested amount is zero or negative.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_insufficient_funds",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Insufficient funds for withdrawal.",
+          "logic": "The backend returns a literal error message when the requested amount exceeds the account balance.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_withdrawal",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Withdrawal successful",
+          "logic": "The backend returns a literal success status after deducting the balance and recording the withdrawal.",
+          "state_source_relations": []
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema declares response field status, but all backend error branches return an error field instead of status.",
+      "schema_path": "$.response.properties.status",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

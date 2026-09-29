@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "tool": "fund_account",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "not $.state_before.authenticated",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "User is not authenticated, so the tool returns an error before validating the amount or modifying state."
+    },
+    {
+      "id": "error_non_positive_amount",
+      "if": "$.args.amount <= 0",
+      "uses": [
+        "$.args.amount"
+      ],
+      "description": "User is authenticated but the requested funding amount is zero or negative, so the tool returns an error without modifying state."
+    },
+    {
+      "id": "success_funded",
+      "if": "otherwise",
+      "uses": [],
+      "description": "User is authenticated and the amount is positive, so the tool increments the account balance, appends a deposit transaction, and returns success."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_funded",
+      "target": "$.state_after.account_info.balance",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.args.amount"
+      ],
+      "external_from": [],
+      "logic": "Add the provided funding amount to the existing account balance."
+    },
+    {
+      "branch": "success_funded",
+      "target": "$.state_after.transaction_history",
+      "operation": "append",
+      "value_from": [
+        "$.args.amount"
+      ],
+      "external_from": [
+        "time",
+        "randomness"
+      ],
+      "logic": "Append a deposit transaction record using the provided amount and a timestamp generated from the current time plus a random offset within one day."
+    }
+  ],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to fund the account.",
+          "logic": "The backend returns this literal error message when the authenticated flag is false."
+        }
+      ]
+    },
+    {
+      "branch": "error_non_positive_amount",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Funding amount must be positive.",
+          "logic": "The backend returns this literal error message when the amount is not greater than zero."
+        }
+      ]
+    },
+    {
+      "branch": "success_funded",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Account funded successfully",
+          "logic": "The backend returns this literal success status after a successful funding operation."
+        },
+        {
+          "path": "$.result.new_balance",
+          "source_kind": "state_direct",
+          "source": "$.state_after.account_info.balance",
+          "logic": "The updated account balance is read from the persistent state after the balance increment."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema declares only status and new_balance response fields, but the backend returns an object containing only error for unauthenticated and non-positive amount branches. The schema also does not state that authentication is required before funding.",
+      "schema_path": "$.response.properties",
+      "backend_path": "$.result.error"
+    },
+    {
+      "type": "dynamic_behavior",
+      "description": "The deposit transaction timestamp is generated using the current time and a random offset within a one-day window, so the exact appended timestamp varies across calls even with identical inputs."
+    }
+  ]
+}

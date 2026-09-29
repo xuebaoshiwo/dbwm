@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "strategy": "backward_state_source_sampling",
+  "requested": 10,
+  "accepted": 10,
+  "failures": [],
+  "planning_only": true,
+  "backend_execution": false,
+  "state_conditions": {
+    "$.state_before.long_context": false
+  },
+  "dependency_scope": "selected_mutation_and_return_field",
+  "seed": 42,
+  "targets": [
+    "balance",
+    "transaction_history",
+    "orders"
+  ],
+  "min_writes": 3,
+  "target_min_writes": {
+    "balance": 3,
+    "transaction_history": 3,
+    "orders": 3
+  },
+  "write_count_mode": "at_least_minimum",
+  "dependency_max_writes": 1,
+  "min_length": 20,
+  "max_length": 60,
+  "specs_sha256": "ca7d93d9c9b4fa0c9f0a8e705bb194897c45ecb65798307366ef97c24f3082b9",
+  "catalog_sha256": "7bb2a46cde93d399e3ef7361c2f4586a317770ff64101defdb7c1a1d7d44bade",
+  "catalog_fields_used": [
+    "targets",
+    "state_specs",
+    "reader_refinements"
+  ],
+  "writer_sequences_used": false,
+  "filler_strategy": [
+    "support_anchor",
+    "distractor"
+  ],
+  "support_anchor_policy": "sample_then_forward_anchor_reuse"
+}

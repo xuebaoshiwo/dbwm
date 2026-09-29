@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.2",
+  "tool": "get_holdings",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The backend first checks whether the user is authenticated. If not authenticated, it returns an error response and does not return holdings."
+    },
+    {
+      "id": "success_get_holdings",
+      "if": "$.state_before.authenticated == true",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The user is authenticated, so the backend returns a deep copy of the current holdings mapping."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to view holdings.",
+          "logic": "The backend returns a literal error message when authentication fails.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_get_holdings",
+      "fields": [
+        {
+          "path": "$.result.holdings",
+          "source_kind": "state_direct",
+          "source": "$.state_before.holdings",
+          "logic": "The backend returns an unchanged deep copy of the current holdings state.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.holdings",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema defines only a 'holdings' response field, but the backend returns an 'error' field when the user is not authenticated.",
+      "schema_path": "$.response.properties",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

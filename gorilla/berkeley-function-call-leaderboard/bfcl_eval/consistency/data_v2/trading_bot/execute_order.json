@@ -1,0 +1,507 @@
+{
+  "schema_version": "1.0",
+  "tool": "execute_order",
+  "branches": [
+    {
+      "id": "error_order_not_found",
+      "if": "$.args.order_id not in $.state_before.orders",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders"
+      ],
+      "description": "The requested order ID does not exist, so execution stops immediately."
+    },
+    {
+      "id": "error_order_not_open",
+      "if": "$.state_before.orders['{args.order_id}'].status != 'Open'",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].status"
+      ],
+      "description": "The order exists but is not Open, so it cannot be executed."
+    },
+    {
+      "id": "error_market_closed",
+      "if": "$.state_before.market_status != 'Open'",
+      "uses": [
+        "$.state_before.market_status"
+      ],
+      "description": "The market is closed, so the Open order cannot be filled."
+    },
+    {
+      "id": "error_stock_not_found",
+      "if": "$.state_before.orders['{args.order_id}'].symbol not in $.state_before.stocks",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.stocks"
+      ],
+      "description": "The order references a stock symbol that is absent from the stock state."
+    },
+    {
+      "id": "error_buy_limit_not_met",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol}'].price > $.state_before.orders['{args.order_id}'].price",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].price",
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "description": "A Buy limit order cannot fill because the current stock price exceeds the order limit price."
+    },
+    {
+      "id": "error_sell_limit_not_met",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol}'].price < $.state_before.orders['{args.order_id}'].price",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].price",
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "description": "A Sell limit order cannot fill because the current stock price is below the order limit price."
+    },
+    {
+      "id": "error_buy_insufficient_funds",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol}'].price * $.state_before.orders['{args.order_id}'].amount, 2) > $.state_before.account_info.balance",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.account_info.balance"
+      ],
+      "description": "A valid Buy limit order cannot fill because the account balance is below the rounded trade value."
+    },
+    {
+      "id": "error_sell_insufficient_shares",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] < $.state_before.orders['{args.order_id}'].amount",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.holdings"
+      ],
+      "description": "A valid Sell limit order cannot fill because the account holds too few shares."
+    },
+    {
+      "id": "error_invalid_order_type",
+      "if": "$.state_before.orders['{args.order_id}'].order_type not in ['Buy', 'Sell']",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type"
+      ],
+      "description": "The stored order type is neither Buy nor Sell."
+    },
+    {
+      "id": "success_buy",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and all earlier checks pass",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type"
+      ],
+      "description": "The Buy order passes all checks and is filled at the current stock price."
+    },
+    {
+      "id": "success_sell_with_remaining_shares",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount > 0 and all earlier checks pass",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.holdings['{order.symbol}']"
+      ],
+      "description": "The Sell order fills and leaves a positive number of shares in the position."
+    },
+    {
+      "id": "success_sell_position_closed",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount == 0 and all earlier checks pass",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.holdings['{order.symbol}']"
+      ],
+      "description": "The Sell order fills and removes the holding entry because no shares remain."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.account_info.balance",
+      "operation": "decrement",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals."
+    },
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.holdings['{order.symbol}']",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.holdings",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held."
+    },
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "logic": "Sets the filled order status to the constant Completed."
+    },
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.orders['{args.order_id}'].filled_price",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "logic": "Stores the current stock price, converted to float, as the order fill price."
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.account_info.balance",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals."
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.holdings['{order.symbol}']",
+      "operation": "decrement",
+      "value_from": [
+        "$.state_before.holdings['{order.symbol}']",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Subtracts the filled amount while retaining the positive remaining holding."
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "logic": "Sets the filled order status to the constant Completed."
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.orders['{args.order_id}'].filled_price",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "logic": "Stores the current stock price, converted to float, as the order fill price."
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.account_info.balance",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals."
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.holdings['{order.symbol}']",
+      "operation": "delete",
+      "value_from": [
+        "$.state_before.holdings['{order.symbol}']",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Deletes the symbol from holdings when the fill reduces its share count to zero."
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "logic": "Sets the filled order status to the constant Completed."
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.orders['{args.order_id}'].filled_price",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "logic": "Stores the current stock price, converted to float, as the order fill price."
+    }
+  ],
+  "returns": [
+    {
+      "branch": "error_order_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id"
+          ],
+          "logic": "Formats the missing order ID into the not-found error message."
+        }
+      ]
+    },
+    {
+      "branch": "error_order_not_open",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id",
+            "$.state_before.orders['{args.order_id}'].status"
+          ],
+          "logic": "Formats the order ID and lowercased current status into the execution error message."
+        }
+      ]
+    },
+    {
+      "branch": "error_market_closed",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Market is closed. Orders cannot be executed.",
+          "logic": "Returns the fixed closed-market error message."
+        }
+      ]
+    },
+    {
+      "branch": "error_stock_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].symbol"
+          ],
+          "logic": "Formats the missing stock symbol from the order into the error message."
+        }
+      ]
+    },
+    {
+      "branch": "error_buy_limit_not_met",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].price",
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Formats the Buy limit price and current stock price to two decimal places in the error message."
+        }
+      ]
+    },
+    {
+      "branch": "error_sell_limit_not_met",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].price",
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Formats the Sell limit price and current stock price to two decimal places in the error message."
+        }
+      ]
+    },
+    {
+      "branch": "error_buy_insufficient_funds",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Insufficient funds to execute the buy order.",
+          "logic": "Returns the fixed insufficient-funds execution error."
+        }
+      ]
+    },
+    {
+      "branch": "error_sell_insufficient_shares",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Insufficient shares to execute the sell order.",
+          "logic": "Returns the fixed insufficient-shares execution error."
+        }
+      ]
+    },
+    {
+      "branch": "error_invalid_order_type",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].order_type"
+          ],
+          "logic": "Formats the unsupported stored order type into the error message."
+        }
+      ]
+    },
+    {
+      "branch": "success_buy",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged."
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill."
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float."
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int."
+        },
+        {
+          "path": "$.result.new_balance",
+          "source_kind": "state_direct",
+          "source": "$.state_after.account_info.balance",
+          "logic": "Returns the updated account balance unchanged."
+        },
+        {
+          "path": "$.result.shares_held",
+          "source_kind": "state_direct",
+          "source": "$.state_after.holdings['{order.symbol}']",
+          "logic": "Returns the updated holding count for the purchased symbol unchanged."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged."
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill."
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float."
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int."
+        },
+        {
+          "path": "$.result.new_balance",
+          "source_kind": "state_direct",
+          "source": "$.state_after.account_info.balance",
+          "logic": "Returns the updated account balance unchanged."
+        },
+        {
+          "path": "$.result.shares_held",
+          "source_kind": "state_direct",
+          "source": "$.state_after.holdings['{order.symbol}']",
+          "logic": "Returns the positive remaining holding count unchanged."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged."
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill."
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float."
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int."
+        },
+        {
+          "path": "$.result.new_balance",
+          "source_kind": "state_direct",
+          "source": "$.state_after.account_info.balance",
+          "logic": "Returns the updated account balance unchanged."
+        },
+        {
+          "path": "$.result.shares_held",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_after.holdings"
+          ],
+          "logic": "Returns zero because the backend lookup uses a zero default after the symbol entry has been deleted."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema documents only the successful response. The backend can also return an object containing only an error field for missing orders, invalid order status, a closed market, missing stocks, unmet limits, insufficient funds or shares, and invalid stored order types.",
+      "schema_path": "response.properties",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

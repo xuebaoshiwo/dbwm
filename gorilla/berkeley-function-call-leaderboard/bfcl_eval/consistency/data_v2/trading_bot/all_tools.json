@@ -1,0 +1,2391 @@
+[
+  {
+    "schema_version": "1.0",
+    "tool": "activate_order",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.args.order_id not in $.state_before.orders",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "The requested order ID is not present in the backend orders dictionary."
+      },
+      {
+        "id": "error_order_not_pending",
+        "if": "$.state_before.orders['{args.order_id}'].status != \"Pending\"",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "The requested order exists but its current status is not Pending, so activation is rejected."
+      },
+      {
+        "id": "success_activated",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The requested order exists and is currently Pending, so it is activated successfully."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_activated",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "The Pending order's status field is changed to the literal string 'Open'."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "The error message is formatted using the input order_id."
+          }
+        ]
+      },
+      {
+        "branch": "error_order_not_pending",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id",
+              "$.state_before.orders['{args.order_id}'].status"
+            ],
+            "external_from": [],
+            "logic": "The error message is formatted using the input order_id and the current order status lowercased."
+          }
+        ]
+      },
+      {
+        "branch": "success_activated",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "The activated order ID is returned unchanged from the input argument."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Open",
+            "logic": "The status after successful activation is always the literal string 'Open'."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The backend returns an 'error' field for not-found and invalid-status cases, but the tool schema response only declares 'order_id' and 'status'.",
+        "schema_path": "$.response.properties.error",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "add_to_watchlist",
+    "branches": [
+      {
+        "id": "success_stock_added",
+        "if": "$.args.stock not in $.state_before.watch_list and $.args.stock in $.state_before.stocks",
+        "uses": [
+          "$.args.stock",
+          "$.state_before.watch_list",
+          "$.state_before.stocks"
+        ],
+        "description": "The stock is not already in the watchlist and is a valid stock symbol, so it will be appended."
+      },
+      {
+        "id": "fallback_invalid_stock",
+        "if": "$.args.stock not in $.state_before.watch_list and $.args.stock not in $.state_before.stocks",
+        "uses": [
+          "$.args.stock",
+          "$.state_before.watch_list",
+          "$.state_before.stocks"
+        ],
+        "description": "The stock is not already in the watchlist and is not a valid stock symbol, so no change is made."
+      },
+      {
+        "id": "fallback_already_present",
+        "if": "$.args.stock in $.state_before.watch_list",
+        "uses": [
+          "$.args.stock",
+          "$.state_before.watch_list"
+        ],
+        "description": "The stock is already in the watchlist, so no change is made."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_stock_added",
+        "target": "$.state_after.watch_list",
+        "operation": "append",
+        "value_from": [
+          "$.args.stock"
+        ],
+        "external_from": [],
+        "logic": "Append the valid stock symbol to the watchlist because it is not already present and exists in the stocks catalog."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "success_stock_added",
+        "fields": [
+          {
+            "path": "$.result.watchlist",
+            "source_kind": "state_direct",
+            "source": "$.state_after.watch_list",
+            "logic": "Returns the watchlist after the new stock has been appended."
+          }
+        ]
+      },
+      {
+        "branch": "fallback_invalid_stock",
+        "fields": [
+          {
+            "path": "$.result.watchlist",
+            "source_kind": "state_direct",
+            "source": "$.state_after.watch_list",
+            "logic": "Returns the unchanged watchlist because the stock is not a valid stock symbol."
+          }
+        ]
+      },
+      {
+        "branch": "fallback_already_present",
+        "fields": [
+          {
+            "path": "$.result.watchlist",
+            "source_kind": "state_direct",
+            "source": "$.state_after.watch_list",
+            "logic": "Returns the unchanged watchlist because the stock is already present."
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "cancel_order",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.state_before.orders['{args.order_id}'] not exists",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "Return an error if the order ID is not present in the orders mapping."
+      },
+      {
+        "id": "error_order_completed",
+        "if": "$.state_before.orders['{args.order_id}'].status == 'Completed'",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "Return an error when the existing order status is Completed."
+      },
+      {
+        "id": "error_order_already_cancelled",
+        "if": "$.state_before.orders['{args.order_id}'].status == 'Cancelled'",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "Return an error when the existing order status is Cancelled."
+      },
+      {
+        "id": "success_cancelled",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Set an existing non-Completed and non-Cancelled order status to Cancelled and return order_id and new status."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_cancelled",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "Set the selected order's status to the constant string 'Cancelled'."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Error message formatted with the supplied order_id."
+          }
+        ]
+      },
+      {
+        "branch": "error_order_completed",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Error message formatted with the supplied order_id."
+          }
+        ]
+      },
+      {
+        "branch": "error_order_already_cancelled",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Error message formatted with the supplied order_id."
+          }
+        ]
+      },
+      {
+        "branch": "success_cancelled",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "The supplied order ID is returned unchanged."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Cancelled",
+            "logic": "The literal status returned after successful cancellation."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The backend returns an 'error' field on three failure branches, but the tool schema response defines only 'order_id' and 'status'. Successful responses comply with the schema."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "execute_order",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.args.order_id not in $.state_before.orders",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "The requested order ID does not exist, so execution stops immediately."
+      },
+      {
+        "id": "error_order_not_open",
+        "if": "$.state_before.orders['{args.order_id}'].status != 'Open'",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "The order exists but is not Open, so it cannot be executed."
+      },
+      {
+        "id": "error_market_closed",
+        "if": "$.state_before.market_status != 'Open'",
+        "uses": [
+          "$.state_before.market_status"
+        ],
+        "description": "The market is closed, so the Open order cannot be filled."
+      },
+      {
+        "id": "error_stock_not_found",
+        "if": "$.state_before.orders['{args.order_id}'].symbol not in $.state_before.stocks",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.stocks"
+        ],
+        "description": "The order references a stock symbol that is absent from the stock state."
+      },
+      {
+        "id": "error_buy_limit_not_met",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol}'].price > $.state_before.orders['{args.order_id}'].price",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].price",
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "description": "A Buy limit order cannot fill because the current stock price exceeds the order limit price."
+      },
+      {
+        "id": "error_sell_limit_not_met",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol}'].price < $.state_before.orders['{args.order_id}'].price",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].price",
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "description": "A Sell limit order cannot fill because the current stock price is below the order limit price."
+      },
+      {
+        "id": "error_buy_insufficient_funds",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol}'].price * $.state_before.orders['{args.order_id}'].amount, 2) > $.state_before.account_info.balance",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.account_info.balance"
+        ],
+        "description": "A valid Buy limit order cannot fill because the account balance is below the rounded trade value."
+      },
+      {
+        "id": "error_sell_insufficient_shares",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] < $.state_before.orders['{args.order_id}'].amount",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.holdings"
+        ],
+        "description": "A valid Sell limit order cannot fill because the account holds too few shares."
+      },
+      {
+        "id": "error_invalid_order_type",
+        "if": "$.state_before.orders['{args.order_id}'].order_type not in ['Buy', 'Sell']",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type"
+        ],
+        "description": "The stored order type is neither Buy nor Sell."
+      },
+      {
+        "id": "success_buy",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and all earlier checks pass",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type"
+        ],
+        "description": "The Buy order passes all checks and is filled at the current stock price."
+      },
+      {
+        "id": "success_sell_with_remaining_shares",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount > 0 and all earlier checks pass",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.holdings['{order.symbol}']"
+        ],
+        "description": "The Sell order fills and leaves a positive number of shares in the position."
+      },
+      {
+        "id": "success_sell_position_closed",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount == 0 and all earlier checks pass",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.holdings['{order.symbol}']"
+        ],
+        "description": "The Sell order fills and removes the holding entry because no shares remain."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.account_info.balance",
+        "operation": "decrement",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals."
+      },
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.holdings['{order.symbol}']",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.holdings",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held."
+      },
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "logic": "Sets the filled order status to the constant Completed."
+      },
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.orders['{args.order_id}'].filled_price",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "logic": "Stores the current stock price, converted to float, as the order fill price."
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.account_info.balance",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals."
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.holdings['{order.symbol}']",
+        "operation": "decrement",
+        "value_from": [
+          "$.state_before.holdings['{order.symbol}']",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Subtracts the filled amount while retaining the positive remaining holding."
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "logic": "Sets the filled order status to the constant Completed."
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.orders['{args.order_id}'].filled_price",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "logic": "Stores the current stock price, converted to float, as the order fill price."
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.account_info.balance",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals."
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.holdings['{order.symbol}']",
+        "operation": "delete",
+        "value_from": [
+          "$.state_before.holdings['{order.symbol}']",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Deletes the symbol from holdings when the fill reduces its share count to zero."
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "logic": "Sets the filled order status to the constant Completed."
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.orders['{args.order_id}'].filled_price",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "logic": "Stores the current stock price, converted to float, as the order fill price."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "logic": "Formats the missing order ID into the not-found error message."
+          }
+        ]
+      },
+      {
+        "branch": "error_order_not_open",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id",
+              "$.state_before.orders['{args.order_id}'].status"
+            ],
+            "logic": "Formats the order ID and lowercased current status into the execution error message."
+          }
+        ]
+      },
+      {
+        "branch": "error_market_closed",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Market is closed. Orders cannot be executed.",
+            "logic": "Returns the fixed closed-market error message."
+          }
+        ]
+      },
+      {
+        "branch": "error_stock_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].symbol"
+            ],
+            "logic": "Formats the missing stock symbol from the order into the error message."
+          }
+        ]
+      },
+      {
+        "branch": "error_buy_limit_not_met",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].price",
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Formats the Buy limit price and current stock price to two decimal places in the error message."
+          }
+        ]
+      },
+      {
+        "branch": "error_sell_limit_not_met",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].price",
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Formats the Sell limit price and current stock price to two decimal places in the error message."
+          }
+        ]
+      },
+      {
+        "branch": "error_buy_insufficient_funds",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient funds to execute the buy order.",
+            "logic": "Returns the fixed insufficient-funds execution error."
+          }
+        ]
+      },
+      {
+        "branch": "error_sell_insufficient_shares",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient shares to execute the sell order.",
+            "logic": "Returns the fixed insufficient-shares execution error."
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_order_type",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].order_type"
+            ],
+            "logic": "Formats the unsupported stored order type into the error message."
+          }
+        ]
+      },
+      {
+        "branch": "success_buy",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Completed",
+            "logic": "Returns the fixed completed status after a successful fill."
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Returns the current stock price after converting it to float."
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "logic": "Returns the stored order amount after converting it to int."
+          },
+          {
+            "path": "$.result.new_balance",
+            "source_kind": "state_direct",
+            "source": "$.state_after.account_info.balance",
+            "logic": "Returns the updated account balance unchanged."
+          },
+          {
+            "path": "$.result.shares_held",
+            "source_kind": "state_direct",
+            "source": "$.state_after.holdings['{order.symbol}']",
+            "logic": "Returns the updated holding count for the purchased symbol unchanged."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Completed",
+            "logic": "Returns the fixed completed status after a successful fill."
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Returns the current stock price after converting it to float."
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "logic": "Returns the stored order amount after converting it to int."
+          },
+          {
+            "path": "$.result.new_balance",
+            "source_kind": "state_direct",
+            "source": "$.state_after.account_info.balance",
+            "logic": "Returns the updated account balance unchanged."
+          },
+          {
+            "path": "$.result.shares_held",
+            "source_kind": "state_direct",
+            "source": "$.state_after.holdings['{order.symbol}']",
+            "logic": "Returns the positive remaining holding count unchanged."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Completed",
+            "logic": "Returns the fixed completed status after a successful fill."
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Returns the current stock price after converting it to float."
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "logic": "Returns the stored order amount after converting it to int."
+          },
+          {
+            "path": "$.result.new_balance",
+            "source_kind": "state_direct",
+            "source": "$.state_after.account_info.balance",
+            "logic": "Returns the updated account balance unchanged."
+          },
+          {
+            "path": "$.result.shares_held",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_after.holdings"
+            ],
+            "logic": "Returns zero because the backend lookup uses a zero default after the symbol entry has been deleted."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema documents only the successful response. The backend can also return an object containing only an error field for missing orders, invalid order status, a closed market, missing stocks, unmet limits, insufficient funds or shares, and invalid stored order types.",
+        "schema_path": "response.properties",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "filter_stocks_by_price",
+    "branches": [
+      {
+        "id": "success_filtered",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The method unconditionally executes a list comprehension that filters the requested stock symbols by price range and returns the filtered list."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_filtered",
+        "fields": [
+          {
+            "path": "$.result.filtered_stocks",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stocks",
+              "$.state_before.stocks['{symbol}'].price",
+              "$.args.min_price",
+              "$.args.max_price"
+            ],
+            "external_from": [],
+            "logic": "For each symbol in $.args.stocks, the backend reads its current price from $.state_before.stocks, defaulting to 0 if the symbol is absent, and includes the symbol if the price is greater than or equal to $.args.min_price and less than or equal to $.args.max_price."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "ambiguous_state",
+        "description": "When a symbol in $.args.stocks is not present in $.state_before.stocks, the backend uses a default price of 0. Such symbols may be included in the result if the price range includes 0. The schema does not specify the expected behavior for unknown symbols."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "fund_account",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "User is not authenticated, so the tool returns an error before validating the amount or modifying state."
+      },
+      {
+        "id": "error_non_positive_amount",
+        "if": "$.args.amount <= 0",
+        "uses": [
+          "$.args.amount"
+        ],
+        "description": "User is authenticated but the requested funding amount is zero or negative, so the tool returns an error without modifying state."
+      },
+      {
+        "id": "success_funded",
+        "if": "otherwise",
+        "uses": [],
+        "description": "User is authenticated and the amount is positive, so the tool increments the account balance, appends a deposit transaction, and returns success."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_funded",
+        "target": "$.state_after.account_info.balance",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.args.amount"
+        ],
+        "external_from": [],
+        "logic": "Add the provided funding amount to the existing account balance."
+      },
+      {
+        "branch": "success_funded",
+        "target": "$.state_after.transaction_history",
+        "operation": "append",
+        "value_from": [
+          "$.args.amount"
+        ],
+        "external_from": [
+          "time",
+          "randomness"
+        ],
+        "logic": "Append a deposit transaction record using the provided amount and a timestamp generated from the current time plus a random offset within one day."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to fund the account.",
+            "logic": "The backend returns this literal error message when the authenticated flag is false."
+          }
+        ]
+      },
+      {
+        "branch": "error_non_positive_amount",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Funding amount must be positive.",
+            "logic": "The backend returns this literal error message when the amount is not greater than zero."
+          }
+        ]
+      },
+      {
+        "branch": "success_funded",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Account funded successfully",
+            "logic": "The backend returns this literal success status after a successful funding operation."
+          },
+          {
+            "path": "$.result.new_balance",
+            "source_kind": "state_direct",
+            "source": "$.state_after.account_info.balance",
+            "logic": "The updated account balance is read from the persistent state after the balance increment."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema declares only status and new_balance response fields, but the backend returns an object containing only error for unauthenticated and non-positive amount branches. The schema also does not state that authentication is required before funding.",
+        "schema_path": "$.response.properties",
+        "backend_path": "$.result.error"
+      },
+      {
+        "type": "dynamic_behavior",
+        "description": "The deposit transaction timestamp is generated using the current time and a random offset within a one-day window, so the exact appended timestamp varies across calls even with identical inputs."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_account_info",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is not logged in; the method returns an error before accessing account information."
+      },
+      {
+        "id": "success_account_info",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The user is authenticated; the method returns the stored account_info object."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to view account information.",
+            "logic": "Static authentication error message."
+          }
+        ]
+      },
+      {
+        "branch": "success_account_info",
+        "fields": [
+          {
+            "path": "$.result.account_id",
+            "source_kind": "state_direct",
+            "source": "$.state_before.account_info.account_id",
+            "logic": "Returns the account ID from the stored account_info mapping."
+          },
+          {
+            "path": "$.result.balance",
+            "source_kind": "state_direct",
+            "source": "$.state_before.account_info.balance",
+            "logic": "Returns the current balance from the stored account_info mapping."
+          },
+          {
+            "path": "$.result.binding_card",
+            "source_kind": "state_direct",
+            "source": "$.state_before.account_info.binding_card",
+            "logic": "Returns the binding card number from the stored account_info mapping."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema response does not include an 'error' field, but the backend returns an error object when the user is not authenticated. The schema also does not document the authentication requirement.",
+        "schema_path": "response",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_available_stocks",
+    "branches": [
+      {
+        "id": "success_long_context",
+        "if": "$.state_before.long_context == true",
+        "uses": [
+          "$.state_before.long_context"
+        ],
+        "description": "When long_context mode is enabled, the method extends the Technology and Automobile sector lists with additional symbols before returning the selected sector's stock list."
+      },
+      {
+        "id": "success_standard",
+        "if": "$.state_before.long_context != true",
+        "uses": [
+          "$.state_before.long_context"
+        ],
+        "description": "When long_context mode is not enabled, the method skips extending the local sector map and returns the base sector stock list."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_long_context",
+        "fields": [
+          {
+            "path": "$.result.stock_list",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.sector",
+              "$.state_before.long_context"
+            ],
+            "external_from": [],
+            "logic": "The returned list is selected from a locally constructed sector map. If the requested sector is 'Technology' or 'Automobile', the base symbol list is extended with technology and automobile extension constants before selection; for any other sector, an empty list is returned. The returned value depends on the sector argument and the long_context state."
+          }
+        ]
+      },
+      {
+        "branch": "success_standard",
+        "fields": [
+          {
+            "path": "$.result.stock_list",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.sector"
+            ],
+            "external_from": [],
+            "logic": "The returned list is selected from the base sector map: Technology returns [AAPL, GOOG, MSFT, NVDA], Automobile returns [TSLA, F, GM], and any other sector returns an empty list."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "dynamic_behavior",
+        "description": "The returned stock list depends on an undocumented backend attribute self.long_context. When true, additional symbols are appended to the Technology and Automobile sectors, but the tool schema does not mention this extension behavior."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_current_time",
+    "branches": [
+      {
+        "id": "success_current_time",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The method has a single unconditional return path that formats the module-level constant CURRENT_TIME as HH:MM AM/PM and returns it inside a dictionary with key current_time."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_current_time",
+        "fields": [
+          {
+            "path": "$.result.current_time",
+            "source_kind": "constant",
+            "value": "10:30 AM",
+            "logic": "The backend formats the fixed module constant CURRENT_TIME = datetime(2024, 9, 1, 10, 30) using strftime('%I:%M %p'), so the returned value is always the literal string '10:30 AM'."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema describes the response as current time in HH:MM AM/PM format, implying a dynamic system time, but the backend implementation returns a fixed constant value '10:30 AM' derived from CURRENT_TIME = datetime(2024, 9, 1, 10, 30)."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_holdings",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "Return an authentication error before reading holdings when the user is not logged in."
+      },
+      {
+        "id": "success_holdings",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Return the current holdings mapping when the user is authenticated."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to view holdings.",
+            "logic": "The backend returns a literal error string when the authenticated state is false."
+          }
+        ]
+      },
+      {
+        "branch": "success_holdings",
+        "fields": [
+          {
+            "path": "$.result.holdings",
+            "source_kind": "state_direct",
+            "source": "$.state_before.holdings",
+            "logic": "The backend returns a deep copy of the holdings mapping read directly from persistent state."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema response defines only the 'holdings' field, but the backend returns an 'error' field when the user is not authenticated.",
+        "schema_path": "$.response.properties.error",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_market_status",
+    "branches": [
+      {
+        "id": "success_market_status",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Unconditionally read the current market status and return it."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_market_status",
+        "fields": [
+          {
+            "path": "$.result.market_status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.market_status",
+            "logic": "The backend returns the market_status field directly from instance state without transformation."
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_order_details",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.args.order_id not in $.state_before.orders",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "Order ID is missing from the orders dictionary, so an error response is returned immediately."
+      },
+      {
+        "id": "error_long_context_formatting",
+        "if": "$.state_before.long_context == true and formatting raises KeyError",
+        "uses": [
+          "$.state_before.long_context",
+          "$.state_before.orders['{args.order_id}'].symbol"
+        ],
+        "description": "Long context mode is enabled and formatting ORDER_DETAIL_EXTENSION with the order symbol raises a KeyError, causing an early error return."
+      },
+      {
+        "id": "success_long_context",
+        "if": "$.state_before.long_context == true and formatting succeeds",
+        "uses": [
+          "$.state_before.long_context",
+          "$.state_before.orders['{args.order_id}'].symbol"
+        ],
+        "description": "Long context mode is enabled and formatting succeeds, so the copied order is returned with an added metadata field."
+      },
+      {
+        "id": "success_standard",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Long context mode is disabled, so the stored order object is returned directly without modification."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id",
+              "$.state_before.orders"
+            ],
+            "external_from": [],
+            "logic": "Formatted error message including the missing order ID and the list of existing order IDs."
+          }
+        ]
+      },
+      {
+        "branch": "error_long_context_formatting",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [],
+            "external_from": [],
+            "logic": "Error message combines a constant prefix with the Python KeyError exception text from formatting ORDER_DETAIL_EXTENSION."
+          }
+        ]
+      },
+      {
+        "branch": "success_long_context",
+        "fields": [
+          {
+            "path": "$.result.id",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].id",
+            "logic": "Direct copy of the order ID from the stored order."
+          },
+          {
+            "path": "$.result.order_type",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].order_type",
+            "logic": "Direct copy of the order type from the stored order."
+          },
+          {
+            "path": "$.result.symbol",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "Direct copy of the stock symbol from the stored order."
+          },
+          {
+            "path": "$.result.price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].price",
+            "logic": "Direct copy of the limit price from the stored order."
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].amount",
+            "logic": "Direct copy of the share amount from the stored order."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].status",
+            "logic": "Direct copy of the order status from the stored order."
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].filled_price",
+            "logic": "Copied only if the stored order has a filled_price field, typically for completed orders."
+          },
+          {
+            "path": "$.result.metadata",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].symbol"
+            ],
+            "external_from": [],
+            "logic": "Metadata is built by formatting the constant ORDER_DETAIL_EXTENSION strings with the order symbol."
+          }
+        ]
+      },
+      {
+        "branch": "success_standard",
+        "fields": [
+          {
+            "path": "$.result.id",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].id",
+            "logic": "Direct reference to the order ID in the stored order object."
+          },
+          {
+            "path": "$.result.order_type",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].order_type",
+            "logic": "Direct reference to the order type in the stored order object."
+          },
+          {
+            "path": "$.result.symbol",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "Direct reference to the stock symbol in the stored order object."
+          },
+          {
+            "path": "$.result.price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].price",
+            "logic": "Direct reference to the limit price in the stored order object."
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].amount",
+            "logic": "Direct reference to the share amount in the stored order object."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].status",
+            "logic": "Direct reference to the order status in the stored order object."
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].filled_price",
+            "logic": "Direct reference to the filled price if present in the stored order object."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Backend error branches return an 'error' field that is not declared in the tool schema response.",
+        "schema_path": "response",
+        "backend_path": "$.result.error"
+      },
+      {
+        "type": "schema_backend_mismatch",
+        "description": "In long_context mode, the backend returns an additional 'metadata' field that is not declared in the tool schema response.",
+        "schema_path": "response",
+        "backend_path": "$.result.metadata"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_order_history",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "User is not authenticated; returns an error list."
+      },
+      {
+        "id": "success_order_history",
+        "if": "otherwise",
+        "uses": [],
+        "description": "User is authenticated; returns order ID history."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "constant",
+            "value": [
+              {
+                "error": "User not authenticated. Please log in to view order history."
+              }
+            ],
+            "logic": "Returns a constant error list containing a dictionary with an error message."
+          }
+        ]
+      },
+      {
+        "branch": "success_order_history",
+        "fields": [
+          {
+            "path": "$.result.history",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders"
+            ],
+            "external_from": [],
+            "logic": "Extracts the list of order IDs from the keys of the orders dictionary."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Schema expects response key 'order_history' with an array of integers, but the authenticated backend returns key 'history'.",
+        "schema_path": "$.response.order_history",
+        "backend_path": "$.result.history"
+      },
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Schema expects a dictionary response, but when unauthenticated the backend returns a list containing an error dictionary.",
+        "schema_path": "$.response",
+        "backend_path": "$.result"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_stock_info",
+    "branches": [
+      {
+        "id": "error_symbol_not_found",
+        "if": "$.args.symbol not in $.state_before.stocks",
+        "uses": [
+          "$.args.symbol",
+          "$.state_before.stocks"
+        ],
+        "description": "Returns an error when the requested stock symbol is not present in the stocks state."
+      },
+      {
+        "id": "success_long_context",
+        "if": "$.state_before.long_context == true",
+        "uses": [
+          "$.state_before.long_context"
+        ],
+        "description": "When long_context mode is enabled, returns a shallow copy of the stock with MA(5) and MA(20) replaced by imported extension constants."
+      },
+      {
+        "id": "success_standard",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Returns the stock data directly from the stocks state for the requested symbol."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_symbol_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "external_from": [],
+            "logic": "Constructs an error message by embedding the requested symbol in a formatted string."
+          }
+        ]
+      },
+      {
+        "branch": "success_long_context",
+        "fields": [
+          {
+            "path": "$.result.price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}'].price",
+            "logic": "Copied unchanged from the stored stock information."
+          },
+          {
+            "path": "$.result.percent_change",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}'].percent_change",
+            "logic": "Copied unchanged from the stored stock information."
+          },
+          {
+            "path": "$.result.volume",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}'].volume",
+            "logic": "Copied unchanged from the stored stock information."
+          },
+          {
+            "path": "$.result['MA(5)']",
+            "source_kind": "external",
+            "external_from": [
+              "imported constant MA_5_EXTENSION"
+            ],
+            "logic": "Replaces the MA(5) value in the copied stock with an imported module-level extension constant."
+          },
+          {
+            "path": "$.result['MA(20)']",
+            "source_kind": "external",
+            "external_from": [
+              "imported constant MA_20_EXTENSION"
+            ],
+            "logic": "Replaces the MA(20) value in the copied stock with an imported module-level extension constant."
+          }
+        ]
+      },
+      {
+        "branch": "success_standard",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}']",
+            "logic": "Returns the stored stock information dict unchanged."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The backend returns an 'error' field for unknown symbols, but the tool schema only defines success fields price, percent_change, volume, MA(5), and MA(20).",
+        "schema_path": "$.response",
+        "backend_path": "$.result.error"
+      },
+      {
+        "type": "dynamic_behavior",
+        "description": "In long_context mode, the backend overwrites MA(5) and MA(20) with imported extension constants whose runtime type and value are not defined in this source snippet, so they may not match the schema's float type.",
+        "schema_path": "$.response['MA(5)']",
+        "backend_path": "$.result['MA(5)']"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_symbol_by_name",
+    "branches": [
+      {
+        "id": "success_symbol_found",
+        "if": "$.args.name in ['Apple', 'Google', 'Tesla', 'Microsoft', 'Nvidia', 'Zeta Corp', 'Alpha Tech', 'Omega Industries', 'Quasar Ltd.', 'Neptune Systems', 'Synex Solutions', 'Amazon', 'Gorilla']",
+        "uses": [
+          "$.args.name"
+        ],
+        "description": "The supplied company name matches one of the keys in the internal symbol map."
+      },
+      {
+        "id": "fallback_symbol_not_found",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The supplied company name does not match any key in the internal symbol map."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_symbol_found",
+        "fields": [
+          {
+            "path": "$.result.symbol",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.name"
+            ],
+            "logic": "The symbol is selected from the internal constant symbol map using the supplied company name."
+          }
+        ]
+      },
+      {
+        "branch": "fallback_symbol_not_found",
+        "fields": [
+          {
+            "path": "$.result.symbol",
+            "source_kind": "constant",
+            "value": "Stock not found",
+            "logic": "The fallback string returned by the internal symbol_map.get call when the name is not found."
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_transaction_history",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is not authenticated, so the method returns an error list and does not access transaction history."
+      },
+      {
+        "id": "success_transaction_history",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The user is authenticated. The method parses optional start_date and end_date arguments, filters transaction_history, optionally extends it in long-context mode, and returns the filtered result."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to view transaction history.",
+            "logic": "The actual returned value is a list containing one object with an error field. The error string is a hard-coded constant. This return type does not match the tool schema, which expects an object containing transaction_history."
+          }
+        ]
+      },
+      {
+        "branch": "success_transaction_history",
+        "fields": [
+          {
+            "path": "$.result.transaction_history",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.transaction_history",
+              "$.args.start_date",
+              "$.args.end_date",
+              "$.state_before.long_context"
+            ],
+            "external_from": [],
+            "logic": "Filters state_before.transaction_history by comparing each transaction timestamp with the parsed date range. start_date and end_date are parsed with datetime.strptime; if absent, datetime.min and datetime.max are used. When state_before.long_context is true, the local filtered list is extended with the constant TRANSACTION_HISTORY_EXTENSION list before being returned."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "On the unauthenticated path, the backend returns a list containing an error object, while the schema declares the response as an object with transaction_history.",
+        "schema_path": "$.result.transaction_history",
+        "backend_path": "$.result"
+      },
+      {
+        "type": "dynamic_behavior",
+        "description": "Invalid start_date or end_date strings are passed directly to datetime.strptime without error handling. A malformed date raises ValueError and bypasses the documented JSON return shape."
+      },
+      {
+        "type": "dynamic_behavior",
+        "description": "When the long_context attribute is true, the method unconditionally extends the filtered history with TRANSACTION_HISTORY_EXTENSION items. These items may not conform to the schema's transaction item fields."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "get_watchlist",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "Return an authentication error when the user is not authenticated."
+      },
+      {
+        "id": "success_long_context",
+        "if": "$.state_before.long_context == true",
+        "uses": [
+          "$.state_before.long_context"
+        ],
+        "description": "Return a copy of the watch list extended with an imported long-context constant when long_context is enabled."
+      },
+      {
+        "id": "success_standard",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Return the current watch list under the watchlist key."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "constant",
+            "value": [
+              "Error: User not authenticated. Please log in to view the watchlist."
+            ],
+            "logic": "The backend returns a Python list containing this exact error string when the user is not authenticated."
+          }
+        ]
+      },
+      {
+        "branch": "success_long_context",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.watch_list"
+            ],
+            "external_from": [
+              "WATCH_LIST_EXTENSION imported constant"
+            ],
+            "logic": "The backend copies the current watch_list state, extends the copy with the imported WATCH_LIST_EXTENSION constant, and returns the resulting list directly without wrapping it in an object."
+          }
+        ]
+      },
+      {
+        "branch": "success_standard",
+        "fields": [
+          {
+            "path": "$.result.watchlist",
+            "source_kind": "state_direct",
+            "source": "$.state_before.watch_list",
+            "logic": "The backend returns the current watch_list state under the watchlist key without modification."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema expects a response object with a watchlist array, but the unauthenticated branch returns a list containing an error string and the long_context branch returns a list rather than an object. Only the default success branch matches the schema shape.",
+        "schema_path": "$.response.type",
+        "backend_path": "$.result"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "notify_price_change",
+    "branches": [
+      {
+        "id": "success_significant_changes",
+        "if": "changed_stocks is not empty, where changed_stocks = [symbol for symbol in $.args.stocks if symbol in $.state_before.stocks and abs($.state_before.stocks['{symbol}'].percent_change) >= $.args.threshold]",
+        "uses": [
+          "$.args.stocks",
+          "$.args.threshold",
+          "$.state_before.stocks",
+          "$.state_before.stocks['{symbol}'].percent_change"
+        ],
+        "description": "The backend filters the requested stock symbols to those that exist in backend state and whose absolute percent_change is greater than or equal to the provided threshold. If that filtered list is non-empty, this branch returns a notification naming the changed stocks."
+      },
+      {
+        "id": "fallback_no_significant_changes",
+        "if": "otherwise",
+        "uses": [],
+        "description": "If no requested stock symbol exists in backend state with an absolute percent_change meeting the threshold, the backend returns a generic no-significant-changes notification."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_significant_changes",
+        "fields": [
+          {
+            "path": "$.result.notification",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stocks",
+              "$.args.threshold",
+              "$.state_before.stocks",
+              "$.state_before.stocks['{symbol}'].percent_change"
+            ],
+            "external_from": [],
+            "logic": "The notification string is built by joining the symbols that passed the filter with a constant phrase. The selected symbols are derived from the requested stock list, their existence in backend stock state, and their percent_change values compared to the threshold."
+          }
+        ]
+      },
+      {
+        "branch": "fallback_no_significant_changes",
+        "fields": [
+          {
+            "path": "$.result.notification",
+            "source_kind": "constant",
+            "value": "No significant price changes in the selected stocks.",
+            "logic": "The backend returns a literal constant notification string when no stocks pass the significant-change filter."
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "place_order",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user must be logged in before placing an order. If not authenticated, the backend returns an error immediately."
+      },
+      {
+        "id": "error_invalid_stock_symbol",
+        "if": "$.args.symbol not in $.state_before.stocks",
+        "uses": [
+          "$.args.symbol",
+          "$.state_before.stocks"
+        ],
+        "description": "The requested stock symbol must exist in the stocks state; otherwise the backend returns an invalid symbol error."
+      },
+      {
+        "id": "error_invalid_price_or_amount",
+        "if": "$.args.price <= 0 or $.args.amount <= 0",
+        "uses": [
+          "$.args.price",
+          "$.args.amount"
+        ],
+        "description": "Both price and amount must be positive; otherwise the backend rejects the order."
+      },
+      {
+        "id": "error_invalid_order_type",
+        "if": "case-insensitive $.args.order_type not in ['buy', 'sell']",
+        "uses": [
+          "$.args.order_type"
+        ],
+        "description": "The order type must be Buy or Sell, ignoring case; any other value returns an error."
+      },
+      {
+        "id": "error_insufficient_funds_for_buy",
+        "if": "case-insensitive $.args.order_type is Buy and ($.args.price * $.args.amount) > $.state_before.account_info.balance",
+        "uses": [
+          "$.args.order_type",
+          "$.args.price",
+          "$.args.amount",
+          "$.state_before.account_info.balance"
+        ],
+        "description": "For a Buy order, the total cost (limit price times amount) must not exceed the account balance."
+      },
+      {
+        "id": "error_insufficient_shares_for_sell",
+        "if": "case-insensitive $.args.order_type is Sell and $.state_before.holdings['{args.symbol}'] < $.args.amount",
+        "uses": [
+          "$.args.order_type",
+          "$.args.symbol",
+          "$.args.amount",
+          "$.state_before.holdings"
+        ],
+        "description": "For a Sell order, the user must hold at least the requested number of shares of the given symbol."
+      },
+      {
+        "id": "success_order_placed",
+        "if": "otherwise",
+        "uses": [],
+        "description": "All validation passes, the backend creates a new Pending order and increments the order counter."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_order_placed",
+        "target": "$.state_after.orders['{generated_order_id}']",
+        "operation": "insert",
+        "value_from": [
+          "$.state_before.order_counter",
+          "$.state_before.orders",
+          "$.args.order_type",
+          "$.args.symbol",
+          "$.args.price",
+          "$.args.amount"
+        ],
+        "external_from": [],
+        "logic": "Creates a new order object under a generated order ID. The ID is derived from state_before.order_counter and existing order keys; order_type is normalized to title case; symbol is copied; price is converted to float; amount is copied; status is set to the constant Pending."
+      },
+      {
+        "branch": "success_order_placed",
+        "target": "$.state_after.order_counter",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.order_counter",
+          "$.state_before.orders"
+        ],
+        "external_from": [],
+        "logic": "Updates the order counter to one greater than the generated order ID, after the new order has been inserted, to prepare for the next order."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to place an order.",
+            "logic": "Backend returns a fixed error message when authentication is false."
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_stock_symbol",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "logic": "Error message embeds the invalid stock symbol argument."
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_price_or_amount",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Price and amount must be positive values.",
+            "logic": "Backend returns a fixed error message when price or amount is non-positive."
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_order_type",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Order type must be Buy or Sell.",
+            "logic": "Backend returns a fixed error message when order_type is neither Buy nor Sell, ignoring case."
+          }
+        ]
+      },
+      {
+        "branch": "error_insufficient_funds_for_buy",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.price",
+              "$.args.amount",
+              "$.state_before.account_info.balance"
+            ],
+            "logic": "Error message is formatted with the computed total cost and the current account balance."
+          }
+        ]
+      },
+      {
+        "branch": "error_insufficient_shares_for_sell",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient shares to place the sell order.",
+            "logic": "Backend returns a fixed error message when holdings are insufficient for a Sell order."
+          }
+        ]
+      },
+      {
+        "branch": "success_order_placed",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.order_counter",
+              "$.state_before.orders"
+            ],
+            "logic": "Generated order ID starts from order_counter and is incremented while the ID already exists in orders, so it is derived from those state fields."
+          },
+          {
+            "path": "$.result.order_type",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_type"
+            ],
+            "logic": "Backend normalizes the input order_type to title case using capitalize(); for example 'buy' becomes 'Buy'."
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Pending",
+            "logic": "Newly placed order always starts in Pending status."
+          },
+          {
+            "path": "$.result.price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.price"
+            ],
+            "logic": "Backend converts the input price to float before returning it."
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "arg_direct",
+            "source": "$.args.amount",
+            "logic": "Amount is returned unchanged after validation."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema response only documents the success shape with order_id, order_type, status, price, and amount. The backend also returns an object with a single 'error' field on authentication, validation, or insufficient resource failures. A client relying only on the schema would not see those error fields."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "remove_stock_from_watchlist",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "User is not authenticated."
+      },
+      {
+        "id": "error_symbol_not_in_watchlist",
+        "if": "$.args.symbol not in $.state_before.watch_list",
+        "uses": [
+          "$.args.symbol",
+          "$.state_before.watch_list"
+        ],
+        "description": "The requested stock symbol is not present in the watchlist."
+      },
+      {
+        "id": "success_removed",
+        "if": "otherwise",
+        "uses": [],
+        "description": "User is authenticated and the symbol exists in the watchlist; remove it."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_removed",
+        "target": "$.state_after.watch_list",
+        "operation": "delete",
+        "value_from": [
+          "$.args.symbol"
+        ],
+        "external_from": [],
+        "logic": "Remove the provided stock symbol from the persistent watchlist."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to modify the watchlist.",
+            "logic": "The backend returns a hard-coded error message when the user is not authenticated."
+          }
+        ]
+      },
+      {
+        "branch": "error_symbol_not_in_watchlist",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "external_from": [],
+            "logic": "The backend returns an error message that includes the requested stock symbol interpolated into a template string."
+          }
+        ]
+      },
+      {
+        "branch": "success_removed",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "external_from": [],
+            "logic": "The backend returns a success status message that includes the requested stock symbol interpolated into a template string."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema only declares a 'status' field in the response, but the backend returns an 'error' field on authentication failure and when the symbol is not found. The backend response shape is therefore not fully described by the schema.",
+        "schema_path": "$.response.properties",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "trading_get_login_status",
+    "branches": [
+      {
+        "id": "success_login_status",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Unconditional return of the login status from backend state."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_login_status",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.authenticated"
+            ],
+            "external_from": [],
+            "logic": "The method returns a boolean conversion of the stored authenticated state field."
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "trading_login",
+    "branches": [
+      {
+        "id": "fallback_already_logged_in",
+        "if": "$.state_before.authenticated == true",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "If the user is already authenticated, return an already logged in message without modifying state."
+      },
+      {
+        "id": "success_logged_in",
+        "if": "otherwise",
+        "uses": [],
+        "description": "If the user is not authenticated, set the authenticated flag to true and return a successful login message."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_logged_in",
+        "target": "$.state_after.authenticated",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "Sets the authenticated flag to true to mark the user as logged in."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "fallback_already_logged_in",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Already logged in",
+            "logic": "Literal string returned when the user is already authenticated."
+          }
+        ]
+      },
+      {
+        "branch": "success_logged_in",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Logged in successfully",
+            "logic": "Literal string returned after setting the authenticated flag to true."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema declares required username and password arguments for authentication, but the backend implementation does not read or validate these arguments; login succeeds regardless of provided credentials."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "trading_logout",
+    "branches": [
+      {
+        "id": "fallback_not_logged_in",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "Return early when no user is currently logged in."
+      },
+      {
+        "id": "success_logged_out",
+        "if": "otherwise",
+        "uses": [],
+        "description": "When the user is authenticated, log the user out and return a success message."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_logged_out",
+        "target": "$.state_after.authenticated",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "Set the authenticated flag to False to mark the user as logged out."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "fallback_not_logged_in",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "No user is currently logged in",
+            "logic": "Backend returns a fixed error/status message when no user is authenticated."
+          }
+        ]
+      },
+      {
+        "branch": "success_logged_out",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Logged out successfully",
+            "logic": "Backend returns a fixed success message after clearing the authenticated flag."
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.0",
+    "tool": "withdraw_funds",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is not authenticated, so the withdrawal is rejected."
+      },
+      {
+        "id": "error_market_closed",
+        "if": "$.state_before.market_status != 'Open'",
+        "uses": [
+          "$.state_before.market_status"
+        ],
+        "description": "The market is not open, so transactions are not allowed."
+      },
+      {
+        "id": "error_non_positive_amount",
+        "if": "$.args.amount <= 0",
+        "uses": [
+          "$.args.amount"
+        ],
+        "description": "The requested withdrawal amount is zero or negative, so it is rejected."
+      },
+      {
+        "id": "error_insufficient_funds",
+        "if": "$.args.amount > $.state_before.account_info.balance",
+        "uses": [
+          "$.args.amount",
+          "$.state_before.account_info.balance"
+        ],
+        "description": "The requested amount exceeds the current account balance, so the withdrawal is rejected."
+      },
+      {
+        "id": "success_withdrawal",
+        "if": "otherwise",
+        "uses": [],
+        "description": "All validation checks pass, so the withdrawal is processed."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_withdrawal",
+        "target": "$.state_after.account_info.balance",
+        "operation": "decrement",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.args.amount"
+        ],
+        "external_from": [],
+        "logic": "The withdrawal amount is subtracted from the pre-call account balance."
+      },
+      {
+        "branch": "success_withdrawal",
+        "target": "$.state_after.transaction_history",
+        "operation": "append",
+        "value_from": [
+          "$.args.amount"
+        ],
+        "external_from": [
+          "random timestamp generated by _generate_transaction_timestamp"
+        ],
+        "logic": "A withdrawal record is appended to the transaction history with type 'withdrawal', the requested amount, and a generated timestamp."
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to make a transaction.",
+            "logic": "The backend returns a fixed error message when the user is not authenticated."
+          }
+        ]
+      },
+      {
+        "branch": "error_market_closed",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Market is closed. Transactions are not allowed.",
+            "logic": "The backend returns a fixed error message when the market is closed."
+          }
+        ]
+      },
+      {
+        "branch": "error_non_positive_amount",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Transaction amount must be positive.",
+            "logic": "The backend returns a fixed error message when the amount is not positive."
+          }
+        ]
+      },
+      {
+        "branch": "error_insufficient_funds",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient funds for withdrawal.",
+            "logic": "The backend returns a fixed error message when the account balance is insufficient."
+          }
+        ]
+      },
+      {
+        "branch": "success_withdrawal",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Withdrawal successful",
+            "logic": "The backend always returns this success status after the balance is decremented and the history record is appended."
+          },
+          {
+            "path": "$.result.new_balance",
+            "source_kind": "state_direct",
+            "source": "$.state_after.account_info.balance",
+            "logic": "The backend reads the updated account balance after the successful withdrawal mutation."
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "For validation and authorization failures the backend returns only an 'error' field, but the tool schema defines only 'status' and 'new_balance' as the response fields. The schema also does not mention the authentication and market status requirements enforced by the backend.",
+        "schema_path": "response.properties",
+        "backend_path": "error"
+      }
+    ]
+  }
+]

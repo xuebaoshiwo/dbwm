@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.1",
+  "tool": "trading_login",
+  "branches": [
+    {
+      "id": "fallback_already_logged_in",
+      "if": "$.state_before.authenticated == true",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The user is already authenticated, so the login operation is a no-op and returns the already logged in message."
+    },
+    {
+      "id": "success_login",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "The user is not authenticated, so the backend sets authenticated to true and returns the successful login message."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_login",
+      "target": "$.state_after.authenticated",
+      "operation": "set",
+      "value_from": [],
+      "external_from": [],
+      "logic": "Sets the persistent authenticated flag to True after a successful login.",
+      "state_source_relations": []
+    }
+  ],
+  "returns": [
+    {
+      "branch": "fallback_already_logged_in",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Already logged in",
+          "logic": "The backend returns this literal status when authenticated is already true.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_login",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Logged in successfully",
+          "logic": "The backend returns this literal status after setting authenticated to true.",
+          "state_source_relations": []
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema declares required username and password arguments, but trading_login does not read either argument; branch selection and returned status depend only on authenticated state.",
+      "schema_path": "$.args.username",
+      "backend_path": "$.state_before.authenticated"
+    }
+  ]
+}

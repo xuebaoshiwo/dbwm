@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.2",
+  "tool": "get_market_status",
+  "branches": [
+    {
+      "id": "success_get_market_status",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The tool has a single unconditional path that reads the current market status from backend state and returns it."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "success_get_market_status",
+      "fields": [
+        {
+          "path": "$.result.market_status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.market_status",
+          "logic": "The returned market_status is the unchanged value of the backend market_status field read before any modification, and no state is modified by this tool.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

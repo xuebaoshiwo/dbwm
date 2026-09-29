@@ -1,0 +1,3786 @@
+[
+  {
+    "schema_version": "1.2",
+    "tool": "activate_order",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.args.order_id not in $.state_before.orders",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "The requested order ID does not exist in the orders store."
+      },
+      {
+        "id": "error_order_not_pending",
+        "if": "$.state_before.orders['{args.order_id}'].status != 'Pending'",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "The requested order exists but its status is not Pending, so it cannot be activated."
+      },
+      {
+        "id": "success_activated",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The order exists and is Pending, so the backend changes its status to Open and returns the activated order ID and new status."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_activated",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "Sets the order status to the constant value 'Open'.",
+        "state_source_relations": []
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Formats an error message that includes the missing order ID.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_order_not_pending",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id",
+              "$.state_before.orders['{args.order_id}'].status"
+            ],
+            "external_from": [],
+            "logic": "Formats an error message using the input order ID and the lowercased current order status.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].status",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "The status is lowercased in the message, so its original spelling is lost."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The status is lowercased in the message, so its original spelling is lost."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_activated",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the input order ID unchanged.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Open",
+            "logic": "Returns the literal status string 'Open' after successful activation.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema response defines only order_id and status properties, but backend error branches return a dictionary containing only an 'error' field. The schema does not document this error field.",
+        "schema_path": "$.response.properties",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "add_to_watchlist",
+    "branches": [
+      {
+        "id": "success_added_stock",
+        "if": "$.args.stock not in $.state_before.watch_list and $.state_before.stocks['{args.stock}'] exists",
+        "uses": [
+          "$.args.stock",
+          "$.state_before.watch_list",
+          "$.state_before.stocks['{args.stock}']"
+        ],
+        "description": "Executes when the supplied stock is not already in the watchlist and is a known symbol in the stocks dictionary; appends it and returns an added confirmation."
+      },
+      {
+        "id": "error_invalid_stock_symbol",
+        "if": "$.args.stock not in $.state_before.watch_list and not ($.state_before.stocks['{args.stock}'] exists)",
+        "uses": [
+          "$.args.stock",
+          "$.state_before.watch_list",
+          "$.state_before.stocks['{args.stock}']"
+        ],
+        "description": "Executes when the supplied stock is not already in the watchlist but is not a known stock symbol; rejects the add request and returns an invalid-symbol status."
+      },
+      {
+        "id": "fallback_already_in_watchlist",
+        "if": "$.args.stock in $.state_before.watch_list",
+        "uses": [
+          "$.args.stock",
+          "$.state_before.watch_list"
+        ],
+        "description": "Executes when the supplied stock is already present in the watchlist; performs no mutation and returns an already-in-watchlist status."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_added_stock",
+        "target": "$.state_after.watch_list",
+        "operation": "append",
+        "value_from": [
+          "$.state_before.watch_list",
+          "$.args.stock"
+        ],
+        "external_from": [],
+        "logic": "Appends the supplied stock symbol to the persistent watchlist collection.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.watch_list",
+            "transform": "collection",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "The operation appends one item; drop the last item from the observed list."
+          }
+        ]
+      }
+    ],
+    "returns": [
+      {
+        "branch": "success_added_stock",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stock"
+            ],
+            "external_from": [],
+            "logic": "Formats the added-to-watchlist success message using the supplied stock symbol.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_stock_symbol",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stock"
+            ],
+            "external_from": [],
+            "logic": "Formats the invalid-stock-symbol status message using the supplied stock symbol.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "fallback_already_in_watchlist",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stock"
+            ],
+            "external_from": [],
+            "logic": "Formats the already-in-watchlist status message using the supplied stock symbol.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "cancel_order",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.args.order_id not in $.state_before.orders",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "The requested order ID does not exist in the orders map; the backend returns a not-found error without mutating state."
+      },
+      {
+        "id": "error_order_completed",
+        "if": "$.state_before.orders['{args.order_id}'].status == \"Completed\"",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "The order exists and is already Completed; the backend rejects cancellation without mutating state."
+      },
+      {
+        "id": "error_order_cancelled",
+        "if": "$.state_before.orders['{args.order_id}'].status == \"Cancelled\"",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "The order exists and is already Cancelled; the backend rejects cancellation without mutating state."
+      },
+      {
+        "id": "success_cancelled",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The order exists and its status is neither Completed nor Cancelled, so the backend sets its status to Cancelled and returns the order ID and new status."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_cancelled",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "Set the matching order's status field to the literal value 'Cancelled'.",
+        "state_source_relations": []
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Formats an error message containing the requested order ID and literal text indicating the order was not found.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_order_completed",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Formats an error message containing the requested order ID and literal text indicating the order is already completed.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_order_cancelled",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "external_from": [],
+            "logic": "Formats an error message containing the requested order ID and literal text indicating the order is already cancelled.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_cancelled",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Cancelled",
+            "logic": "Returns the literal new order status produced by the cancellation operation.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema advertises response fields order_id and status, but backend error branches return only an 'error' field not present in the schema.",
+        "schema_path": "response.properties.order_id",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "execute_order",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "$.args.order_id not in $.state_before.orders",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders"
+        ],
+        "description": "The requested order ID does not exist, so execution stops immediately."
+      },
+      {
+        "id": "error_order_not_open",
+        "if": "$.state_before.orders['{args.order_id}'].status != 'Open'",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].status"
+        ],
+        "description": "The order exists but is not Open, so it cannot be executed."
+      },
+      {
+        "id": "error_market_closed",
+        "if": "$.state_before.market_status != 'Open'",
+        "uses": [
+          "$.state_before.market_status"
+        ],
+        "description": "The market is closed, so the Open order cannot be filled."
+      },
+      {
+        "id": "error_stock_not_found",
+        "if": "$.state_before.orders['{args.order_id}'].symbol not in $.state_before.stocks",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.stocks"
+        ],
+        "description": "The order references a stock symbol that is absent from the stock state."
+      },
+      {
+        "id": "error_buy_limit_not_met",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol}'].price > $.state_before.orders['{args.order_id}'].price",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].price",
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "description": "A Buy limit order cannot fill because the current stock price exceeds the order limit price."
+      },
+      {
+        "id": "error_sell_limit_not_met",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol}'].price < $.state_before.orders['{args.order_id}'].price",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].price",
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "description": "A Sell limit order cannot fill because the current stock price is below the order limit price."
+      },
+      {
+        "id": "error_buy_insufficient_funds",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol}'].price * $.state_before.orders['{args.order_id}'].amount, 2) > $.state_before.account_info.balance",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.account_info.balance"
+        ],
+        "description": "A valid Buy limit order cannot fill because the account balance is below the rounded trade value."
+      },
+      {
+        "id": "error_sell_insufficient_shares",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] < $.state_before.orders['{args.order_id}'].amount",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.holdings"
+        ],
+        "description": "A valid Sell limit order cannot fill because the account holds too few shares."
+      },
+      {
+        "id": "error_invalid_order_type",
+        "if": "$.state_before.orders['{args.order_id}'].order_type not in ['Buy', 'Sell']",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type"
+        ],
+        "description": "The stored order type is neither Buy nor Sell."
+      },
+      {
+        "id": "success_buy",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and all earlier checks pass",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type"
+        ],
+        "description": "The Buy order passes all checks and is filled at the current stock price."
+      },
+      {
+        "id": "success_sell_with_remaining_shares",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount > 0 and all earlier checks pass",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.holdings['{order.symbol}']"
+        ],
+        "description": "The Sell order fills and leaves a positive number of shares in the position."
+      },
+      {
+        "id": "success_sell_position_closed",
+        "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount == 0 and all earlier checks pass",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}'].order_type",
+          "$.state_before.orders['{args.order_id}'].symbol",
+          "$.state_before.orders['{args.order_id}'].amount",
+          "$.state_before.holdings['{order.symbol}']"
+        ],
+        "description": "The Sell order fills and removes the holding entry because no shares remain."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.account_info.balance",
+        "operation": "decrement",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.account_info.balance",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          },
+          {
+            "path": "$.state_before.stocks['{order.symbol}'].price",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          },
+          {
+            "path": "$.state_before.orders['{args.order_id}'].amount",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          }
+        ]
+      },
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.holdings['{order.symbol}']",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.holdings",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.holdings",
+            "transform": "collection",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "One updated holding cannot reconstruct the entire prior holdings mapping."
+          },
+          {
+            "path": "$.state_before.orders['{args.order_id}'].amount",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [
+              "$.state_before.holdings"
+            ],
+            "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+          }
+        ]
+      },
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "logic": "Sets the filled order status to the constant Completed.",
+        "state_source_relations": []
+      },
+      {
+        "branch": "success_buy",
+        "target": "$.state_after.orders['{args.order_id}'].filled_price",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "logic": "Stores the current stock price, converted to float, as the order fill price.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.stocks['{order.symbol}'].price",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.account_info.balance",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.account_info.balance",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          },
+          {
+            "path": "$.state_before.stocks['{order.symbol}'].price",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          },
+          {
+            "path": "$.state_before.orders['{args.order_id}'].amount",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.holdings['{order.symbol}']",
+        "operation": "decrement",
+        "value_from": [
+          "$.state_before.holdings['{order.symbol}']",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Subtracts the filled amount while retaining the positive remaining holding.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.holdings['{order.symbol}']",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+          },
+          {
+            "path": "$.state_before.orders['{args.order_id}'].amount",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [
+              "$.state_before.holdings['{order.symbol}']"
+            ],
+            "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "logic": "Sets the filled order status to the constant Completed.",
+        "state_source_relations": []
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "target": "$.state_after.orders['{args.order_id}'].filled_price",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "logic": "Stores the current stock price, converted to float, as the order fill price.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.stocks['{order.symbol}'].price",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.account_info.balance",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.state_before.stocks['{order.symbol}'].price",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.account_info.balance",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          },
+          {
+            "path": "$.state_before.stocks['{order.symbol}'].price",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          },
+          {
+            "path": "$.state_before.orders['{args.order_id}'].amount",
+            "transform": "arithmetic",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.holdings['{order.symbol}']",
+        "operation": "delete",
+        "value_from": [
+          "$.state_before.holdings['{order.symbol}']",
+          "$.state_before.orders['{args.order_id}'].amount"
+        ],
+        "logic": "Deletes the symbol from holdings when the fill reduces its share count to zero.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.holdings['{order.symbol}']",
+            "transform": "collection",
+            "recoverability": "none",
+            "given": [],
+            "reason": "The deleted target is absent after the write and does not expose the prior quantity."
+          },
+          {
+            "path": "$.state_before.orders['{args.order_id}'].amount",
+            "transform": "collection",
+            "recoverability": "none",
+            "given": [],
+            "reason": "The deleted target is absent after the write and does not expose the prior quantity."
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.orders['{args.order_id}'].status",
+        "operation": "set",
+        "value_from": [],
+        "logic": "Sets the filled order status to the constant Completed.",
+        "state_source_relations": []
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "target": "$.state_after.orders['{args.order_id}'].filled_price",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.stocks['{order.symbol}'].price"
+        ],
+        "logic": "Stores the current stock price, converted to float, as the order fill price.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.stocks['{order.symbol}'].price",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+          }
+        ]
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id"
+            ],
+            "logic": "Formats the missing order ID into the not-found error message.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_order_not_open",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id",
+              "$.state_before.orders['{args.order_id}'].status"
+            ],
+            "logic": "Formats the order ID and lowercased current status into the execution error message.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].status",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "error_market_closed",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Market is closed. Orders cannot be executed.",
+            "logic": "Returns the fixed closed-market error message.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_stock_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].symbol"
+            ],
+            "logic": "Formats the missing stock symbol from the order into the error message.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].symbol",
+                "transform": "format",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The source string is embedded verbatim in a fixed message and can be extracted."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].symbol",
+                "transform": "format",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The source string is embedded verbatim in a fixed message and can be extracted."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "error_buy_limit_not_met",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].price",
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Formats the Buy limit price and current stock price to two decimal places in the error message.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+              },
+              {
+                "path": "$.state_before.stocks['{order.symbol}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+              },
+              {
+                "path": "$.state_after.stocks['{order.symbol}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "error_sell_limit_not_met",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].price",
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Formats the Sell limit price and current stock price to two decimal places in the error message.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+              },
+              {
+                "path": "$.state_before.stocks['{order.symbol}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+              },
+              {
+                "path": "$.state_after.stocks['{order.symbol}'].price",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "error_buy_insufficient_funds",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient funds to execute the buy order.",
+            "logic": "Returns the fixed insufficient-funds execution error.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_sell_insufficient_shares",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient shares to execute the sell order.",
+            "logic": "Returns the fixed insufficient-shares execution error.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_order_type",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].order_type"
+            ],
+            "logic": "Formats the unsupported stored order type into the error message.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].order_type",
+                "transform": "format",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The source string is embedded verbatim in a fixed message and can be extracted."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].order_type",
+                "transform": "format",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The source string is embedded verbatim in a fixed message and can be extracted."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_buy",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Completed",
+            "logic": "Returns the fixed completed status after a successful fill.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Returns the current stock price after converting it to float.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{order.symbol}'].price",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{order.symbol}'].price",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              },
+              {
+                "path": "$.state_after.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "logic": "Returns the stored order amount after converting it to int.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].amount",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].amount",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_with_remaining_shares",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Completed",
+            "logic": "Returns the fixed completed status after a successful fill.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Returns the current stock price after converting it to float.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{order.symbol}'].price",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{order.symbol}'].price",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              },
+              {
+                "path": "$.state_after.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "logic": "Returns the stored order amount after converting it to int.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].amount",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].amount",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_sell_position_closed",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "arg_direct",
+            "source": "$.args.order_id",
+            "logic": "Returns the requested order ID unchanged.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Completed",
+            "logic": "Returns the fixed completed status after a successful fill.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.stocks['{order.symbol}'].price"
+            ],
+            "logic": "Returns the current stock price after converting it to float.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{order.symbol}'].price",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{order.symbol}'].price",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              },
+              {
+                "path": "$.state_after.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].amount"
+            ],
+            "logic": "Returns the stored order amount after converting it to int.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].amount",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].amount",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema documents only the successful response. The backend can also return an object containing only an error field for missing orders, invalid order status, a closed market, missing stocks, unmet limits, insufficient funds or shares, and invalid stored order types.",
+        "schema_path": "response.properties",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "filter_stocks_by_price",
+    "branches": [
+      {
+        "id": "success_filtered",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Unconditional filtering path: iterates over the provided stock symbols and returns those whose price in backend state is greater than or equal to min_price and less than or equal to max_price."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_filtered",
+        "fields": [
+          {
+            "path": "$.result.filtered_stocks",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stocks",
+              "$.args.min_price",
+              "$.args.max_price",
+              "$.state_before.stocks['{symbol}'].price"
+            ],
+            "external_from": [],
+            "logic": "Filters the input stock list to symbols whose stock price in the backend state is between min_price and max_price inclusive. Unknown symbols are treated as having price 0, so they are included only if 0 falls within the range.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{symbol}'].price",
+                "transform": "comparison",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Membership reveals only whether each price falls inside the requested interval."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{symbol}'].price",
+                "transform": "comparison",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Membership reveals only whether each price falls inside the requested interval."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "fund_account",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "User is not authenticated; the tool rejects the operation with an error before any state mutation."
+      },
+      {
+        "id": "error_amount_not_positive",
+        "if": "$.args.amount <= 0",
+        "uses": [
+          "$.args.amount"
+        ],
+        "description": "Funding amount is zero or negative; the tool rejects the operation with an error before any state mutation."
+      },
+      {
+        "id": "success_funded",
+        "if": "otherwise",
+        "uses": [],
+        "description": "User is authenticated and amount is positive; the account balance is increased and a deposit transaction is recorded."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_funded",
+        "target": "$.state_after.account_info.balance",
+        "operation": "increment",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.args.amount"
+        ],
+        "external_from": [],
+        "logic": "The account balance is increased by the funded amount.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.account_info.balance",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "Given the argument amount, reverse the addition/subtraction on the bounded currency domain."
+          }
+        ]
+      },
+      {
+        "branch": "success_funded",
+        "target": "$.state_after.transaction_history",
+        "operation": "append",
+        "value_from": [
+          "$.state_before.transaction_history",
+          "$.args.amount"
+        ],
+        "external_from": [
+          "generated_transaction_timestamp (random timestamp within current time to next day)"
+        ],
+        "logic": "A deposit transaction record is appended to the transaction history with the funded amount and a generated timestamp.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.transaction_history",
+            "transform": "collection",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "The operation appends exactly one record; remove the last element of the observed list."
+          }
+        ]
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to fund the account.",
+            "logic": "The backend returns a literal error string when the user is not authenticated.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_amount_not_positive",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Funding amount must be positive.",
+            "logic": "The backend returns a literal error string when the amount is not positive.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_funded",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Account funded successfully",
+            "logic": "The backend returns a literal success status message after increasing the balance and recording the deposit.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema response only defines a 'status' string, but the backend returns an object with key 'error' for authentication and validation failures. Successful branches match the schema.",
+        "schema_path": "$.result.status",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_account_info",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is not authenticated, so the backend returns an error response and does not expose account details."
+      },
+      {
+        "id": "success_account_info",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The user is authenticated, so the backend returns the account information mapping."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to view account information.",
+            "logic": "The backend returns a hard-coded error message when authentication has not been performed.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_account_info",
+        "fields": [
+          {
+            "path": "$.result.account_id",
+            "source_kind": "state_direct",
+            "source": "$.state_before.account_info.account_id",
+            "logic": "The account ID is returned directly from the persistent account_info state.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.account_info.account_id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.account_info.account_id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.balance",
+            "source_kind": "state_direct",
+            "source": "$.state_before.account_info.balance",
+            "logic": "The current balance is returned directly from the persistent account_info state.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.account_info.balance",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.account_info.balance",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.binding_card",
+            "source_kind": "state_direct",
+            "source": "$.state_before.account_info.binding_card",
+            "logic": "The binding card number is returned directly from the persistent account_info state.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.account_info.binding_card",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.account_info.binding_card",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_available_stocks",
+    "branches": [
+      {
+        "id": "success_extended_context",
+        "if": "$.state_before.long_context == true and $.args.sector in ['Technology','Automobile']",
+        "uses": [
+          "$.state_before.long_context",
+          "$.args.sector"
+        ],
+        "description": "The tool returns the stock symbols for a known sector while the hidden long_context flag is enabled, causing the base hardcoded sector list to be extended with additional symbols from imported extension constants."
+      },
+      {
+        "id": "success_standard_context",
+        "if": "not $.state_before.long_context and $.args.sector in ['Technology','Automobile']",
+        "uses": [
+          "$.state_before.long_context",
+          "$.args.sector"
+        ],
+        "description": "The tool returns the stock symbols for a known sector while the hidden long_context flag is disabled, using only the base hardcoded sector list."
+      },
+      {
+        "id": "fallback_unknown_sector",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The requested sector is not present in the hardcoded sector map, so the backend returns an empty stock list without raising an error."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_extended_context",
+        "fields": [
+          {
+            "path": "$.result.stock_list",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.sector"
+            ],
+            "external_from": [
+              "sector-specific imported stock-list extension constant"
+            ],
+            "logic": "The sector argument selects a hardcoded list, then the imported extension is appended. The long_context flag selects this branch only.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_standard_context",
+        "fields": [
+          {
+            "path": "$.result.stock_list",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.sector"
+            ],
+            "external_from": [],
+            "logic": "The returned stock_list is selected from the hardcoded sector map based on the sector argument. No long_context extension is applied for this branch.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "fallback_unknown_sector",
+        "fields": [
+          {
+            "path": "$.result.stock_list",
+            "source_kind": "constant",
+            "value": [],
+            "logic": "The backend returns the literal empty list for any sector not present in the hardcoded sector map.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "ambiguous_state",
+        "description": "Backend behavior depends on the hidden instance attribute long_context, which is not part of the documented tool schema or DEFAULT_STATE. When enabled, known sector stock lists are extended with imported module constants, changing the returned stock_list."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_current_time",
+    "branches": [
+      {
+        "id": "success_get_current_time",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Unconditional branch that returns the formatted current time."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_get_current_time",
+        "fields": [
+          {
+            "path": "$.result.current_time",
+            "source_kind": "derived",
+            "value_from": [],
+            "external_from": [],
+            "logic": "Formatted from the fixed module-level datetime constant CURRENT_TIME using '%I:%M %p', producing 10:30 AM.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema describes getting the current time, but the backend returns a fixed value based on module constant CURRENT_TIME=datetime(2024,9,1,10,30) rather than the actual system current time."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_holdings",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The backend first checks whether the user is authenticated. If not authenticated, it returns an error response and does not return holdings."
+      },
+      {
+        "id": "success_get_holdings",
+        "if": "$.state_before.authenticated == true",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is authenticated, so the backend returns a deep copy of the current holdings mapping."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to view holdings.",
+            "logic": "The backend returns a literal error message when authentication fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_get_holdings",
+        "fields": [
+          {
+            "path": "$.result.holdings",
+            "source_kind": "state_direct",
+            "source": "$.state_before.holdings",
+            "logic": "The backend returns an unchanged deep copy of the current holdings state.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.holdings",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.holdings",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema defines only a 'holdings' response field, but the backend returns an 'error' field when the user is not authenticated.",
+        "schema_path": "$.response.properties",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_market_status",
+    "branches": [
+      {
+        "id": "success_get_market_status",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The tool has a single unconditional path that reads the current market status from backend state and returns it."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_get_market_status",
+        "fields": [
+          {
+            "path": "$.result.market_status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.market_status",
+            "logic": "The returned market_status is the unchanged value of the backend market_status field read before any modification, and no state is modified by this tool.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.market_status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.market_status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_order_details",
+    "branches": [
+      {
+        "id": "error_order_not_found",
+        "if": "not exists $.state_before.orders['{args.order_id}']",
+        "uses": [
+          "$.args.order_id",
+          "$.state_before.orders['{args.order_id}']"
+        ],
+        "description": "The requested order ID is not present in stored orders; the method returns an error with the list of existing order IDs."
+      },
+      {
+        "id": "error_keyerror_formatting",
+        "if": "$.state_before.long_context == true and KeyError occurs when formatting ORDER_DETAIL_EXTENSION values using $.state_before.orders['{args.order_id}'].symbol",
+        "uses": [
+          "$.state_before.long_context",
+          "$.state_before.orders['{args.order_id}'].symbol"
+        ],
+        "description": "In long-context mode, formatting an ORDER_DETAIL_EXTENSION placeholder with the order symbol raises KeyError; the method returns an error immediately."
+      },
+      {
+        "id": "success_long_context",
+        "if": "$.state_before.orders['{args.order_id}'] exists and $.state_before.long_context == true and no KeyError occurs while formatting ORDER_DETAIL_EXTENSION",
+        "uses": [
+          "$.state_before.long_context",
+          "$.state_before.orders['{args.order_id}']"
+        ],
+        "description": "The order exists and long-context mode is active; the method copies the order, appends formatted metadata, and returns it."
+      },
+      {
+        "id": "success_standard",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The order exists and long-context mode is false; the method returns the stored order object directly."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_order_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_id",
+              "$.state_before.orders"
+            ],
+            "external_from": [],
+            "logic": "The error string concatenates the missing order ID argument and the list of all order IDs currently stored in state.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders",
+                "transform": "aggregation",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Only order IDs are formatted into the message; order contents are omitted."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders",
+                "transform": "aggregation",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Only order IDs are formatted into the message; order contents are omitted."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "error_keyerror_formatting",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [],
+            "external_from": [
+              "ORDER_DETAIL_EXTENSION",
+              "KeyError exception text"
+            ],
+            "logic": "The formatting KeyError reports a missing template key, not the order symbol's value.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_long_context",
+        "fields": [
+          {
+            "path": "$.result.id",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].id",
+            "logic": "Copied unchanged from the stored order.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.order_type",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].order_type",
+            "logic": "Copied unchanged from the stored order.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].order_type",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].order_type",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.symbol",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "Copied unchanged from the stored order.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].symbol",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].symbol",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].price",
+            "logic": "Copied unchanged from the stored order.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].amount",
+            "logic": "Copied unchanged from the stored order.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].amount",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].amount",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].status",
+            "logic": "Copied unchanged from the stored order.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].filled_price",
+            "logic": "Copied unchanged from the stored order when the stored order includes a filled_price; otherwise this field is absent.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.metadata",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders['{args.order_id}'].symbol"
+            ],
+            "external_from": [
+              "ORDER_DETAIL_EXTENSION"
+            ],
+            "logic": "Constructed by formatting each ORDER_DETAIL_EXTENSION value with the order symbol.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].symbol",
+                "transform": "format",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The known metadata template embeds the symbol verbatim; extract it from a formatted entry."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].symbol",
+                "transform": "format",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The known metadata template embeds the symbol verbatim; extract it from a formatted entry."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_standard",
+        "fields": [
+          {
+            "path": "$.result.id",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].id",
+            "logic": "Read directly from the stored order object.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.order_type",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].order_type",
+            "logic": "Read directly from the stored order object.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].order_type",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].order_type",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.symbol",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].symbol",
+            "logic": "Read directly from the stored order object.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].symbol",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].symbol",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].price",
+            "logic": "Read directly from the stored order object.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].amount",
+            "logic": "Read directly from the stored order object.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].amount",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].amount",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].status",
+            "logic": "Read directly from the stored order object.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.filled_price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.orders['{args.order_id}'].filled_price",
+            "logic": "Read directly from the stored order object when the stored order includes a filled_price; otherwise this field is absent.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{args.order_id}'].filled_price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "In long-context mode, the backend adds a 'metadata' field to the returned order object; the tool schema does not declare this field.",
+        "schema_path": "$.response.properties.metadata",
+        "backend_path": "$.result.metadata"
+      },
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Error branches return a top-level 'error' field; the tool schema only defines success fields.",
+        "schema_path": "$.response.properties.error",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_order_history",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "Backend returns an authentication error response when the user is not logged in."
+      },
+      {
+        "id": "success_history",
+        "if": "$.state_before.authenticated == true",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "Backend returns the current order ID history when the user is authenticated."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "constant",
+            "value": [
+              {
+                "error": "User not authenticated. Please log in to view order history."
+              }
+            ],
+            "logic": "Backend returns a hard-coded list containing an error object.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_history",
+        "fields": [
+          {
+            "path": "$.result.history",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.orders"
+            ],
+            "logic": "Backend builds a list of order IDs by extracting the integer keys from the orders mapping.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.orders",
+                "transform": "aggregation",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "The list exposes order keys but not the order objects."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders",
+                "transform": "aggregation",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The list exposes order keys but not the order objects."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Backend returns the order history under the key 'history', while the tool schema declares response key 'order_history'.",
+        "schema_path": "$.result.order_history",
+        "backend_path": "$.result.history"
+      },
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Backend returns a list containing an error object when unauthenticated, while the schema declares a dict response with an 'order_history' array.",
+        "schema_path": "$.result",
+        "backend_path": "$.result"
+      },
+      {
+        "type": "schema_backend_mismatch",
+        "description": "Backend enforces authentication before returning order history, but the tool schema does not document a login requirement or authentication error."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_stock_info",
+    "branches": [
+      {
+        "id": "error_stock_not_found",
+        "if": "$.args.symbol not in $.state_before.stocks",
+        "uses": [
+          "$.args.symbol",
+          "$.state_before.stocks"
+        ],
+        "description": "The backend first checks whether the requested symbol exists in the stocks state. If not, it returns an error response."
+      },
+      {
+        "id": "success_long_context",
+        "if": "$.state_before.long_context == true",
+        "uses": [
+          "$.state_before.long_context"
+        ],
+        "description": "When long context mode is enabled, the backend returns a copy of the stored stock object with MA(5) and MA(20) replaced by imported extension constants."
+      },
+      {
+        "id": "success_stock_info",
+        "if": "otherwise",
+        "uses": [],
+        "description": "When the symbol exists and long context mode is disabled, the backend returns the stored stock object unchanged."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_stock_not_found",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "logic": "Formats a not-found error message by inserting the requested stock symbol into a literal error template.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_long_context",
+        "fields": [
+          {
+            "path": "$.result.price",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}'].price",
+            "logic": "Returns the stored current price for the requested stock.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{args.symbol}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{args.symbol}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.percent_change",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}'].percent_change",
+            "logic": "Returns the stored percentage change for the requested stock.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{args.symbol}'].percent_change",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{args.symbol}'].percent_change",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.volume",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}'].volume",
+            "logic": "Returns the stored trading volume for the requested stock.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{args.symbol}'].volume",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{args.symbol}'].volume",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          },
+          {
+            "path": "$.result['MA(5)']",
+            "source_kind": "constant",
+            "value": "MA_5_EXTENSION",
+            "logic": "Returns the imported MA_5_EXTENSION constant instead of the stored MA(5) value in long context mode.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          },
+          {
+            "path": "$.result['MA(20)']",
+            "source_kind": "constant",
+            "value": "MA_20_EXTENSION",
+            "logic": "Returns the imported MA_20_EXTENSION constant instead of the stored MA(20) value in long context mode.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_stock_info",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "state_direct",
+            "source": "$.state_before.stocks['{args.symbol}']",
+            "logic": "Returns the entire stored stock object unchanged, including price, percent_change, volume, MA(5), and MA(20).",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks['{args.symbol}']",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks['{args.symbol}']",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The backend has an error branch that returns a top-level 'error' field for an unknown symbol, but the tool response schema does not declare an 'error' property.",
+        "schema_path": "$.response.properties.error",
+        "backend_path": "$.result.error"
+      },
+      {
+        "type": "unsupported_construct",
+        "description": "The long-context branch assigns imported constants MA_5_EXTENSION and MA_20_EXTENSION, whose literal values are not defined in the supplied backend source. The analysis records these as constants by identifier."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_symbol_by_name",
+    "branches": [
+      {
+        "id": "success_found",
+        "if": "$.args.name in [\"Apple\", \"Google\", \"Tesla\", \"Microsoft\", \"Nvidia\", \"Zeta Corp\", \"Alpha Tech\", \"Omega Industries\", \"Quasar Ltd.\", \"Neptune Systems\", \"Synex Solutions\", \"Amazon\", \"Gorilla\"]",
+        "uses": [
+          "$.args.name"
+        ],
+        "description": "The provided company name exists in the hardcoded symbol_map and the matching stock symbol is returned."
+      },
+      {
+        "id": "fallback_not_found",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The provided company name is not found in the hardcoded symbol_map, so the tool returns the 'Stock not found' message without an error."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_found",
+        "fields": [
+          {
+            "path": "$.result.symbol",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.name"
+            ],
+            "external_from": [],
+            "logic": "Symbol selected from the hardcoded company-name-to-symbol map based on the provided company name.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "fallback_not_found",
+        "fields": [
+          {
+            "path": "$.result.symbol",
+            "source_kind": "constant",
+            "value": "Stock not found",
+            "logic": "Hardcoded fallback message returned when the company name is not in the symbol map.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_transaction_history",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The backend rejects the request when the user is not authenticated and returns an error list without reading transaction history or date arguments."
+      },
+      {
+        "id": "success_filtered_history",
+        "if": "$.state_before.authenticated == true and $.state_before.long_context == false",
+        "uses": [
+          "$.state_before.authenticated",
+          "$.state_before.long_context"
+        ],
+        "description": "The authenticated user receives the transaction history filtered by the optional start_date and end_date arguments, with no long-context extension appended."
+      },
+      {
+        "id": "success_filtered_history_long_context",
+        "if": "$.state_before.authenticated == true and $.state_before.long_context == true",
+        "uses": [
+          "$.state_before.authenticated",
+          "$.state_before.long_context"
+        ],
+        "description": "The authenticated user receives the filtered transaction history with the imported TRANSACTION_HISTORY_EXTENSION appended because the backend long_context flag is enabled."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result[0].error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to view transaction history.",
+            "logic": "The backend returns a single-item list containing this literal error message when authentication fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_filtered_history",
+        "fields": [
+          {
+            "path": "$.result.transaction_history",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.transaction_history",
+              "$.args.start_date",
+              "$.args.end_date"
+            ],
+            "external_from": [],
+            "logic": "The backend parses each transaction timestamp and keeps transactions whose timestamp falls between start_date and end_date, inclusive; a missing start_date is treated as datetime.min and a missing end_date as datetime.max.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.transaction_history",
+                "transform": "filter",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.transaction_history",
+                "transform": "filter",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_filtered_history_long_context",
+        "fields": [
+          {
+            "path": "$.result.transaction_history",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.transaction_history",
+              "$.args.start_date",
+              "$.args.end_date"
+            ],
+            "external_from": [
+              "TRANSACTION_HISTORY_EXTENSION"
+            ],
+            "logic": "The backend filters the state transaction_history by the date range and then appends the imported TRANSACTION_HISTORY_EXTENSION entries before returning the combined list.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.transaction_history",
+                "transform": "filter",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.transaction_history",
+                "transform": "filter",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. A date-window projection can omit records; an unbounded call is a special case, not a general inverse."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The response schema expects an object with a transaction_history key, but the unauthenticated backend branch returns a list containing an error object instead of that object.",
+        "schema_path": "response",
+        "backend_path": "$.result"
+      },
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema does not document that authentication is required, but the backend checks authenticated state and returns an error when it is false."
+      },
+      {
+        "type": "dynamic_behavior",
+        "description": "The backend does not catch invalid date formats. If start_date or end_date is present but not in YYYY-MM-DD format, datetime.strptime raises ValueError instead of returning a structured error response."
+      },
+      {
+        "type": "ambiguous_state",
+        "description": "The backend reads an internal long_context flag not represented in the tool schema. When true, it appends TRANSACTION_HISTORY_EXTENSION entries to the returned transaction_history, producing behavior not described by the schema."
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "get_watchlist",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "Backend rejects the request when the user is not authenticated and returns a plain list with an error string."
+      },
+      {
+        "id": "success_watchlist_long_context",
+        "if": "$.state_before.authenticated == true and $.state_before.long_context == true",
+        "uses": [
+          "$.state_before.authenticated",
+          "$.state_before.long_context"
+        ],
+        "description": "Authenticated user with long_context enabled receives a copied watch list extended with the imported WATCH_LIST_EXTENSION entries, returned as a plain list."
+      },
+      {
+        "id": "success_standard",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Authenticated user without long_context receives the watchlist as a dictionary under the key 'watchlist'."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "constant",
+            "value": [
+              "Error: User not authenticated. Please log in to view the watchlist."
+            ],
+            "logic": "The branch returns a one-element list containing the literal error message.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_watchlist_long_context",
+        "fields": [
+          {
+            "path": "$.result",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.watch_list"
+            ],
+            "logic": "Returns a new list containing the current watchlist entries plus the WATCH_LIST_EXTENSION entries from the imported long-context constant.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.watch_list",
+                "transform": "collection",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "Given the known appended extension and its length, remove that suffix to recover the source list."
+              }
+            ],
+            "external_from": [
+              "WATCH_LIST_EXTENSION imported constant"
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.watch_list",
+                "transform": "collection",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Given the known appended extension and its length, remove that suffix to recover the source list."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_standard",
+        "fields": [
+          {
+            "path": "$.result.watchlist",
+            "source_kind": "state_direct",
+            "source": "$.state_before.watch_list",
+            "logic": "Returns the current watchlist state directly under the key 'watchlist'.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.watch_list",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.watch_list",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema describes the response as a dict with property 'watchlist' (array of strings), but the backend returns a plain list in the unauthenticated and long_context branches; only the final standard branch matches the schema shape.",
+        "schema_path": "$.result.watchlist",
+        "backend_path": "$.result"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "notify_price_change",
+    "branches": [
+      {
+        "id": "success_significant_price_change",
+        "if": "any symbol in $.args.stocks exists in $.state_before.stocks and abs($.state_before.stocks['{symbol}'].percent_change) >= $.args.threshold",
+        "uses": [
+          "$.args.stocks",
+          "$.args.threshold",
+          "$.state_before.stocks"
+        ],
+        "description": "At least one requested stock symbol exists in backend stock state and has an absolute percentage change at or above the supplied threshold, so the tool returns a notification listing those symbols."
+      },
+      {
+        "id": "fallback_no_significant_price_change",
+        "if": "not (any symbol in $.args.stocks exists in $.state_before.stocks and abs($.state_before.stocks['{symbol}'].percent_change) >= $.args.threshold)",
+        "uses": [
+          "$.args.stocks",
+          "$.args.threshold",
+          "$.state_before.stocks"
+        ],
+        "description": "No requested stock symbol exists in backend stock state with an absolute percentage change at or above the supplied threshold, so the tool returns a no-significant-change message."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_significant_price_change",
+        "fields": [
+          {
+            "path": "$.result.notification",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.stocks",
+              "$.args.threshold",
+              "$.state_before.stocks"
+            ],
+            "logic": "The notification string is built by joining the selected stock symbols from the changed_stocks list; selection depends on the requested symbols, the threshold, and each existing stock's percent_change.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.stocks",
+                "transform": "comparison",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "Selected symbols constrain percentage changes but omit exact values and other stock fields."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.stocks",
+                "transform": "comparison",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. Selected symbols constrain percentage changes but omit exact values and other stock fields."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "fallback_no_significant_price_change",
+        "fields": [
+          {
+            "path": "$.result.notification",
+            "source_kind": "constant",
+            "value": "No significant price changes in the selected stocks.",
+            "logic": "The backend returns this exact fixed message when changed_stocks is empty.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "place_order",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The backend rejects the operation because the user is not authenticated."
+      },
+      {
+        "id": "error_invalid_symbol",
+        "if": "$.args.symbol not in $.state_before.stocks",
+        "uses": [
+          "$.args.symbol",
+          "$.state_before.stocks"
+        ],
+        "description": "The backend rejects the operation because the provided stock symbol is not present in stocks."
+      },
+      {
+        "id": "error_non_positive_price_or_amount",
+        "if": "$.args.price <= 0 or $.args.amount <= 0",
+        "uses": [
+          "$.args.price",
+          "$.args.amount"
+        ],
+        "description": "The backend rejects the operation because price or amount is not positive."
+      },
+      {
+        "id": "error_invalid_order_type",
+        "if": "$.args.order_type.lower() not in {\"buy\", \"sell\"}",
+        "uses": [
+          "$.args.order_type"
+        ],
+        "description": "The backend rejects the operation because order_type is neither buy nor sell case-insensitively."
+      },
+      {
+        "id": "error_insufficient_funds_buy",
+        "if": "$.args.order_type.lower() == \"buy\" and float($.args.price) * int($.args.amount) > $.state_before.account_info.balance",
+        "uses": [
+          "$.args.order_type",
+          "$.args.price",
+          "$.args.amount",
+          "$.state_before.account_info.balance"
+        ],
+        "description": "The backend rejects a buy order because the total limit cost exceeds the available account balance."
+      },
+      {
+        "id": "error_insufficient_shares_sell",
+        "if": "$.args.order_type.lower() == \"sell\" and $.state_before.holdings.get('{args.symbol}', 0) < $.args.amount",
+        "uses": [
+          "$.args.order_type",
+          "$.args.symbol",
+          "$.state_before.holdings"
+        ],
+        "description": "The backend rejects a sell order because the user does not hold enough shares for the requested amount."
+      },
+      {
+        "id": "success_placed_pending_order",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The backend creates a new Pending order with a generated order ID and returns its details."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_placed_pending_order",
+        "target": "$.state_after.orders['{order_id}']",
+        "operation": "insert",
+        "value_from": [
+          "$.state_before.order_counter",
+          "$.state_before.orders",
+          "$.args.order_type",
+          "$.args.symbol",
+          "$.args.price",
+          "$.args.amount"
+        ],
+        "external_from": [],
+        "logic": "Creates a new order entry keyed by a generated order_id. The entry includes id, normalized order_type, symbol, float price, amount, and status 'Pending'.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.order_counter",
+            "transform": "selection",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+          },
+          {
+            "path": "$.state_before.orders",
+            "transform": "selection",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+          }
+        ]
+      },
+      {
+        "branch": "success_placed_pending_order",
+        "target": "$.state_after.order_counter",
+        "operation": "set",
+        "value_from": [
+          "$.state_before.order_counter",
+          "$.state_before.orders"
+        ],
+        "external_from": [],
+        "logic": "Updates the order counter to one past the generated order_id, skipping any already-used IDs during generation.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.order_counter",
+            "transform": "selection",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+          },
+          {
+            "path": "$.state_before.orders",
+            "transform": "selection",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+          }
+        ]
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to place an order.",
+            "logic": "The backend returns a fixed error message when authentication fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_symbol",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "external_from": [],
+            "logic": "The backend formats an error message that includes the invalid symbol provided by the caller.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_non_positive_price_or_amount",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Price and amount must be positive values.",
+            "logic": "The backend returns a fixed error message when price or amount validation fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_invalid_order_type",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Order type must be Buy or Sell.",
+            "logic": "The backend returns a fixed error message when order_type validation fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_insufficient_funds_buy",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.price",
+              "$.args.amount",
+              "$.state_before.account_info.balance"
+            ],
+            "external_from": [],
+            "logic": "The backend computes the total limit cost and formats an insufficient-funds error message including both required and available amounts.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.account_info.balance",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "The available balance is formatted to two decimal places in the error message."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.account_info.balance",
+                "transform": "format",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The available balance is formatted to two decimal places in the error message."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "error_insufficient_shares_sell",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient shares to place the sell order.",
+            "logic": "The backend returns a fixed error message when sell-share validation fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_placed_pending_order",
+        "fields": [
+          {
+            "path": "$.result.order_id",
+            "source_kind": "derived",
+            "value_from": [
+              "$.state_before.order_counter",
+              "$.state_before.orders"
+            ],
+            "external_from": [],
+            "logic": "The order_id is generated from the pre-call order counter, skipping any IDs that already exist in orders.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.order_counter",
+                "transform": "selection",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "The first free ID constrains the counter and occupied IDs but cannot reconstruct either source."
+              },
+              {
+                "path": "$.state_before.orders",
+                "transform": "selection",
+                "recoverability": "partial",
+                "given": [],
+                "reason": "The first free ID constrains the counter and occupied IDs but cannot reconstruct either source."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{result.order_id}'].id",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              },
+              {
+                "path": "$.state_after.order_counter",
+                "transform": "arithmetic",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "The backend sets the post-call counter to returned order_id + 1."
+              }
+            ]
+          },
+          {
+            "path": "$.result.order_type",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.order_type"
+            ],
+            "external_from": [],
+            "logic": "The order_type is normalized by capitalizing the caller-provided value, e.g. 'buy' becomes 'Buy'.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{result.order_id}'].order_type",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Pending",
+            "logic": "Newly placed orders always receive the initial status 'Pending'.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{result.order_id}'].status",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.price",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.price"
+            ],
+            "external_from": [],
+            "logic": "The returned price is converted to a float from the caller-provided price argument.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{result.order_id}'].price",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          },
+          {
+            "path": "$.result.amount",
+            "source_kind": "arg_direct",
+            "source": "$.args.amount",
+            "logic": "The returned amount is the unchanged caller-provided amount argument.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.orders['{result.order_id}'].amount",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The returned value equals this stored post-call field when present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The backend returns an 'error' field on every failure path, but the tool schema response does not define an error field. The schema only documents the success shape.",
+        "schema_path": "$.result.error",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "remove_stock_from_watchlist",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The backend first checks whether the user is authenticated. If not, it returns an error without modifying state."
+      },
+      {
+        "id": "error_symbol_not_in_watchlist",
+        "if": "$.args.symbol not in $.state_before.watch_list",
+        "uses": [
+          "$.args.symbol",
+          "$.state_before.watch_list"
+        ],
+        "description": "After authentication, the backend checks whether the requested symbol is present in the current watchlist. If it is not present, it returns an error and makes no changes."
+      },
+      {
+        "id": "success_removed",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The user is authenticated and the requested symbol is present in the watchlist, so the backend removes it and returns a success status."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_removed",
+        "target": "$.state_after.watch_list",
+        "operation": "delete",
+        "value_from": [
+          "$.state_before.watch_list",
+          "$.args.symbol"
+        ],
+        "external_from": [],
+        "logic": "Removes the list element equal to the supplied stock symbol from the watchlist.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.watch_list",
+            "transform": "collection",
+            "recoverability": "partial",
+            "given": [],
+            "reason": "Removing an item loses its original position in the list."
+          }
+        ]
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to modify the watchlist.",
+            "logic": "The backend returns a fixed literal error message for unauthenticated calls.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_symbol_not_in_watchlist",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "external_from": [],
+            "logic": "The error message is formatted with the requested symbol that was not found in the watchlist.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_removed",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "derived",
+            "value_from": [
+              "$.args.symbol"
+            ],
+            "external_from": [],
+            "logic": "The success status message is formatted with the supplied stock symbol after removal.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema response type only defines a 'status' string field, but the backend returns an object with an 'error' field for unauthenticated and symbol-not-found cases.",
+        "schema_path": "$.response.properties.status",
+        "backend_path": "$.result.error"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "trading_get_login_status",
+    "branches": [
+      {
+        "id": "success_get_login_status",
+        "if": "otherwise",
+        "uses": [],
+        "description": "Unconditional success path that returns the current authentication status."
+      }
+    ],
+    "mutations": [],
+    "returns": [
+      {
+        "branch": "success_get_login_status",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "state_direct",
+            "source": "$.state_before.authenticated",
+            "logic": "The method reads the backend's authenticated boolean state and returns it unchanged as the status field.",
+            "state_source_relations": [
+              {
+                "path": "$.state_before.authenticated",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "The complete source value is returned unchanged when this field is present."
+              }
+            ],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.authenticated",
+                "transform": "copy",
+                "recoverability": "exact",
+                "given": [],
+                "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "trading_login",
+    "branches": [
+      {
+        "id": "fallback_already_logged_in",
+        "if": "$.state_before.authenticated == true",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is already authenticated, so the login operation is a no-op and returns the already logged in message."
+      },
+      {
+        "id": "success_login",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is not authenticated, so the backend sets authenticated to true and returns the successful login message."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_login",
+        "target": "$.state_after.authenticated",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "Sets the persistent authenticated flag to True after a successful login.",
+        "state_source_relations": []
+      }
+    ],
+    "returns": [
+      {
+        "branch": "fallback_already_logged_in",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Already logged in",
+            "logic": "The backend returns this literal status when authenticated is already true.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.authenticated",
+                "transform": "selection",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "On this branch the returned message identifies the final boolean authentication value as true."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_login",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Logged in successfully",
+            "logic": "The backend returns this literal status after setting authenticated to true.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.authenticated",
+                "transform": "selection",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "On this branch the returned message identifies the final boolean authentication value as true."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The schema declares required username and password arguments, but trading_login does not read either argument; branch selection and returned status depend only on authenticated state.",
+        "schema_path": "$.args.username",
+        "backend_path": "$.state_before.authenticated"
+      }
+    ]
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "trading_logout",
+    "branches": [
+      {
+        "id": "fallback_already_logged_out",
+        "if": "not $.state_before.authenticated",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The user is not currently authenticated, so logout is a no-op and the backend returns a status message indicating that no user is logged in."
+      },
+      {
+        "id": "success_logged_out",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The user is authenticated, so the backend clears the authenticated flag and returns a successful logout status."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_logged_out",
+        "target": "$.state_after.authenticated",
+        "operation": "set",
+        "value_from": [],
+        "external_from": [],
+        "logic": "The backend sets the persistent authenticated flag to the constant value False.",
+        "state_source_relations": []
+      }
+    ],
+    "returns": [
+      {
+        "branch": "fallback_already_logged_out",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "No user is currently logged in",
+            "logic": "The backend returns a literal status message when logout is requested while no user is authenticated.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.authenticated",
+                "transform": "selection",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "On this branch the returned message identifies the final boolean authentication value as false."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": "success_logged_out",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Logged out successfully",
+            "logic": "The backend returns a literal status message after successfully clearing the authenticated state.",
+            "state_source_relations": [],
+            "state_observation_relations": [
+              {
+                "path": "$.state_after.authenticated",
+                "transform": "selection",
+                "recoverability": "conditional",
+                "given": [],
+                "reason": "On this branch the returned message identifies the final boolean authentication value as false."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "schema_version": "1.2",
+    "tool": "withdraw_funds",
+    "branches": [
+      {
+        "id": "error_not_authenticated",
+        "if": "$.state_before.authenticated == false",
+        "uses": [
+          "$.state_before.authenticated"
+        ],
+        "description": "The backend rejects the withdrawal before any other checks because the user is not authenticated."
+      },
+      {
+        "id": "error_market_closed",
+        "if": "$.state_before.market_status != \"Open\"",
+        "uses": [
+          "$.state_before.market_status"
+        ],
+        "description": "The backend rejects the withdrawal because transactions are only allowed while the market is Open."
+      },
+      {
+        "id": "error_transaction_amount_must_be_positive",
+        "if": "$.args.amount <= 0",
+        "uses": [
+          "$.args.amount"
+        ],
+        "description": "The backend rejects the withdrawal because the requested amount is not greater than zero."
+      },
+      {
+        "id": "error_insufficient_funds",
+        "if": "$.args.amount > $.state_before.account_info.balance",
+        "uses": [
+          "$.args.amount",
+          "$.state_before.account_info.balance"
+        ],
+        "description": "The backend rejects the withdrawal because the requested amount exceeds the current account balance."
+      },
+      {
+        "id": "success_withdrawal",
+        "if": "otherwise",
+        "uses": [],
+        "description": "The authenticated user requests a positive amount that is available, so the backend deducts the balance and records a withdrawal transaction."
+      }
+    ],
+    "mutations": [
+      {
+        "branch": "success_withdrawal",
+        "target": "$.state_after.account_info.balance",
+        "operation": "decrement",
+        "value_from": [
+          "$.state_before.account_info.balance",
+          "$.args.amount"
+        ],
+        "external_from": [],
+        "logic": "The account balance is reduced by the requested withdrawal amount.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.account_info.balance",
+            "transform": "arithmetic",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "Given the argument amount, reverse the addition/subtraction on the bounded currency domain."
+          }
+        ]
+      },
+      {
+        "branch": "success_withdrawal",
+        "target": "$.state_after.transaction_history",
+        "operation": "append",
+        "value_from": [
+          "$.state_before.transaction_history",
+          "$.args.amount"
+        ],
+        "external_from": [
+          "randomness and time via _generate_transaction_timestamp"
+        ],
+        "logic": "A new withdrawal transaction record is appended to the transaction history with type \"withdrawal\", the requested amount, and a generated timestamp.",
+        "state_source_relations": [
+          {
+            "path": "$.state_before.transaction_history",
+            "transform": "collection",
+            "recoverability": "conditional",
+            "given": [],
+            "reason": "The operation appends exactly one record; remove the last element of the observed list."
+          }
+        ]
+      }
+    ],
+    "returns": [
+      {
+        "branch": "error_not_authenticated",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "User not authenticated. Please log in to make a transaction.",
+            "logic": "The backend returns a literal error message when authentication fails.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_market_closed",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Market is closed. Transactions are not allowed.",
+            "logic": "The backend returns a literal error message when the market is not Open.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_transaction_amount_must_be_positive",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Transaction amount must be positive.",
+            "logic": "The backend returns a literal error message when the requested amount is zero or negative.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "error_insufficient_funds",
+        "fields": [
+          {
+            "path": "$.result.error",
+            "source_kind": "constant",
+            "value": "Insufficient funds for withdrawal.",
+            "logic": "The backend returns a literal error message when the requested amount exceeds the account balance.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      },
+      {
+        "branch": "success_withdrawal",
+        "fields": [
+          {
+            "path": "$.result.status",
+            "source_kind": "constant",
+            "value": "Withdrawal successful",
+            "logic": "The backend returns a literal success status after deducting the balance and recording the withdrawal.",
+            "state_source_relations": [],
+            "state_observation_relations": []
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "type": "schema_backend_mismatch",
+        "description": "The tool schema declares response field status, but all backend error branches return an error field instead of status.",
+        "schema_path": "$.response.properties.status",
+        "backend_path": "$.result.error"
+      }
+    ]
+  }
+]

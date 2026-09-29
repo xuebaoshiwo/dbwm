@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.2",
+  "tool": "add_to_watchlist",
+  "branches": [
+    {
+      "id": "success_added_stock",
+      "if": "$.args.stock not in $.state_before.watch_list and $.state_before.stocks['{args.stock}'] exists",
+      "uses": [
+        "$.args.stock",
+        "$.state_before.watch_list",
+        "$.state_before.stocks['{args.stock}']"
+      ],
+      "description": "Executes when the supplied stock is not already in the watchlist and is a known symbol in the stocks dictionary; appends it and returns an added confirmation."
+    },
+    {
+      "id": "error_invalid_stock_symbol",
+      "if": "$.args.stock not in $.state_before.watch_list and not ($.state_before.stocks['{args.stock}'] exists)",
+      "uses": [
+        "$.args.stock",
+        "$.state_before.watch_list",
+        "$.state_before.stocks['{args.stock}']"
+      ],
+      "description": "Executes when the supplied stock is not already in the watchlist but is not a known stock symbol; rejects the add request and returns an invalid-symbol status."
+    },
+    {
+      "id": "fallback_already_in_watchlist",
+      "if": "$.args.stock in $.state_before.watch_list",
+      "uses": [
+        "$.args.stock",
+        "$.state_before.watch_list"
+      ],
+      "description": "Executes when the supplied stock is already present in the watchlist; performs no mutation and returns an already-in-watchlist status."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_added_stock",
+      "target": "$.state_after.watch_list",
+      "operation": "append",
+      "value_from": [
+        "$.state_before.watch_list",
+        "$.args.stock"
+      ],
+      "external_from": [],
+      "logic": "Appends the supplied stock symbol to the persistent watchlist collection.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.watch_list",
+          "transform": "collection",
+          "recoverability": "conditional",
+          "given": [],
+          "reason": "The operation appends one item; drop the last item from the observed list."
+        }
+      ]
+    }
+  ],
+  "returns": [
+    {
+      "branch": "success_added_stock",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Formats the added-to-watchlist success message using the supplied stock symbol.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_invalid_stock_symbol",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Formats the invalid-stock-symbol status message using the supplied stock symbol.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "fallback_already_in_watchlist",
+      "fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Formats the already-in-watchlist status message using the supplied stock symbol.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

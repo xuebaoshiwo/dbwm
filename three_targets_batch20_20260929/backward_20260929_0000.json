@@ -1,0 +1,2963 @@
+{
+  "targets": [
+    {
+      "name": "holdings",
+      "path": "$.state_before.holdings['{symbol_1}']"
+    },
+    {
+      "name": "orders",
+      "path": "$.state_before.orders['{order_id_1}'].status"
+    },
+    {
+      "name": "watch_list",
+      "path": "$.state_before.watch_list"
+    }
+  ],
+  "state_conditions": {
+    "$.state_before.long_context": false
+  },
+  "steps": [
+    {
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.state_before.authenticated == true and $.state_before.long_context == true"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated"
+      ],
+      "role": "anchor",
+      "roles": [
+        "anchor"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.watchlist",
+          "source_kind": "state_direct",
+          "source": "$.state_before.watch_list",
+          "logic": "Returns the current watchlist state directly under the key 'watchlist'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.watch_list",
+          "depth": 0,
+          "kind": "initial_anchor",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.watchlist",
+            "source": "$.state_before.watch_list",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.watchlist",
+      "selected_return_source": "$.state_before.watch_list",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 1
+    },
+    {
+      "tool": "add_to_watchlist",
+      "branch": "success_added_stock",
+      "placeholder_bindings": {
+        "args.stock": "stock_2"
+      },
+      "branch_condition": "$.args.stock not in $.state_before.watch_list and $.state_before.stocks['{stock_2}'] exists",
+      "branch_uses": [
+        "$.args.stock",
+        "$.state_before.watch_list",
+        "$.state_before.stocks['{stock_2}']"
+      ],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Formats the added-to-watchlist success message using the supplied stock symbol.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_added_stock",
+          "target": "$.state_after.watch_list",
+          "operation": "append",
+          "value_from": [
+            "$.state_before.watch_list",
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Appends the supplied stock symbol to the persistent watchlist collection.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "collection",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The operation appends one item; drop the last item from the observed list."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "watch_list"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.watch_list",
+          "mutation_target": "$.state_after.watch_list",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.watch_list",
+            "anchor_phase": "before",
+            "anchor_step": 1,
+            "mutation_steps": [],
+            "observation_steps": []
+          }
+        }
+      ],
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.watch_list",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 2
+    },
+    {
+      "tool": "trading_get_login_status",
+      "branch": "success_get_login_status",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {},
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.authenticated",
+          "logic": "The method reads the backend's authenticated boolean state and returns it unchanged as the status field.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.authenticated",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.authenticated",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 3
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "branch": "success_removed",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.args.symbol not in $.state_before.watch_list"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.args.symbol not in $.state_before.watch_list"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "The success status message is formatted with the supplied stock symbol after removal.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_removed",
+          "target": "$.state_after.watch_list",
+          "operation": "delete",
+          "value_from": [
+            "$.state_before.watch_list",
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "Removes the list element equal to the supplied stock symbol from the watchlist.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "collection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Removing an item loses its original position in the list."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "watch_list"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.watch_list",
+          "mutation_target": "$.state_after.watch_list",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.watch_list",
+            "anchor_phase": "before",
+            "anchor_step": 1,
+            "mutation_steps": [
+              2
+            ],
+            "observation_steps": []
+          }
+        }
+      ],
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.watch_list",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 4
+    },
+    {
+      "tool": "get_holdings",
+      "branch": "success_get_holdings",
+      "placeholder_bindings": {},
+      "branch_condition": "$.state_before.authenticated == true",
+      "branch_uses": [
+        "$.state_before.authenticated"
+      ],
+      "earlier_branch_conditions_to_avoid": [
+        "$.state_before.authenticated == false"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.state_before.authenticated == false"
+      ],
+      "role": "anchor",
+      "roles": [
+        "anchor"
+      ],
+      "field": "$.state_before.holdings['{symbol_1}']",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.holdings",
+          "source_kind": "state_direct",
+          "source": "$.state_before.holdings",
+          "logic": "The backend returns an unchanged deep copy of the current holdings state.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.holdings",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.holdings['{symbol_1}']",
+          "depth": 0,
+          "kind": "initial_anchor",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.holdings",
+            "source": "$.state_before.holdings",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        },
+        {
+          "path": "$.state_before.holdings",
+          "depth": 1,
+          "kind": "dependency_anchor",
+          "phase": "before",
+          "required_by": [
+            7,
+            19
+          ],
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.holdings",
+            "source": "$.state_before.holdings",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.holdings",
+      "selected_return_source": "$.state_before.holdings",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 5
+    },
+    {
+      "tool": "add_to_watchlist",
+      "branch": "success_added_stock",
+      "placeholder_bindings": {
+        "args.stock": "stock_1"
+      },
+      "branch_condition": "$.args.stock not in $.state_before.watch_list and $.state_before.stocks['{stock_1}'] exists",
+      "branch_uses": [
+        "$.args.stock",
+        "$.state_before.watch_list",
+        "$.state_before.stocks['{stock_1}']"
+      ],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Formats the added-to-watchlist success message using the supplied stock symbol.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_added_stock",
+          "target": "$.state_after.watch_list",
+          "operation": "append",
+          "value_from": [
+            "$.state_before.watch_list",
+            "$.args.stock"
+          ],
+          "external_from": [],
+          "logic": "Appends the supplied stock symbol to the persistent watchlist collection.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "collection",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The operation appends one item; drop the last item from the observed list."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "watch_list"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.watch_list",
+          "mutation_target": "$.state_after.watch_list",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.watch_list",
+            "anchor_phase": "before",
+            "anchor_step": 1,
+            "mutation_steps": [
+              2,
+              4
+            ],
+            "observation_steps": []
+          }
+        }
+      ],
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.watch_list",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 6
+    },
+    {
+      "tool": "execute_order",
+      "branch": "success_buy",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_4",
+        "order.symbol": "symbol_1"
+      },
+      "branch_condition": "$.state_before.orders['{order_id_4}'].order_type == 'Buy' and all earlier checks pass",
+      "branch_uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{order_id_4}'].order_type"
+      ],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_4}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_4}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Buy' and $.state_before.stocks['{symbol_1}'].price > $.state_before.orders['{order_id_4}'].price",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Sell' and $.state_before.stocks['{symbol_1}'].price < $.state_before.orders['{order_id_4}'].price",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Buy' and round($.state_before.stocks['{symbol_1}'].price * $.state_before.orders['{order_id_4}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] < $.state_before.orders['{order_id_4}'].amount",
+        "$.state_before.orders['{order_id_4}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_4}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_4}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Buy' and $.state_before.stocks['{symbol_1}'].price > $.state_before.orders['{order_id_4}'].price",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Sell' and $.state_before.stocks['{symbol_1}'].price < $.state_before.orders['{order_id_4}'].price",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Buy' and round($.state_before.stocks['{symbol_1}'].price * $.state_before.orders['{order_id_4}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_4}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] < $.state_before.orders['{order_id_4}'].amount",
+        "$.state_before.orders['{order_id_4}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.holdings['{symbol_1}']",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_4}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{order_id_4}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{order_id_4}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_4}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_4}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.account_info.balance",
+          "operation": "decrement",
+          "value_from": [
+            "$.state_before.account_info.balance",
+            "$.state_before.stocks['{symbol_1}'].price",
+            "$.state_before.orders['{order_id_4}'].amount"
+          ],
+          "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.account_info.balance",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_4}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            }
+          ]
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.holdings['{symbol_1}']",
+          "operation": "increment",
+          "value_from": [
+            "$.state_before.holdings",
+            "$.state_before.orders['{order_id_4}'].amount"
+          ],
+          "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings",
+              "transform": "collection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "One updated holding cannot reconstruct the entire prior holdings mapping."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_4}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [
+                "$.state_before.holdings"
+              ],
+              "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+            }
+          ]
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.orders['{order_id_4}'].status",
+          "operation": "set",
+          "value_from": [],
+          "logic": "Sets the filled order status to the constant Completed.",
+          "state_source_relations": []
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.orders['{order_id_4}'].filled_price",
+          "operation": "set",
+          "value_from": [
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "logic": "Stores the current stock price, converted to float, as the order fill price.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 1,
+      "fixes": [],
+      "write_targets": [
+        "holdings"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.holdings",
+          "mutation_target": "$.state_after.holdings['{symbol_1}']",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.holdings",
+            "anchor_phase": "before",
+            "anchor_step": 5,
+            "mutation_steps": [],
+            "observation_steps": []
+          }
+        },
+        {
+          "path": "$.state_before.orders['{order_id_4}'].amount",
+          "mutation_target": "$.state_after.holdings['{symbol_1}']",
+          "resolution": "same_call_return",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.amount",
+            "source": "$.state_before.orders['{order_id_4}'].amount",
+            "requires": [],
+            "condition": null,
+            "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+          }
+        }
+      ],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_4}'].status": {
+          "from": "Open",
+          "to": "Completed"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.account_info.balance",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.account_info.balance"
+          ],
+          "post_state_known": false
+        },
+        {
+          "mutation_index": 1,
+          "target": "$.state_after.holdings['{symbol_1}']",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 2,
+          "target": "$.state_after.orders['{order_id_4}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 3,
+          "target": "$.state_after.orders['{order_id_4}'].filled_price",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 7
+    },
+    {
+      "tool": "place_order",
+      "branch": "success_placed_pending_order",
+      "placeholder_bindings": {
+        "args.symbol": "symbol_2",
+        "result.order_id": "order_id_1",
+        "order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.state_before.authenticated == false",
+        "$.args.symbol not in $.state_before.stocks",
+        "$.args.price <= 0 or $.args.amount <= 0",
+        "$.args.order_type.lower() not in {\"buy\", \"sell\"}",
+        "$.args.order_type.lower() == \"buy\" and float($.args.price) * int($.args.amount) > $.state_before.account_info.balance",
+        "$.args.order_type.lower() == \"sell\" and $.state_before.holdings.get('{symbol_2}', 0) < $.args.amount"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.state_before.authenticated == false",
+        "$.args.symbol not in $.state_before.stocks",
+        "$.args.price <= 0 or $.args.amount <= 0",
+        "$.args.order_type.lower() not in {\"buy\", \"sell\"}",
+        "$.args.order_type.lower() == \"buy\" and float($.args.price) * int($.args.amount) > $.state_before.account_info.balance",
+        "$.args.order_type.lower() == \"sell\" and $.state_before.holdings.get('{symbol_2}', 0) < $.args.amount"
+      ],
+      "role": "anchor",
+      "roles": [
+        "anchor"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "external_from": [],
+          "logic": "The order_id is generated from the pre-call order counter, skipping any IDs that already exist in orders.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.order_counter",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The first free ID constrains the counter and occupied IDs but cannot reconstruct either source."
+            },
+            {
+              "path": "$.state_before.orders",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The first free ID constrains the counter and occupied IDs but cannot reconstruct either source."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            },
+            {
+              "path": "$.state_after.order_counter",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The backend sets the post-call counter to returned order_id + 1."
+            }
+          ]
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_type"
+          ],
+          "external_from": [],
+          "logic": "The order_type is normalized by capitalizing the caller-provided value, e.g. 'buy' becomes 'Buy'.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Pending",
+          "logic": "Newly placed orders always receive the initial status 'Pending'.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.price"
+          ],
+          "external_from": [],
+          "logic": "The returned price is converted to a float from the caller-provided price argument.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "arg_direct",
+          "source": "$.args.amount",
+          "logic": "The returned amount is the unchanged caller-provided amount argument.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_placed_pending_order",
+          "target": "$.state_after.orders['{order_id_1}']",
+          "operation": "insert",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders",
+            "$.args.order_type",
+            "$.args.symbol",
+            "$.args.price",
+            "$.args.amount"
+          ],
+          "external_from": [],
+          "logic": "Creates a new order entry keyed by a generated order_id. The entry includes id, normalized order_type, symbol, float price, amount, and status 'Pending'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.order_counter",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            },
+            {
+              "path": "$.state_before.orders",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            }
+          ]
+        },
+        {
+          "branch": "success_placed_pending_order",
+          "target": "$.state_after.order_counter",
+          "operation": "set",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "external_from": [],
+          "logic": "Updates the order counter to one past the generated order_id, skipping any already-used IDs during generation.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.order_counter",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            },
+            {
+              "path": "$.state_before.orders",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.orders['{order_id_1}'].status",
+          "depth": 0,
+          "kind": "initial_anchor",
+          "phase": "after",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.status",
+            "source": "$.state_after.orders['{order_id_1}'].status",
+            "requires": [],
+            "condition": null,
+            "reason": "The returned value equals this stored post-call field when present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.status",
+      "selected_return_source": "$.state_after.orders['{order_id_1}'].status",
+      "fix_dependencies": [],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_1}'].status": {
+          "from": "Absent",
+          "to": "Pending"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_1}']",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "post_state_known": false
+        },
+        {
+          "mutation_index": 1,
+          "target": "$.state_after.order_counter",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "post_state_known": true
+        }
+      ],
+      "index": 8
+    },
+    {
+      "tool": "activate_order",
+      "branch": "success_activated",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the input order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Open",
+          "logic": "Returns the literal status string 'Open' after successful activation.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_activated",
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "operation": "set",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Sets the order status to the constant value 'Open'.",
+          "state_source_relations": []
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "orders"
+      ],
+      "write_source_requirements": [],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_1}'].status": {
+          "from": "Pending",
+          "to": "Open"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 9
+    },
+    {
+      "tool": "get_market_status",
+      "branch": "success_get_market_status",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {},
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.market_status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.market_status",
+          "logic": "The returned market_status is the unchanged value of the backend market_status field read before any modification, and no state is modified by this tool.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 10
+    },
+    {
+      "tool": "filter_stocks_by_price",
+      "branch": "success_filtered",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {
+        "symbol": "symbol_3"
+      },
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.filtered_stocks",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stocks",
+            "$.args.min_price",
+            "$.args.max_price",
+            "$.state_before.stocks['{symbol_3}'].price"
+          ],
+          "external_from": [],
+          "logic": "Filters the input stock list to symbols whose stock price in the backend state is between min_price and max_price inclusive. Unknown symbols are treated as having price 0, so they are included only if 0 falls within the range.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_3}'].price",
+              "transform": "comparison",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Membership reveals only whether each price falls inside the requested interval."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{symbol_3}'].price",
+              "transform": "comparison",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Membership reveals only whether each price falls inside the requested interval."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 11
+    },
+    {
+      "tool": "execute_order",
+      "branch": "success_sell_with_remaining_shares",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_3",
+        "order.symbol": "symbol_1"
+      },
+      "branch_condition": "$.state_before.orders['{order_id_3}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] - $.state_before.orders['{order_id_3}'].amount > 0 and all earlier checks pass",
+      "branch_uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{order_id_3}'].order_type",
+        "$.state_before.orders['{order_id_3}'].symbol",
+        "$.state_before.orders['{order_id_3}'].amount",
+        "$.state_before.holdings['{symbol_1}']"
+      ],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_3}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_3}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Buy' and $.state_before.stocks['{symbol_1}'].price > $.state_before.orders['{order_id_3}'].price",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Sell' and $.state_before.stocks['{symbol_1}'].price < $.state_before.orders['{order_id_3}'].price",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Buy' and round($.state_before.stocks['{symbol_1}'].price * $.state_before.orders['{order_id_3}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] < $.state_before.orders['{order_id_3}'].amount",
+        "$.state_before.orders['{order_id_3}'].order_type not in ['Buy', 'Sell']",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Buy' and all earlier checks pass"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_3}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_3}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Buy' and $.state_before.stocks['{symbol_1}'].price > $.state_before.orders['{order_id_3}'].price",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Sell' and $.state_before.stocks['{symbol_1}'].price < $.state_before.orders['{order_id_3}'].price",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Buy' and round($.state_before.stocks['{symbol_1}'].price * $.state_before.orders['{order_id_3}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_3}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] < $.state_before.orders['{order_id_3}'].amount",
+        "$.state_before.orders['{order_id_3}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.holdings['{symbol_1}']",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_3}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{order_id_3}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{order_id_3}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_3}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_3}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_sell_with_remaining_shares",
+          "target": "$.state_after.account_info.balance",
+          "operation": "increment",
+          "value_from": [
+            "$.state_before.account_info.balance",
+            "$.state_before.stocks['{symbol_1}'].price",
+            "$.state_before.orders['{order_id_3}'].amount"
+          ],
+          "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.account_info.balance",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_3}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            }
+          ]
+        },
+        {
+          "branch": "success_sell_with_remaining_shares",
+          "target": "$.state_after.holdings['{symbol_1}']",
+          "operation": "decrement",
+          "value_from": [
+            "$.state_before.holdings['{symbol_1}']",
+            "$.state_before.orders['{order_id_3}'].amount"
+          ],
+          "logic": "Subtracts the filled amount while retaining the positive remaining holding.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings['{symbol_1}']",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [
+                "$.state_before.orders['{order_id_3}'].amount"
+              ],
+              "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_3}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [
+                "$.state_before.holdings['{symbol_1}']"
+              ],
+              "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+            }
+          ]
+        },
+        {
+          "branch": "success_sell_with_remaining_shares",
+          "target": "$.state_after.orders['{order_id_3}'].status",
+          "operation": "set",
+          "value_from": [],
+          "logic": "Sets the filled order status to the constant Completed.",
+          "state_source_relations": []
+        },
+        {
+          "branch": "success_sell_with_remaining_shares",
+          "target": "$.state_after.orders['{order_id_3}'].filled_price",
+          "operation": "set",
+          "value_from": [
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "logic": "Stores the current stock price, converted to float, as the order fill price.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 1,
+      "fixes": [],
+      "write_targets": [
+        "holdings"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.holdings['{symbol_1}']",
+          "mutation_target": "$.state_after.holdings['{symbol_1}']",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.holdings['{symbol_1}']",
+            "anchor_phase": "before",
+            "anchor_step": 5,
+            "mutation_steps": [
+              7
+            ],
+            "observation_steps": []
+          }
+        },
+        {
+          "path": "$.state_before.orders['{order_id_3}'].amount",
+          "mutation_target": "$.state_after.holdings['{symbol_1}']",
+          "resolution": "same_call_return",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.amount",
+            "source": "$.state_before.orders['{order_id_3}'].amount",
+            "requires": [],
+            "condition": null,
+            "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+          }
+        }
+      ],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_3}'].status": {
+          "from": "Open",
+          "to": "Completed"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.account_info.balance",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.account_info.balance"
+          ],
+          "post_state_known": false
+        },
+        {
+          "mutation_index": 1,
+          "target": "$.state_after.holdings['{symbol_1}']",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 2,
+          "target": "$.state_after.orders['{order_id_3}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 3,
+          "target": "$.state_after.orders['{order_id_3}'].filled_price",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 12
+    },
+    {
+      "tool": "get_market_status",
+      "branch": "success_get_market_status",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {},
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.market_status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.market_status",
+          "logic": "The returned market_status is the unchanged value of the backend market_status field read before any modification, and no state is modified by this tool.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 13
+    },
+    {
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.state_before.authenticated == true and $.state_before.long_context == true"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated"
+      ],
+      "role": "read",
+      "roles": [
+        "read"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.watchlist",
+          "source_kind": "state_direct",
+          "source": "$.state_before.watch_list",
+          "logic": "Returns the current watchlist state directly under the key 'watchlist'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.watch_list",
+          "depth": 0,
+          "kind": "final_read",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.watchlist",
+            "source": "$.state_before.watch_list",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.watchlist",
+      "selected_return_source": "$.state_before.watch_list",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 14
+    },
+    {
+      "tool": "trading_get_login_status",
+      "branch": "success_get_login_status",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {},
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.authenticated",
+          "logic": "The method reads the backend's authenticated boolean state and returns it unchanged as the status field.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.authenticated",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.authenticated",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 15
+    },
+    {
+      "tool": "execute_order",
+      "branch": "success_buy",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1",
+        "order.symbol": "order.symbol_1"
+      },
+      "branch_condition": "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and all earlier checks pass",
+      "branch_uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{order_id_1}'].order_type"
+      ],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_1}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol_1}'].price > $.state_before.orders['{order_id_1}'].price",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol_1}'].price < $.state_before.orders['{order_id_1}'].price",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol_1}'].price * $.state_before.orders['{order_id_1}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol_1}'] < $.state_before.orders['{order_id_1}'].amount",
+        "$.state_before.orders['{order_id_1}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_1}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol_1}'].price > $.state_before.orders['{order_id_1}'].price",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol_1}'].price < $.state_before.orders['{order_id_1}'].price",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol_1}'].price * $.state_before.orders['{order_id_1}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol_1}'] < $.state_before.orders['{order_id_1}'].amount",
+        "$.state_before.orders['{order_id_1}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol_1}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{order.symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{order.symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{order_id_1}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{order_id_1}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.account_info.balance",
+          "operation": "decrement",
+          "value_from": [
+            "$.state_before.account_info.balance",
+            "$.state_before.stocks['{order.symbol_1}'].price",
+            "$.state_before.orders['{order_id_1}'].amount"
+          ],
+          "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.account_info.balance",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.stocks['{order.symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_1}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            }
+          ]
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.holdings['{order.symbol_1}']",
+          "operation": "increment",
+          "value_from": [
+            "$.state_before.holdings",
+            "$.state_before.orders['{order_id_1}'].amount"
+          ],
+          "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings",
+              "transform": "collection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "One updated holding cannot reconstruct the entire prior holdings mapping."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_1}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [
+                "$.state_before.holdings"
+              ],
+              "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+            }
+          ]
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "operation": "set",
+          "value_from": [],
+          "logic": "Sets the filled order status to the constant Completed.",
+          "state_source_relations": []
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.orders['{order_id_1}'].filled_price",
+          "operation": "set",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol_1}'].price"
+          ],
+          "logic": "Stores the current stock price, converted to float, as the order fill price.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{order.symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 2,
+      "fixes": [],
+      "write_targets": [
+        "orders"
+      ],
+      "write_source_requirements": [],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_1}'].status": {
+          "from": "Open",
+          "to": "Completed"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.account_info.balance",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.account_info.balance"
+          ],
+          "post_state_known": false
+        },
+        {
+          "mutation_index": 1,
+          "target": "$.state_after.holdings['{order.symbol_1}']",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 2,
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 3,
+          "target": "$.state_after.orders['{order_id_1}'].filled_price",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 16
+    },
+    {
+      "tool": "get_order_details",
+      "branch": "success_standard",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not exists $.state_before.orders['{order_id_1}']",
+        "$.state_before.long_context == true and KeyError occurs when formatting ORDER_DETAIL_EXTENSION values using $.state_before.orders['{order_id_1}'].symbol",
+        "$.state_before.orders['{order_id_1}'] exists and $.state_before.long_context == true and no KeyError occurs while formatting ORDER_DETAIL_EXTENSION"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not exists $.state_before.orders['{order_id_1}']",
+        "$.state_before.long_context == true and KeyError occurs when formatting ORDER_DETAIL_EXTENSION values using $.state_before.orders['{order_id_1}'].symbol"
+      ],
+      "role": "read",
+      "roles": [
+        "read"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.id",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].id",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].order_type",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.symbol",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].symbol",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].symbol",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].symbol",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].price",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].amount",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].status",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].filled_price",
+          "logic": "Read directly from the stored order object when the stored order includes a filled_price; otherwise this field is absent.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.orders['{order_id_1}'].status",
+          "depth": 0,
+          "kind": "final_read",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.status",
+            "source": "$.state_before.orders['{order_id_1}'].status",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.status",
+      "selected_return_source": "$.state_before.orders['{order_id_1}'].status",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 17
+    },
+    {
+      "tool": "notify_price_change",
+      "branch": "success_significant_price_change",
+      "branch_condition": "any symbol in $.args.stocks exists in $.state_before.stocks and abs($.state_before.stocks['{symbol_4}'].percent_change) >= $.args.threshold",
+      "placeholder_bindings": {
+        "symbol": "symbol_4"
+      },
+      "branch_uses": [
+        "$.args.stocks",
+        "$.args.threshold",
+        "$.state_before.stocks"
+      ],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.notification",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stocks",
+            "$.args.threshold",
+            "$.state_before.stocks"
+          ],
+          "logic": "The notification string is built by joining the selected stock symbols from the changed_stocks list; selection depends on the requested symbols, the threshold, and each existing stock's percent_change.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks",
+              "transform": "comparison",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Selected symbols constrain percentage changes but omit exact values and other stock fields."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks",
+              "transform": "comparison",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Selected symbols constrain percentage changes but omit exact values and other stock fields."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 18
+    },
+    {
+      "tool": "execute_order",
+      "branch": "success_buy",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_2",
+        "order.symbol": "symbol_1"
+      },
+      "branch_condition": "$.state_before.orders['{order_id_2}'].order_type == 'Buy' and all earlier checks pass",
+      "branch_uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{order_id_2}'].order_type"
+      ],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_2}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_2}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Buy' and $.state_before.stocks['{symbol_1}'].price > $.state_before.orders['{order_id_2}'].price",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Sell' and $.state_before.stocks['{symbol_1}'].price < $.state_before.orders['{order_id_2}'].price",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Buy' and round($.state_before.stocks['{symbol_1}'].price * $.state_before.orders['{order_id_2}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] < $.state_before.orders['{order_id_2}'].amount",
+        "$.state_before.orders['{order_id_2}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_2}'].status != 'Open'",
+        "$.state_before.market_status != 'Open'",
+        "$.state_before.orders['{order_id_2}'].symbol not in $.state_before.stocks",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Buy' and $.state_before.stocks['{symbol_1}'].price > $.state_before.orders['{order_id_2}'].price",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Sell' and $.state_before.stocks['{symbol_1}'].price < $.state_before.orders['{order_id_2}'].price",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Buy' and round($.state_before.stocks['{symbol_1}'].price * $.state_before.orders['{order_id_2}'].amount, 2) > $.state_before.account_info.balance",
+        "$.state_before.orders['{order_id_2}'].order_type == 'Sell' and $.state_before.holdings['{symbol_1}'] < $.state_before.orders['{order_id_2}'].amount",
+        "$.state_before.orders['{order_id_2}'].order_type not in ['Buy', 'Sell']"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.holdings['{symbol_1}']",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_2}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{order_id_2}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{order_id_2}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_2}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_2}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.account_info.balance",
+          "operation": "decrement",
+          "value_from": [
+            "$.state_before.account_info.balance",
+            "$.state_before.stocks['{symbol_1}'].price",
+            "$.state_before.orders['{order_id_2}'].amount"
+          ],
+          "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.account_info.balance",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_2}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+            }
+          ]
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.holdings['{symbol_1}']",
+          "operation": "increment",
+          "value_from": [
+            "$.state_before.holdings",
+            "$.state_before.orders['{order_id_2}'].amount"
+          ],
+          "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings",
+              "transform": "collection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "One updated holding cannot reconstruct the entire prior holdings mapping."
+            },
+            {
+              "path": "$.state_before.orders['{order_id_2}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [
+                "$.state_before.holdings"
+              ],
+              "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+            }
+          ]
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.orders['{order_id_2}'].status",
+          "operation": "set",
+          "value_from": [],
+          "logic": "Sets the filled order status to the constant Completed.",
+          "state_source_relations": []
+        },
+        {
+          "branch": "success_buy",
+          "target": "$.state_after.orders['{order_id_2}'].filled_price",
+          "operation": "set",
+          "value_from": [
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "logic": "Stores the current stock price, converted to float, as the order fill price.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+            }
+          ]
+        }
+      ],
+      "selected_mutation_index": 1,
+      "fixes": [],
+      "write_targets": [
+        "holdings"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.holdings",
+          "mutation_target": "$.state_after.holdings['{symbol_1}']",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.holdings",
+            "anchor_phase": "before",
+            "anchor_step": 5,
+            "mutation_steps": [
+              7,
+              12,
+              16
+            ],
+            "observation_steps": []
+          }
+        },
+        {
+          "path": "$.state_before.orders['{order_id_2}'].amount",
+          "mutation_target": "$.state_after.holdings['{symbol_1}']",
+          "resolution": "same_call_return",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.amount",
+            "source": "$.state_before.orders['{order_id_2}'].amount",
+            "requires": [],
+            "condition": null,
+            "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+          }
+        }
+      ],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_2}'].status": {
+          "from": "Open",
+          "to": "Completed"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.account_info.balance",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.account_info.balance"
+          ],
+          "post_state_known": false
+        },
+        {
+          "mutation_index": 1,
+          "target": "$.state_after.holdings['{symbol_1}']",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 2,
+          "target": "$.state_after.orders['{order_id_2}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        },
+        {
+          "mutation_index": 3,
+          "target": "$.state_after.orders['{order_id_2}'].filled_price",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 19
+    },
+    {
+      "tool": "get_holdings",
+      "branch": "success_get_holdings",
+      "placeholder_bindings": {},
+      "branch_condition": "$.state_before.authenticated == true",
+      "branch_uses": [
+        "$.state_before.authenticated"
+      ],
+      "earlier_branch_conditions_to_avoid": [
+        "$.state_before.authenticated == false"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.state_before.authenticated == false"
+      ],
+      "role": "read",
+      "roles": [
+        "read"
+      ],
+      "field": "$.state_before.holdings['{symbol_1}']",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.holdings",
+          "source_kind": "state_direct",
+          "source": "$.state_before.holdings",
+          "logic": "The backend returns an unchanged deep copy of the current holdings state.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.holdings",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.holdings",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.holdings['{symbol_1}']",
+          "depth": 0,
+          "kind": "final_read",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.holdings",
+            "source": "$.state_before.holdings",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.holdings",
+      "selected_return_source": "$.state_before.holdings",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 20
+    }
+  ],
+  "planning": {
+    "direction": "backward",
+    "target_chains": {
+      "holdings": {
+        "path": "$.state_before.holdings['{symbol_1}']",
+        "anchor_step": 5,
+        "read_step": 20,
+        "anchor_phase": "before",
+        "read_phase": "before",
+        "write_steps": [
+          7,
+          12,
+          19
+        ],
+        "write_count": 3,
+        "source_fixed_write_steps": [
+          7,
+          12,
+          19
+        ],
+        "fully_source_fixed": true,
+        "min_write_count": 3,
+        "write_shortfall": 0,
+        "shortfall_reason": null,
+        "writer_tools": [
+          "execute_order"
+        ]
+      },
+      "orders": {
+        "path": "$.state_before.orders['{order_id_1}'].status",
+        "anchor_step": 8,
+        "read_step": 17,
+        "anchor_phase": "after",
+        "read_phase": "before",
+        "write_steps": [
+          9,
+          16
+        ],
+        "write_count": 2,
+        "source_fixed_write_steps": [
+          9,
+          16
+        ],
+        "fully_source_fixed": true,
+        "min_write_count": 3,
+        "write_shortfall": 1,
+        "shortfall_reason": "lifecycle_writers_exhausted",
+        "writer_tools": [
+          "activate_order",
+          "execute_order"
+        ]
+      },
+      "watch_list": {
+        "path": "$.state_before.watch_list",
+        "anchor_step": 1,
+        "read_step": 14,
+        "anchor_phase": "before",
+        "read_phase": "before",
+        "write_steps": [
+          2,
+          4,
+          6
+        ],
+        "write_count": 3,
+        "source_fixed_write_steps": [
+          2,
+          4,
+          6
+        ],
+        "fully_source_fixed": true,
+        "min_write_count": 3,
+        "write_shortfall": 0,
+        "shortfall_reason": null,
+        "writer_tools": [
+          "add_to_watchlist",
+          "remove_stock_from_watchlist"
+        ]
+      }
+    },
+    "dependency_scope": "selected_mutation_and_return_field",
+    "target_min_writes": {
+      "holdings": 3,
+      "orders": 3,
+      "watch_list": 3
+    },
+    "write_count_mode": "best_effort_lifecycle",
+    "lifecycle_targets": [
+      "orders"
+    ],
+    "lifecycle_instances": {
+      "$.state_before.orders['{order_id_1}'].status": {
+        "rule": "orders",
+        "initial_states": [
+          "Absent"
+        ],
+        "transition_steps": [
+          8,
+          9,
+          16
+        ]
+      },
+      "$.state_before.orders['{order_id_2}'].status": {
+        "rule": "orders",
+        "initial_states": [
+          "Open"
+        ],
+        "transition_steps": [
+          19
+        ]
+      },
+      "$.state_before.orders['{order_id_3}'].status": {
+        "rule": "orders",
+        "initial_states": [
+          "Open"
+        ],
+        "transition_steps": [
+          12
+        ]
+      },
+      "$.state_before.orders['{order_id_4}'].status": {
+        "rule": "orders",
+        "initial_states": [
+          "Open"
+        ],
+        "transition_steps": [
+          7
+        ]
+      }
+    },
+    "dependency_max_writes": 1,
+    "min_length": 20,
+    "max_length": 20,
+    "core_length": 14,
+    "support_anchor_count": 0,
+    "necessary_length": 14,
+    "distractor_count": 6,
+    "redundant_anchors_removed": [],
+    "writer_tools_by_target": {
+      "holdings": [
+        "execute_order"
+      ],
+      "orders": [
+        "activate_order",
+        "execute_order"
+      ],
+      "watch_list": [
+        "add_to_watchlist",
+        "remove_stock_from_watchlist"
+      ]
+    },
+    "writer_candidates_by_target": {
+      "holdings": [
+        {
+          "tool": "execute_order",
+          "branch": "success_buy",
+          "mutation_index": 1,
+          "mutation_target": "$.state_after.holdings['{order.symbol}']",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_sell_with_remaining_shares",
+          "mutation_index": 1,
+          "mutation_target": "$.state_after.holdings['{order.symbol}']",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_sell_position_closed",
+          "mutation_index": 1,
+          "mutation_target": "$.state_after.holdings['{order.symbol}']",
+          "unfixable_write_sources": []
+        }
+      ],
+      "orders": [
+        {
+          "tool": "activate_order",
+          "branch": "success_activated",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "cancel_order",
+          "branch": "success_cancelled",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_buy",
+          "mutation_index": 2,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_sell_with_remaining_shares",
+          "mutation_index": 2,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_sell_position_closed",
+          "mutation_index": 2,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "place_order",
+          "branch": "success_placed_pending_order",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.orders['{order_id}']",
+          "unfixable_write_sources": [
+            "$.state_before.orders"
+          ]
+        }
+      ],
+      "watch_list": [
+        {
+          "tool": "add_to_watchlist",
+          "branch": "success_added_stock",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.watch_list",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "remove_stock_from_watchlist",
+          "branch": "success_removed",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.watch_list",
+          "unfixable_write_sources": []
+        }
+      ]
+    },
+    "unresolved_structural_sources": [],
+    "unfixed_side_effects": [
+      {
+        "step": 7,
+        "mutation_index": 0,
+        "target": "$.state_after.account_info.balance",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.account_info.balance"
+        ],
+        "post_state_known": false
+      },
+      {
+        "step": 8,
+        "mutation_index": 0,
+        "target": "$.state_after.orders['{order_id_1}']",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.order_counter",
+          "$.state_before.orders"
+        ],
+        "post_state_known": false
+      },
+      {
+        "step": 8,
+        "mutation_index": 1,
+        "target": "$.state_after.order_counter",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.order_counter",
+          "$.state_before.orders"
+        ],
+        "post_state_known": true
+      },
+      {
+        "step": 12,
+        "mutation_index": 0,
+        "target": "$.state_after.account_info.balance",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.account_info.balance"
+        ],
+        "post_state_known": false
+      },
+      {
+        "step": 16,
+        "mutation_index": 0,
+        "target": "$.state_after.account_info.balance",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.account_info.balance"
+        ],
+        "post_state_known": false
+      },
+      {
+        "step": 19,
+        "mutation_index": 0,
+        "target": "$.state_after.account_info.balance",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.account_info.balance"
+        ],
+        "post_state_known": false
+      }
+    ],
+    "execution": "not_run",
+    "arguments": "not_instantiated",
+    "initial_state": "not_generated",
+    "grounding_obligations": [
+      "Load the backend with long_context=False and keep that environment mode fixed throughout the trajectory.",
+      "Satisfy each selected branch condition and avoid every earlier branch.",
+      "Assign concrete keys to numbered placeholders, preserving their identities and each lifecycle instance's initial states.",
+      "Ground every retained side effect; unfixed_side_effects does not imply the affected state is derivable from observations.",
+      "Satisfy reversible-domain assumptions and additional reader conditions.",
+      "Instantiate time/random sources consistently with mutations and observations.",
+      "Reject and resample chains whose conditions cannot be jointly instantiated; no backend feasibility is claimed."
+    ],
+    "attempts": 1,
+    "rejected_attempts": {},
+    "seed": 20260929
+  },
+  "id": "backward_20260929_0000"
+}

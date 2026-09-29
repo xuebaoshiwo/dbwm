@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "tool": "get_current_time",
+  "branches": [
+    {
+      "id": "success_current_time",
+      "if": "otherwise",
+      "uses": [],
+      "description": "The method has a single unconditional return path that formats the module-level constant CURRENT_TIME as HH:MM AM/PM and returns it inside a dictionary with key current_time."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "success_current_time",
+      "fields": [
+        {
+          "path": "$.result.current_time",
+          "source_kind": "constant",
+          "value": "10:30 AM",
+          "logic": "The backend formats the fixed module constant CURRENT_TIME = datetime(2024, 9, 1, 10, 30) using strftime('%I:%M %p'), so the returned value is always the literal string '10:30 AM'."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema describes the response as current time in HH:MM AM/PM format, implying a dynamic system time, but the backend implementation returns a fixed constant value '10:30 AM' derived from CURRENT_TIME = datetime(2024, 9, 1, 10, 30)."
+    }
+  ]
+}

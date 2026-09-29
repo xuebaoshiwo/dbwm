@@ -1,0 +1,913 @@
+{
+  "schema_version": "1.2",
+  "tool": "execute_order",
+  "branches": [
+    {
+      "id": "error_order_not_found",
+      "if": "$.args.order_id not in $.state_before.orders",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders"
+      ],
+      "description": "The requested order ID does not exist, so execution stops immediately."
+    },
+    {
+      "id": "error_order_not_open",
+      "if": "$.state_before.orders['{args.order_id}'].status != 'Open'",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].status"
+      ],
+      "description": "The order exists but is not Open, so it cannot be executed."
+    },
+    {
+      "id": "error_market_closed",
+      "if": "$.state_before.market_status != 'Open'",
+      "uses": [
+        "$.state_before.market_status"
+      ],
+      "description": "The market is closed, so the Open order cannot be filled."
+    },
+    {
+      "id": "error_stock_not_found",
+      "if": "$.state_before.orders['{args.order_id}'].symbol not in $.state_before.stocks",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.stocks"
+      ],
+      "description": "The order references a stock symbol that is absent from the stock state."
+    },
+    {
+      "id": "error_buy_limit_not_met",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol}'].price > $.state_before.orders['{args.order_id}'].price",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].price",
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "description": "A Buy limit order cannot fill because the current stock price exceeds the order limit price."
+    },
+    {
+      "id": "error_sell_limit_not_met",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol}'].price < $.state_before.orders['{args.order_id}'].price",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].price",
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "description": "A Sell limit order cannot fill because the current stock price is below the order limit price."
+    },
+    {
+      "id": "error_buy_insufficient_funds",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol}'].price * $.state_before.orders['{args.order_id}'].amount, 2) > $.state_before.account_info.balance",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.account_info.balance"
+      ],
+      "description": "A valid Buy limit order cannot fill because the account balance is below the rounded trade value."
+    },
+    {
+      "id": "error_sell_insufficient_shares",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] < $.state_before.orders['{args.order_id}'].amount",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.holdings"
+      ],
+      "description": "A valid Sell limit order cannot fill because the account holds too few shares."
+    },
+    {
+      "id": "error_invalid_order_type",
+      "if": "$.state_before.orders['{args.order_id}'].order_type not in ['Buy', 'Sell']",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type"
+      ],
+      "description": "The stored order type is neither Buy nor Sell."
+    },
+    {
+      "id": "success_buy",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Buy' and all earlier checks pass",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type"
+      ],
+      "description": "The Buy order passes all checks and is filled at the current stock price."
+    },
+    {
+      "id": "success_sell_with_remaining_shares",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount > 0 and all earlier checks pass",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.holdings['{order.symbol}']"
+      ],
+      "description": "The Sell order fills and leaves a positive number of shares in the position."
+    },
+    {
+      "id": "success_sell_position_closed",
+      "if": "$.state_before.orders['{args.order_id}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol}'] - $.state_before.orders['{args.order_id}'].amount == 0 and all earlier checks pass",
+      "uses": [
+        "$.args.order_id",
+        "$.state_before.orders['{args.order_id}'].order_type",
+        "$.state_before.orders['{args.order_id}'].symbol",
+        "$.state_before.orders['{args.order_id}'].amount",
+        "$.state_before.holdings['{order.symbol}']"
+      ],
+      "description": "The Sell order fills and removes the holding entry because no shares remain."
+    }
+  ],
+  "mutations": [
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.account_info.balance",
+      "operation": "decrement",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Subtracts the rounded current-price trade value from the account balance and rounds the resulting balance to two decimals.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.account_info.balance",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        },
+        {
+          "path": "$.state_before.stocks['{order.symbol}'].price",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        },
+        {
+          "path": "$.state_before.orders['{args.order_id}'].amount",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        }
+      ]
+    },
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.holdings['{order.symbol}']",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.holdings",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Adds the filled amount to the existing holding, using zero when the symbol was not previously held.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.holdings",
+          "transform": "collection",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "One updated holding cannot reconstruct the entire prior holdings mapping."
+        },
+        {
+          "path": "$.state_before.orders['{args.order_id}'].amount",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [
+            "$.state_before.holdings"
+          ],
+          "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+        }
+      ]
+    },
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "logic": "Sets the filled order status to the constant Completed.",
+      "state_source_relations": []
+    },
+    {
+      "branch": "success_buy",
+      "target": "$.state_after.orders['{args.order_id}'].filled_price",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "logic": "Stores the current stock price, converted to float, as the order fill price.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.stocks['{order.symbol}'].price",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [],
+          "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.account_info.balance",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.account_info.balance",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        },
+        {
+          "path": "$.state_before.stocks['{order.symbol}'].price",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        },
+        {
+          "path": "$.state_before.orders['{args.order_id}'].amount",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.holdings['{order.symbol}']",
+      "operation": "decrement",
+      "value_from": [
+        "$.state_before.holdings['{order.symbol}']",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Subtracts the filled amount while retaining the positive remaining holding.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.holdings['{order.symbol}']",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+        },
+        {
+          "path": "$.state_before.orders['{args.order_id}'].amount",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [
+            "$.state_before.holdings['{order.symbol}']"
+          ],
+          "reason": "Given the other source and the filled amount, invert the integer share addition/subtraction."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "logic": "Sets the filled order status to the constant Completed.",
+      "state_source_relations": []
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "target": "$.state_after.orders['{args.order_id}'].filled_price",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "logic": "Stores the current stock price, converted to float, as the order fill price.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.stocks['{order.symbol}'].price",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [],
+          "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.account_info.balance",
+      "operation": "increment",
+      "value_from": [
+        "$.state_before.account_info.balance",
+        "$.state_before.stocks['{order.symbol}'].price",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Adds the rounded current-price trade value to the account balance and rounds the resulting balance to two decimals.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.account_info.balance",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        },
+        {
+          "path": "$.state_before.stocks['{order.symbol}'].price",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        },
+        {
+          "path": "$.state_before.orders['{args.order_id}'].amount",
+          "transform": "arithmetic",
+          "recoverability": "partial",
+          "given": [],
+          "reason": "The trade value and resulting balance are rounded to cents, losing unrestricted source precision."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.holdings['{order.symbol}']",
+      "operation": "delete",
+      "value_from": [
+        "$.state_before.holdings['{order.symbol}']",
+        "$.state_before.orders['{args.order_id}'].amount"
+      ],
+      "logic": "Deletes the symbol from holdings when the fill reduces its share count to zero.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.holdings['{order.symbol}']",
+          "transform": "collection",
+          "recoverability": "none",
+          "given": [],
+          "reason": "The deleted target is absent after the write and does not expose the prior quantity."
+        },
+        {
+          "path": "$.state_before.orders['{args.order_id}'].amount",
+          "transform": "collection",
+          "recoverability": "none",
+          "given": [],
+          "reason": "The deleted target is absent after the write and does not expose the prior quantity."
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.orders['{args.order_id}'].status",
+      "operation": "set",
+      "value_from": [],
+      "logic": "Sets the filled order status to the constant Completed.",
+      "state_source_relations": []
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "target": "$.state_after.orders['{args.order_id}'].filled_price",
+      "operation": "set",
+      "value_from": [
+        "$.state_before.stocks['{order.symbol}'].price"
+      ],
+      "logic": "Stores the current stock price, converted to float, as the order fill price.",
+      "state_source_relations": [
+        {
+          "path": "$.state_before.stocks['{order.symbol}'].price",
+          "transform": "arithmetic",
+          "recoverability": "conditional",
+          "given": [],
+          "reason": "Float conversion preserves the price only on the exactly representable numeric domain."
+        }
+      ]
+    }
+  ],
+  "returns": [
+    {
+      "branch": "error_order_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id"
+          ],
+          "logic": "Formats the missing order ID into the not-found error message.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_order_not_open",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_id",
+            "$.state_before.orders['{args.order_id}'].status"
+          ],
+          "logic": "Formats the order ID and lowercased current status into the execution error message.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].status",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].status",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "error_market_closed",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Market is closed. Orders cannot be executed.",
+          "logic": "Returns the fixed closed-market error message.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_stock_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].symbol"
+          ],
+          "logic": "Formats the missing stock symbol from the order into the error message.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].symbol",
+              "transform": "format",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The source string is embedded verbatim in a fixed message and can be extracted."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].symbol",
+              "transform": "format",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The source string is embedded verbatim in a fixed message and can be extracted."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "error_buy_limit_not_met",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].price",
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Formats the Buy limit price and current stock price to two decimal places in the error message.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+            },
+            {
+              "path": "$.state_before.stocks['{order.symbol}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+            },
+            {
+              "path": "$.state_after.stocks['{order.symbol}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "error_sell_limit_not_met",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].price",
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Formats the Sell limit price and current stock price to two decimal places in the error message.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+            },
+            {
+              "path": "$.state_before.stocks['{order.symbol}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Case normalization or two-decimal formatting does not preserve every possible source value."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+            },
+            {
+              "path": "$.state_after.stocks['{order.symbol}'].price",
+              "transform": "format",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Case normalization or two-decimal formatting does not preserve every possible source value."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "error_buy_insufficient_funds",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Insufficient funds to execute the buy order.",
+          "logic": "Returns the fixed insufficient-funds execution error.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_sell_insufficient_shares",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "Insufficient shares to execute the sell order.",
+          "logic": "Returns the fixed insufficient-shares execution error.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "error_invalid_order_type",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].order_type"
+          ],
+          "logic": "Formats the unsupported stored order type into the error message.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].order_type",
+              "transform": "format",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The source string is embedded verbatim in a fixed message and can be extracted."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].order_type",
+              "transform": "format",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The source string is embedded verbatim in a fixed message and can be extracted."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "success_buy",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{order.symbol}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{order.symbol}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{args.order_id}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_with_remaining_shares",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{order.symbol}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{order.symbol}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{args.order_id}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "branch": "success_sell_position_closed",
+      "fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Completed",
+          "logic": "Returns the fixed completed status after a successful fill.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.stocks['{order.symbol}'].price"
+          ],
+          "logic": "Returns the current stock price after converting it to float.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{order.symbol}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{order.symbol}'].price",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            },
+            {
+              "path": "$.state_after.orders['{args.order_id}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders['{args.order_id}'].amount"
+          ],
+          "logic": "Returns the stored order amount after converting it to int.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{args.order_id}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{args.order_id}'].amount",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The returned float/int is the source value on its exactly representable numeric domain; conversion can otherwise lose information."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema documents only the successful response. The backend can also return an object containing only an error field for missing orders, invalid order status, a closed market, missing stocks, unmet limits, insufficient funds or shares, and invalid stored order types.",
+      "schema_path": "response.properties",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

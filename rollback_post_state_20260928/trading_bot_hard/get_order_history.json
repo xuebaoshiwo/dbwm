@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.1",
+  "tool": "get_order_history",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "$.state_before.authenticated == false",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "Backend returns an authentication error response when the user is not logged in."
+    },
+    {
+      "id": "success_history",
+      "if": "$.state_before.authenticated == true",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "Backend returns the current order ID history when the user is authenticated."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "constant",
+          "value": [
+            {
+              "error": "User not authenticated. Please log in to view order history."
+            }
+          ],
+          "logic": "Backend returns a hard-coded list containing an error object.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_history",
+      "fields": [
+        {
+          "path": "$.result.history",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.orders"
+          ],
+          "logic": "Backend builds a list of order IDs by extracting the integer keys from the orders mapping.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders",
+              "transform": "aggregation",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The list exposes order keys but not the order objects."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "Backend returns the order history under the key 'history', while the tool schema declares response key 'order_history'.",
+      "schema_path": "$.result.order_history",
+      "backend_path": "$.result.history"
+    },
+    {
+      "type": "schema_backend_mismatch",
+      "description": "Backend returns a list containing an error object when unauthenticated, while the schema declares a dict response with an 'order_history' array.",
+      "schema_path": "$.result",
+      "backend_path": "$.result"
+    },
+    {
+      "type": "schema_backend_mismatch",
+      "description": "Backend enforces authentication before returning order history, but the tool schema does not document a login requirement or authentication error."
+    }
+  ]
+}

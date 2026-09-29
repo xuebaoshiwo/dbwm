@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "tool": "get_holdings",
+  "branches": [
+    {
+      "id": "error_not_authenticated",
+      "if": "not $.state_before.authenticated",
+      "uses": [
+        "$.state_before.authenticated"
+      ],
+      "description": "Return an authentication error before reading holdings when the user is not logged in."
+    },
+    {
+      "id": "success_holdings",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Return the current holdings mapping when the user is authenticated."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_not_authenticated",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "constant",
+          "value": "User not authenticated. Please log in to view holdings.",
+          "logic": "The backend returns a literal error string when the authenticated state is false."
+        }
+      ]
+    },
+    {
+      "branch": "success_holdings",
+      "fields": [
+        {
+          "path": "$.result.holdings",
+          "source_kind": "state_direct",
+          "source": "$.state_before.holdings",
+          "logic": "The backend returns a deep copy of the holdings mapping read directly from persistent state."
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The tool schema response defines only the 'holdings' field, but the backend returns an 'error' field when the user is not authenticated.",
+      "schema_path": "$.response.properties.error",
+      "backend_path": "$.result.error"
+    }
+  ]
+}

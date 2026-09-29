@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.1",
+  "tool": "get_current_time",
+  "branches": [
+    {
+      "id": "success_get_current_time",
+      "if": "otherwise",
+      "uses": [],
+      "description": "Unconditional branch that returns the formatted current time."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "success_get_current_time",
+      "fields": [
+        {
+          "path": "$.result.current_time",
+          "source_kind": "derived",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Formatted from the fixed module-level datetime constant CURRENT_TIME using '%I:%M %p', producing 10:30 AM.",
+          "state_source_relations": []
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The schema describes getting the current time, but the backend returns a fixed value based on module constant CURRENT_TIME=datetime(2024,9,1,10,30) rather than the actual system current time."
+    }
+  ]
+}

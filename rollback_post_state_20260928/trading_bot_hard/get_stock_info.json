@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.1",
+  "tool": "get_stock_info",
+  "branches": [
+    {
+      "id": "error_stock_not_found",
+      "if": "$.args.symbol not in $.state_before.stocks",
+      "uses": [
+        "$.args.symbol",
+        "$.state_before.stocks"
+      ],
+      "description": "The backend first checks whether the requested symbol exists in the stocks state. If not, it returns an error response."
+    },
+    {
+      "id": "success_long_context",
+      "if": "$.state_before.long_context == true",
+      "uses": [
+        "$.state_before.long_context"
+      ],
+      "description": "When long context mode is enabled, the backend returns a copy of the stored stock object with MA(5) and MA(20) replaced by imported extension constants."
+    },
+    {
+      "id": "success_stock_info",
+      "if": "otherwise",
+      "uses": [],
+      "description": "When the symbol exists and long context mode is disabled, the backend returns the stored stock object unchanged."
+    }
+  ],
+  "mutations": [],
+  "returns": [
+    {
+      "branch": "error_stock_not_found",
+      "fields": [
+        {
+          "path": "$.result.error",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.symbol"
+          ],
+          "logic": "Formats a not-found error message by inserting the requested stock symbol into a literal error template.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_long_context",
+      "fields": [
+        {
+          "path": "$.result.price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}'].price",
+          "logic": "Returns the stored current price for the requested stock.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{args.symbol}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.percent_change",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}'].percent_change",
+          "logic": "Returns the stored percentage change for the requested stock.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{args.symbol}'].percent_change",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.volume",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}'].volume",
+          "logic": "Returns the stored trading volume for the requested stock.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{args.symbol}'].volume",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result['MA(5)']",
+          "source_kind": "constant",
+          "value": "MA_5_EXTENSION",
+          "logic": "Returns the imported MA_5_EXTENSION constant instead of the stored MA(5) value in long context mode.",
+          "state_source_relations": []
+        },
+        {
+          "path": "$.result['MA(20)']",
+          "source_kind": "constant",
+          "value": "MA_20_EXTENSION",
+          "logic": "Returns the imported MA_20_EXTENSION constant instead of the stored MA(20) value in long context mode.",
+          "state_source_relations": []
+        }
+      ]
+    },
+    {
+      "branch": "success_stock_info",
+      "fields": [
+        {
+          "path": "$.result",
+          "source_kind": "state_direct",
+          "source": "$.state_before.stocks['{args.symbol}']",
+          "logic": "Returns the entire stored stock object unchanged, including price, percent_change, volume, MA(5), and MA(20).",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{args.symbol}']",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "type": "schema_backend_mismatch",
+      "description": "The backend has an error branch that returns a top-level 'error' field for an unknown symbol, but the tool response schema does not declare an 'error' property.",
+      "schema_path": "$.response.properties.error",
+      "backend_path": "$.result.error"
+    },
+    {
+      "type": "unsupported_construct",
+      "description": "The long-context branch assigns imported constants MA_5_EXTENSION and MA_20_EXTENSION, whose literal values are not defined in the supplied backend source. The analysis records these as constants by identifier."
+    }
+  ]
+}

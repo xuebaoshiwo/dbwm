@@ -1,0 +1,46 @@
+{
+  "status": "complete",
+  "strategy": "backward_state_source_sampling",
+  "requested": 1,
+  "accepted": 1,
+  "failures": [],
+  "planning_only": true,
+  "backend_execution": false,
+  "state_conditions": {
+    "$.state_before.long_context": false
+  },
+  "dependency_scope": "selected_mutation_and_return_field",
+  "seed": 42,
+  "targets": [
+    "balance",
+    "transaction_history",
+    "orders"
+  ],
+  "min_writes": 3,
+  "target_min_writes": {
+    "balance": 3,
+    "transaction_history": 3,
+    "orders": 3
+  },
+  "write_count_mode": "best_effort_lifecycle",
+  "lifecycle_targets": [
+    "orders"
+  ],
+  "lifecycle_rules_sha256": "9059e4bab9f10b72b9647e54d0607f0d25c9e450a3a84aa28674637791de0d66",
+  "dependency_max_writes": 1,
+  "min_length": 20,
+  "max_length": 60,
+  "specs_sha256": "ca7d93d9c9b4fa0c9f0a8e705bb194897c45ecb65798307366ef97c24f3082b9",
+  "catalog_sha256": "45983fae7ff3cad6e3d3b11f93cc52dd36063b21f70c35a109e6bcbc23d05075",
+  "catalog_fields_used": [
+    "targets",
+    "state_specs",
+    "reader_refinements"
+  ],
+  "writer_sequences_used": false,
+  "filler_strategy": [
+    "support_anchor",
+    "distractor"
+  ],
+  "support_anchor_policy": "sample_then_forward_anchor_reuse"
+}
