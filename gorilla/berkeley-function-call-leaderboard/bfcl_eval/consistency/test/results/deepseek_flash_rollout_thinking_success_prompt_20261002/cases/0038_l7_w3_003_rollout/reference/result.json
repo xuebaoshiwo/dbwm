@@ -1,0 +1,118 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 5322.0,
+    "holdings": {
+      "MSFT": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 225.0,
+      "MSFT": 310.0,
+      "NVDA": 220.0,
+      "__unobserved_stock_3001": 0.001,
+      "__unobserved_stock_3002": 0.001,
+      "__unobserved_stock_3003": 0.001
+    },
+    "initial_orders": {
+      "3001": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      },
+      "3002": {
+        "id": 3002,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 230.0,
+        "amount": 3,
+        "status": "Open"
+      },
+      "3003": {
+        "id": 3003,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 2,
+        "status": "Open"
+      }
+    },
+    "order_counter": 3004,
+    "watchlist": [],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "3001": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      },
+      "3002": {
+        "id": 3002,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 230.0,
+        "amount": 3,
+        "status": "Open"
+      },
+      "3003": {
+        "id": 3003,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 2,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 5322.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "MSFT": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 3004,
+    "stocks": {
+      "AAPL": {
+        "price": 225.0,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "MSFT": {
+        "price": 310.0,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "NVDA": {
+        "price": 220.0,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.39000000001396984
+}

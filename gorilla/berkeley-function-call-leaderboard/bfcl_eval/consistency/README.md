@@ -1,5 +1,11 @@
 # TradingBot observation consistency checker
 
+For the **TradingBotHard** checker used with `data_generator_v2`, see
+[HARD_SOLVER.md](HARD_SOLVER.md). It supports three-decimal monetary inputs,
+excludes the three fixed lookup tools by default, and provides configurable
+transaction timestamp policies. The description below concerns the original
+`trading_solver.py` checker.
+
 The checker asks whether **one possible initial TradingBot state** can explain a
 sequence of tool calls and predicted observations. Initial cash, holdings,
 authentication, market status, stock prices, order keys, and watchlist contents

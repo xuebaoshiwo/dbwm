@@ -1,0 +1,133 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3003
+      },
+      "observation": {
+        "id": 3003,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 250.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3004
+      },
+      "observation": {
+        "id": 3004,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 10,
+          "TSLA": 5,
+          "GOOG": 5
+        }
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3004
+      },
+      "observation": {
+        "order_id": 3004,
+        "status": "Completed",
+        "filled_price": 305.42,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3003
+      },
+      "observation": {
+        "order_id": 3003,
+        "status": "Completed",
+        "filled_price": 252.18,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3002
+      },
+      "observation": {
+        "id": 3002,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 180.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3001
+      },
+      "observation": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 400.0,
+        "amount": 2,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3002
+      },
+      "observation": {
+        "order_id": 3002,
+        "status": "Completed",
+        "filled_price": 182.35,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3001
+      },
+      "observation": {
+        "order_id": 3001,
+        "status": "Completed",
+        "filled_price": 402.77,
+        "amount": 2
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "MSFT": 2
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

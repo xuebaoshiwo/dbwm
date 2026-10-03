@@ -1,0 +1,2163 @@
+{
+  "source": "min_length_7\\min_writes_2\\l7_w2_005.json",
+  "status": "accepted",
+  "placeholder_values": {
+    "order.symbol_1": "GOOG",
+    "order_id_1": 12446
+  },
+  "replay_config": {
+    "long_context": false,
+    "random_seed": 12345
+  },
+  "initial_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Pending"
+      },
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 210.65,
+        "amount": 10,
+        "status": "Completed"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 10000.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 10
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12448,
+    "stocks": {
+      "AAPL": {
+        "price": 227.16,
+        "percent_change": 0.17,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2840.34,
+        "percent_change": 0.24,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "TSLA": {
+        "price": 667.92,
+        "percent_change": -0.12,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      },
+      "MSFT": {
+        "price": 310.23,
+        "percent_change": 0.09,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "NVDA": {
+        "price": 220.34,
+        "percent_change": 0.34,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "ALPH": {
+        "price": 1320.45,
+        "percent_change": -0.08,
+        "volume": 1.567,
+        "MA(5)": 1321.12,
+        "MA(20)": 1325.78
+      },
+      "OMEG": {
+        "price": 457.23,
+        "percent_change": 0.12,
+        "volume": 2.345,
+        "MA(5)": 456.78,
+        "MA(20)": 458.12
+      },
+      "QUAS": {
+        "price": 725.89,
+        "percent_change": -0.03,
+        "volume": 1.789,
+        "MA(5)": 726.45,
+        "MA(20)": 728.0
+      },
+      "NEPT": {
+        "price": 88.34,
+        "percent_change": 0.19,
+        "volume": 0.654,
+        "MA(5)": 88.21,
+        "MA(20)": 88.67
+      },
+      "SYNX": {
+        "price": 345.67,
+        "percent_change": 0.11,
+        "volume": 2.112,
+        "MA(5)": 345.34,
+        "MA(20)": 346.12
+      },
+      "ZETA": {
+        "price": 22.09,
+        "percent_change": -0.05,
+        "volume": 0.789,
+        "MA(5)": 22.12,
+        "MA(20)": 22.34
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "MSFT",
+      "AAPL"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "tool_chain": [
+    {
+      "step_id": 1,
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.state_before.authenticated == true and $.state_before.long_context == true"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 2,
+      "tool": "get_symbol_by_name",
+      "branch": "success_found",
+      "args": {
+        "name": "Apple"
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "$.args.name in [\"Apple\", \"Google\", \"Tesla\", \"Microsoft\", \"Nvidia\", \"Zeta Corp\", \"Alpha Tech\", \"Omega Industries\", \"Quasar Ltd.\", \"Neptune Systems\", \"Synex Solutions\", \"Amazon\", \"Gorilla\"]",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 3,
+      "tool": "remove_stock_from_watchlist",
+      "branch": "success_removed",
+      "args": {
+        "symbol": "MSFT"
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.args.symbol not in $.state_before.watch_list"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 4,
+      "tool": "remove_stock_from_watchlist",
+      "branch": "success_removed",
+      "args": {
+        "symbol": "AAPL"
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.args.symbol not in $.state_before.watch_list"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 5,
+      "tool": "activate_order",
+      "branch": "success_activated",
+      "args": {
+        "order_id": 12446
+      },
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.args.order_id not in $.state_before.orders",
+          "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 6,
+      "tool": "execute_order",
+      "branch": "success_sell_with_remaining_shares",
+      "args": {
+        "order_id": 12446
+      },
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_conditions": {
+        "selected": "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol_1}'] - $.state_before.orders['{order_id_1}'].amount > 0 and all earlier checks pass",
+        "avoid": [
+          "$.args.order_id not in $.state_before.orders",
+          "$.state_before.orders['{order_id_1}'].status != 'Open'",
+          "$.state_before.market_status != 'Open'",
+          "$.state_before.orders['{order_id_1}'].symbol not in $.state_before.stocks",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol_1}'].price > $.state_before.orders['{order_id_1}'].price",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol_1}'].price < $.state_before.orders['{order_id_1}'].price",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol_1}'].price * $.state_before.orders['{order_id_1}'].amount, 2) > $.state_before.account_info.balance",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol_1}'] < $.state_before.orders['{order_id_1}'].amount",
+          "$.state_before.orders['{order_id_1}'].order_type not in ['Buy', 'Sell']",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and all earlier checks pass"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": [
+        {
+          "kind": "target_identity",
+          "placeholder": "order.symbol_1",
+          "binding_aliases": [
+            "order.symbol"
+          ],
+          "path": "$.state_before.orders['12446'].symbol",
+          "logic": "The target holding key is the symbol stored in the selected order.",
+          "meaning": "At this write, the addressed state key must equal the bound identity."
+        }
+      ]
+    },
+    {
+      "step_id": 7,
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.state_before.authenticated == true and $.state_before.long_context == true"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    }
+  ],
+  "trace": [
+    {
+      "step_id": 1,
+      "tool": "get_watchlist",
+      "expected_branch": "success_standard",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "watchlist": [
+          "NVDA",
+          "MSFT",
+          "AAPL"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 2,
+      "tool": "get_symbol_by_name",
+      "expected_branch": "success_found",
+      "is_distractor": true,
+      "args": {
+        "name": "Apple"
+      },
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "symbol": "AAPL"
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 3,
+      "tool": "remove_stock_from_watchlist",
+      "expected_branch": "success_removed",
+      "is_distractor": false,
+      "args": {
+        "symbol": "MSFT"
+      },
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "status": "Stock MSFT removed from watchlist successfully."
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 4,
+      "tool": "remove_stock_from_watchlist",
+      "expected_branch": "success_removed",
+      "is_distractor": false,
+      "args": {
+        "symbol": "AAPL"
+      },
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "status": "Stock AAPL removed from watchlist successfully."
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 5,
+      "tool": "activate_order",
+      "expected_branch": "success_activated",
+      "is_distractor": true,
+      "args": {
+        "order_id": 12446
+      },
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Pending"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "order_id": 12446,
+        "status": "Open"
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Open"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 6,
+      "tool": "execute_order",
+      "expected_branch": "success_sell_with_remaining_shares",
+      "is_distractor": true,
+      "args": {
+        "order_id": 12446
+      },
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Open"
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 10000.0,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 10
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "order_id": 12446,
+        "status": "Completed",
+        "filled_price": 2840.34,
+        "amount": 5
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Completed",
+            "filled_price": 2840.34
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 24201.7,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 7,
+      "tool": "get_watchlist",
+      "expected_branch": "success_standard",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Completed",
+            "filled_price": 2840.34
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 24201.7,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "watchlist": [
+          "NVDA"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "12446": {
+            "id": 12446,
+            "order_type": "Sell",
+            "symbol": "GOOG",
+            "price": 2840.34,
+            "amount": 5,
+            "status": "Completed",
+            "filled_price": 2840.34
+          },
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "AAPL",
+            "price": 210.65,
+            "amount": 10,
+            "status": "Completed"
+          }
+        },
+        "account_info": {
+          "account_id": 12345,
+          "balance": 24201.7,
+          "binding_card": 1974202140965533
+        },
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12448,
+        "stocks": {
+          "AAPL": {
+            "price": 227.16,
+            "percent_change": 0.17,
+            "volume": 2.552,
+            "MA(5)": 227.11,
+            "MA(20)": 227.09
+          },
+          "GOOG": {
+            "price": 2840.34,
+            "percent_change": 0.24,
+            "volume": 1.123,
+            "MA(5)": 2835.67,
+            "MA(20)": 2842.15
+          },
+          "TSLA": {
+            "price": 667.92,
+            "percent_change": -0.12,
+            "volume": 1.654,
+            "MA(5)": 671.15,
+            "MA(20)": 668.2
+          },
+          "MSFT": {
+            "price": 310.23,
+            "percent_change": 0.09,
+            "volume": 3.234,
+            "MA(5)": 309.88,
+            "MA(20)": 310.11
+          },
+          "NVDA": {
+            "price": 220.34,
+            "percent_change": 0.34,
+            "volume": 1.234,
+            "MA(5)": 220.45,
+            "MA(20)": 220.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          }
+        },
+        "watch_list": [
+          "NVDA"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    }
+  ],
+  "branch_audit": {
+    "valid": true,
+    "steps": [
+      {
+        "step_id": 1,
+        "branch_match": true,
+        "observed_branch": "success_standard",
+        "reason": "authenticated=true, long_context=false, so selected 'otherwise' branch; result returned watchlist."
+      },
+      {
+        "step_id": 2,
+        "branch_match": true,
+        "observed_branch": "success_found",
+        "reason": "args.name='Apple' is in allowed list; result returned symbol 'AAPL'."
+      },
+      {
+        "step_id": 3,
+        "branch_match": true,
+        "observed_branch": "success_removed",
+        "reason": "authenticated=true, symbol 'MSFT' in watch_list; result success, watch_list updated."
+      },
+      {
+        "step_id": 4,
+        "branch_match": true,
+        "observed_branch": "success_removed",
+        "reason": "authenticated=true, symbol 'AAPL' in watch_list; result success, watch_list updated."
+      },
+      {
+        "step_id": 5,
+        "branch_match": true,
+        "observed_branch": "success_activated",
+        "reason": "order_id 12446 exists and status='Pending'; result status='Open'."
+      },
+      {
+        "step_id": 6,
+        "branch_match": true,
+        "observed_branch": "success_sell_with_remaining_shares",
+        "reason": "order_type='Sell', holdings['GOOG']=10, amount=5, remaining>0; all earlier checks pass; result status='Completed', holdings updated to 5."
+      },
+      {
+        "step_id": 7,
+        "branch_match": true,
+        "observed_branch": "success_standard",
+        "reason": "authenticated=true, long_context=false, so selected 'otherwise' branch; result returned watchlist."
+      }
+    ],
+    "issues": []
+  },
+  "debug_rounds": 1,
+  "diversity": {
+    "enabled": true,
+    "guide": "避免重复使用订单ID 12447和股票代码NVDA、MSFT",
+    "retrieved_ids": [
+      "6fe2bc170e26077c4e63838c6f3224277f4f161eb99fc5aae20c6e318b02af17",
+      "5f6363526b2b246385f914010a8bf14bd8dbe6ef4f0e006efc8c5f7ea0f36e7b",
+      "668201f44b1b8a4283c2da69a20c074fb7e0b2340c1a8d01614ad7ea61efc7d2",
+      "418ec28096f20eb12905854082afc73e8bfb41c8dbece2563e37a44543aa48a4"
+    ],
+    "accepted_in_scope": 33,
+    "update": {
+      "stored": true,
+      "id": "0441619c3b6af0739a42b8f79aa8c9a0afce92359bd170bb69f2d6794a25a9ad"
+    }
+  },
+  "query": "I want to tidy up my watchlist and get my pending order 12446 filled. Could you pull up my current watchlist before making changes? I’d like to remove Microsoft and Apple; since I only know Apple by company name, please look up its symbol, then remove MSFT and Apple. After that, activate order 12446 and execute it. Once that’s complete, show me the watchlist again so I can confirm what’s left.",
+  "query_generation": {
+    "model": "deepseek-v4-pro",
+    "language": "English",
+    "prompt_version": "agent-query-v2",
+    "trajectory_sha256": "c01509c229488a690511c0d0a57ecea8e6e22bcfc762b41131784c5ec11ba7da",
+    "generated_at": "2026-10-02T11:04:12.051830+00:00",
+    "attempts": 1,
+    "audit": {
+      "valid": true,
+      "natural": true,
+      "faithful": true,
+      "no_answer_leakage": true,
+      "issues": [],
+      "coverage": [
+        {
+          "step_id": 1,
+          "supported": true,
+          "query_quote": "Could you pull up my current watchlist before making changes?",
+          "reason": "Requests an initial watchlist read before any modifications."
+        },
+        {
+          "step_id": 2,
+          "supported": true,
+          "query_quote": "since I only know Apple by company name, please look up its symbol",
+          "reason": "Requests a symbol lookup for Apple by company name."
+        },
+        {
+          "step_id": 3,
+          "supported": true,
+          "query_quote": "then remove MSFT and Apple",
+          "reason": "Explicitly requests removing MSFT from the watchlist."
+        },
+        {
+          "step_id": 4,
+          "supported": true,
+          "query_quote": "then remove MSFT and Apple",
+          "reason": "Requests removing Apple, which the preceding lookup resolves to AAPL."
+        },
+        {
+          "step_id": 5,
+          "supported": true,
+          "query_quote": "activate order 12446",
+          "reason": "Requests activation of order 12446."
+        },
+        {
+          "step_id": 6,
+          "supported": true,
+          "query_quote": "execute it",
+          "reason": "Requests execution of the just-activated order 12446."
+        },
+        {
+          "step_id": 7,
+          "supported": true,
+          "query_quote": "Once that’s complete, show me the watchlist again so I can confirm what’s left.",
+          "reason": "Requests a final watchlist read after the order is completed."
+        }
+      ]
+    },
+    "blind_review": {
+      "natural": true,
+      "naturalness_reason": "The request is a coherent, goal-led conversational instruction with specific order details, rationale, and natural sequencing rather than a mechanical checklist.",
+      "tool_call_counts": {
+        "get_watchlist": 2,
+        "get_symbol_by_name": 1,
+        "remove_stock_from_watchlist": 2,
+        "activate_order": 1,
+        "execute_order": 1
+      },
+      "extra_tasks": []
+    },
+    "validation": "LLM semantic review; not an agent execution test"
+  }
+}

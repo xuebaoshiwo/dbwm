@@ -1,0 +1,11 @@
+{
+  "tool_schema": "../../../data/multi_turn_func_doc/trading_bot_hard.json",
+  "task_description": "trading_bot_hard_task.txt",
+  "examples": "trading_bot_hard_examples.json",
+  "checker": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "checker_options": {"check_static_tools": false, "timestamp_policy": "symbolic"},
+  "backend": "bfcl_eval.eval_checker.multi_turn_eval.func_source_code.trading_bot_hard:TradingBot",
+  "state_loader": "_load_scenario",
+  "loader_options": {"long_context": false},
+  "example_fixtures": "bfcl_eval.consistency.test.domains.trading_bot_hard:fixtures"
+}

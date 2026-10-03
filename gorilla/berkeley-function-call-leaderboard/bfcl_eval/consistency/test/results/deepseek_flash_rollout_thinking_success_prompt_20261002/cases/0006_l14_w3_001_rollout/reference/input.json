@@ -1,0 +1,148 @@
+{
+  "steps": [
+    {
+      "tool": "place_order",
+      "args": {
+        "order_type": "Buy",
+        "symbol": "GOOG",
+        "price": 2800.0,
+        "amount": 2
+      },
+      "observation": {
+        "order_id": 12447,
+        "order_type": "Buy",
+        "status": "Pending",
+        "price": 2800.0,
+        "amount": 2
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 12345,
+        "balance": 15000.0,
+        "binding_card": 1974202140965533
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Completed",
+        "filled_price": 2840.34,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Microsoft"
+      },
+      "observation": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "GOOG",
+        "price": 2800.0,
+        "amount": 2,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 12345,
+        "balance": 29701.7,
+        "binding_card": 1974202140965533
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

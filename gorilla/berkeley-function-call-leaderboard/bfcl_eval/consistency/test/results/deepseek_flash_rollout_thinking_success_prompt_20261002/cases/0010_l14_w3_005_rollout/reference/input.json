@@ -1,0 +1,176 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "id": 12449,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 8,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": []
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 200.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "MSFT": 5,
+          "NVDA": 10,
+          "AAPL": 8,
+          "GOOG": 3,
+          "TSLA": 2
+        }
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 2000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "order_id": 12449,
+        "status": "Completed",
+        "filled_price": 227.16,
+        "amount": 8
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 220.34,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 10:52:12"
+          },
+          {
+            "type": "deposit",
+            "amount": 2000.0,
+            "timestamp": "2024-09-01 21:22:23"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "id": 12447,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 310.23,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "GOOG": 3,
+          "TSLA": 2
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

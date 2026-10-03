@@ -1,0 +1,120 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 12000.0,
+    "holdings": {
+      "NVDA": 1,
+      "TSLA": 1,
+      "__unobserved_stock_12447": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 253.41,
+      "GOOG": 253.41,
+      "MSFT": 253.41,
+      "NVDA": 253.41,
+      "TSLA": 253.41,
+      "__unobserved_stock_12447": 0.001
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 253.41,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12448,
+    "watchlist": [
+      "NVDA",
+      "MSFT"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-08-13 10:30:00",
+      "2024-08-13 10:34:00",
+      "2024-08-13 10:35:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 253.41,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 12000.0,
+      "account_id": 601,
+      "binding_card": 730001
+    },
+    "holdings": {
+      "NVDA": 1,
+      "TSLA": 1,
+      "__unobserved_stock_12447": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12448,
+    "stocks": {
+      "AAPL": {
+        "price": 253.41,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 253.41,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "TSLA": {
+        "price": 253.41,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "MSFT"
+    ],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 5000.0,
+        "timestamp": "2024-08-05 09:15:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 1200.0,
+        "timestamp": "2024-08-07 14:30:00"
+      },
+      {
+        "type": "deposit",
+        "amount": 8200.0,
+        "timestamp": "2024-08-09 10:05:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-08-13 10:30:00",
+      "2024-08-13 10:34:00",
+      "2024-08-13 10:35:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.5
+}

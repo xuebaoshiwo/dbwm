@@ -1,0 +1,135 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 20000.0,
+    "holdings": {
+      "AAPL": 40,
+      "GOOG": 12,
+      "MSFT": 10,
+      "NVDA": 20,
+      "TSLA": 15,
+      "ZETA": 50
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 230.5,
+      "GOOG": 2750.0,
+      "MSFT": 0.001,
+      "NVDA": 0.001,
+      "TSLA": 850.0,
+      "ZETA": 0.001,
+      "__unobserved_stock_4101": 0.001,
+      "__unobserved_stock_4102": 0.001,
+      "__unobserved_stock_4103": 0.001
+    },
+    "initial_orders": {
+      "4101": {
+        "id": 4101,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 185.0,
+        "amount": 25,
+        "status": "Open"
+      },
+      "4102": {
+        "id": 4102,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2400.0,
+        "amount": 12,
+        "status": "Open"
+      },
+      "4103": {
+        "id": 4103,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 620.0,
+        "amount": 8,
+        "status": "Open"
+      }
+    },
+    "order_counter": 4104,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "4101": {
+        "id": 4101,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 185.0,
+        "amount": 25,
+        "status": "Open"
+      },
+      "4102": {
+        "id": 4102,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2400.0,
+        "amount": 12,
+        "status": "Open"
+      },
+      "4103": {
+        "id": 4103,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 620.0,
+        "amount": 8,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 20000.0,
+      "account_id": 82107,
+      "binding_card": 4111222233334444
+    },
+    "holdings": {
+      "AAPL": 40,
+      "GOOG": 12,
+      "MSFT": 10,
+      "NVDA": 20,
+      "TSLA": 15,
+      "ZETA": 50
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 4104,
+    "stocks": {
+      "AAPL": {
+        "price": 230.5,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2750.0,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "TSLA": {
+        "price": 850.0,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.45400000002700835
+}

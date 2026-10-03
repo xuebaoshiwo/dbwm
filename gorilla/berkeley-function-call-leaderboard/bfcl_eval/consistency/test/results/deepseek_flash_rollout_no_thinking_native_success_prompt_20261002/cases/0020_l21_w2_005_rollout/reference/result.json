@@ -1,0 +1,140 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {
+      "GOOG": 1,
+      "MSFT": 1,
+      "NEPT": 1,
+      "NVDA": 1,
+      "TSLA": 1,
+      "ZETA": 1,
+      "__unobserved_stock_12446": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 299.999,
+      "GOOG": 1000.001,
+      "MSFT": 1000.0,
+      "NEPT": 200.0,
+      "NVDA": 20.001,
+      "TSLA": 300.001,
+      "ZETA": 20.001,
+      "__unobserved_stock_12446": 19.999
+    },
+    "initial_orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 1.0,
+        "amount": 1,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [
+      "NVDA"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-09-02 01:40:07",
+      "2024-09-01 10:52:12",
+      "2024-09-01 21:22:23"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 1.0,
+        "amount": 1,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 98765,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {
+      "GOOG": 1,
+      "MSFT": 1,
+      "NEPT": 1,
+      "NVDA": 1,
+      "TSLA": 1,
+      "ZETA": 1,
+      "__unobserved_stock_12446": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {
+      "AAPL": {
+        "price": 299.999,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 1000.001,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "MSFT": {
+        "price": 1000.0,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "NEPT": {
+        "price": 200.0,
+        "percent_change": 0.0,
+        "volume": 0.654,
+        "MA(5)": 88.21,
+        "MA(20)": 88.67
+      },
+      "NVDA": {
+        "price": 20.001,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "TSLA": {
+        "price": 300.001,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      },
+      "ZETA": {
+        "price": 20.001,
+        "percent_change": 0.0,
+        "volume": 0.789,
+        "MA(5)": 22.12,
+        "MA(20)": 22.34
+      }
+    },
+    "watch_list": [
+      "NVDA"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 01:40:07",
+      "2024-09-01 10:52:12",
+      "2024-09-01 21:22:23"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.5619999999762513
+}

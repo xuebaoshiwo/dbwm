@@ -1,0 +1,209 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12345
+      },
+      "observation": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "NVDA",
+          "MSFT",
+          "TSLA"
+        ]
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 12345,
+        "balance": 50000.0,
+        "binding_card": 1974202140965533
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 0,
+          "GOOG": 10,
+          "MSFT": 20,
+          "TSLA": 5
+        }
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12345
+      },
+      "observation": {
+        "order_id": 12345,
+        "status": "Completed",
+        "filled_price": 225.5,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Microsoft"
+      },
+      "observation": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Nvidia"
+      },
+      "observation": {
+        "symbol": "NVDA"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Completed",
+        "filled_price": 2850.0,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 5,
+          "MSFT": 20,
+          "TSLA": 5
+        }
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Zeta Corp"
+      },
+      "observation": {
+        "symbol": "ZETA"
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 12345,
+        "balance": 61995.0,
+        "binding_card": 1974202140965533
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "TSLA"
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "steps": [
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 12000.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 30,
+          "GOOG": 20,
+          "TSLA": 15,
+          "MSFT": 8
+        }
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 245.0,
+        "amount": 10,
+        "status": "Pending"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "GOOG",
+        "price": 280.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "id": 12448,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 310.0,
+        "amount": 4,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "id": 12450,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Completed",
+        "filled_price": 245.0,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "order_id": 12450,
+        "status": "Completed",
+        "filled_price": 250.85,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 245.0,
+        "amount": 10,
+        "status": "Completed",
+        "filled_price": 245.0
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "order_id": 12449,
+        "status": "Completed",
+        "filled_price": 278.45,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 307.89,
+        "amount": 4
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 276.18,
+        "amount": 3
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 12908.98,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 25,
+          "TSLA": 10,
+          "MSFT": 12
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

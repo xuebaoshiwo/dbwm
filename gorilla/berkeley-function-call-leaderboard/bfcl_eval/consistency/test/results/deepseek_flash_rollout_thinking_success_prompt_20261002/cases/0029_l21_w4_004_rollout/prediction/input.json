@@ -1,0 +1,214 @@
+{
+  "steps": [
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "NVDA"
+        ]
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "GOOG"
+      },
+      "observation": {
+        "status": "Stock GOOG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 12000.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "TSLA"
+      },
+      "observation": {
+        "status": "Stock TSLA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "place_order",
+      "args": {
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 10
+      },
+      "observation": {
+        "order_id": 12450,
+        "order_type": "Buy",
+        "status": "Pending",
+        "price": 220.0,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "order_id": 12450,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "order_id": 12450,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "id": 12450,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 10,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "order_id": 12449,
+        "status": "Completed",
+        "filled_price": 218.42,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 219.87,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "MSFT",
+          "GOOG",
+          "TSLA"
+        ]
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 10216.45,
+        "binding_card": 730001
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

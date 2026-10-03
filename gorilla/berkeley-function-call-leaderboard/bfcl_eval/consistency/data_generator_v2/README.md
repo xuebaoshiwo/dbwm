@@ -38,6 +38,9 @@ in the design context; do not infer that every shortfall is already accepted.
 | `lifecycle_rules.py` | Parse and evaluate the external lifecycle rules. |
 | `placeholder_bindings.py` | Allocate numbered placeholders and substitute call-local aliases. |
 | `generate_backward_trajectories.py` | Sample success branches backward and emit symbolic plans. |
+| `generate_trajectory_grid.py` | Generate batches across trajectory-length and write-count settings. |
+| `grounding/ground_and_replay.py` | Ground concrete arguments and initial state, replay the backend, audit branches and repair candidates. |
+| `grounding/generate_queries.py` | Generate natural agent-facing requests using the concrete reference trajectory and tool schemas, review them, and write `query` into each existing case. |
 | `backward_state_knowledge.py` | Track observed state, propagate writes and invalidate unknown regions. |
 | `symbolic_dependency_graph.py` | Match symbolic paths and load dependency specifications. |
 | `migrate_trading_bot_hard_sources.py` | Migrate the existing TradingBotHard specifications using reviewed backend facts. |
@@ -46,6 +49,12 @@ The generic specification generator and lifecycle engine accept domain data;
 the TradingBotHard migration is intentionally specific to that backend. The
 sampler currently has a fixed `long_context=false` assumption, documented in
 the algorithm notes and design context.
+
+For the concrete grounding and final user-query generation stages, see
+[grounding/README.md](grounding/README.md). Query generation defaults to
+DeepSeek V4 Pro and requires no domain-specific backend code. The resulting
+`query` is shown to the task-executing agent; `tool_chain` remains its reference
+execution and `trace` remains the recorded backend replay.
 
 ## Run
 
@@ -74,6 +83,8 @@ Repeat a placeholder target to monitor independent instances, for example
 `{order_id_2}`. Use `--target-min-writes orders_1=2 orders_2=2` to override
 their counts. A static field such as `balance` cannot be repeated.
 The catalog also offers `watch_list` as a static monitoring target.
+`holdings` monitors the complete holdings map without a placeholder; it cannot
+be repeated. Its child mutations count as writes to the monitored map.
 
 The sampler binds anchors, mutations, return sources and dependencies before
 planning. Different numbered placeholders cannot reuse each other's facts.

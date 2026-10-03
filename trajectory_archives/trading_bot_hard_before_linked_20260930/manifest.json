@@ -1,0 +1,942 @@
+{
+  "status": "complete",
+  "seed": 20260929,
+  "count_per_group": 5,
+  "requested": 45,
+  "accepted": 45,
+  "failures": [],
+  "candidate_targets": {
+    "balance": {
+      "path": "$.state_before.account_info.balance"
+    },
+    "transaction_history": {
+      "path": "$.state_before.transaction_history"
+    },
+    "holdings": {
+      "path": "$.state_before.holdings"
+    },
+    "watch_list": {
+      "path": "$.state_before.watch_list"
+    },
+    "orders": {
+      "path": "$.state_before.orders['{target_order_id}'].status",
+      "scope": "The status of one symbolic order, not the complete orders mapping.",
+      "identity_condition": "The anchor, status writers, and final reader refer to the same symbolic order ID; that order exists and starts Pending."
+    }
+  },
+  "target_selection": "uniform_without_replacement_per_case; fixed_during_retries",
+  "length_target_count_tiers": [
+    {
+      "min_length": 7,
+      "target_count": 1
+    },
+    {
+      "min_length": 14,
+      "target_count": 2
+    },
+    {
+      "min_length": 21,
+      "target_count": 3
+    }
+  ],
+  "min_write_tiers": [
+    2,
+    3,
+    4
+  ],
+  "max_length": 60,
+  "dependency_max_writes": 1,
+  "attempts_per_case": 200,
+  "write_count_policy": "minimum; shared writes may exceed; lifecycle shortfalls retained",
+  "planning_only": true,
+  "backend_execution": false,
+  "input_sha256": {
+    "catalog": "817b7584f791c866b25729d5977347ad01d36b40173ff1f33801a0a60a060e3b",
+    "specs": "62b92eb614dcbb5e1e261ed7aac0df164b9443ee6c2b00b2d7af0e92b0d64aaa",
+    "lifecycle_rules": "fe7823de7d4bee41121a85a721a2dcf950e2a9c1f296700f114866ec67408d26"
+  },
+  "groups": [
+    {
+      "directory": "min_length_7/min_writes_2",
+      "min_length": 7,
+      "target_count": 1,
+      "min_writes": 2,
+      "cases": [
+        {
+          "id": "l7_w2_001",
+          "file": "min_length_7/min_writes_2/l7_w2_001.json",
+          "seed": 2712018334673078314,
+          "targets": [
+            "watch_list"
+          ],
+          "length": 7,
+          "write_counts": {
+            "watch_list": 2
+          },
+          "write_shortfalls": {
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l7_w2_002",
+          "file": "min_length_7/min_writes_2/l7_w2_002.json",
+          "seed": 8897500139396094993,
+          "targets": [
+            "watch_list"
+          ],
+          "length": 7,
+          "write_counts": {
+            "watch_list": 2
+          },
+          "write_shortfalls": {
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l7_w2_003",
+          "file": "min_length_7/min_writes_2/l7_w2_003.json",
+          "seed": 168831009057712488,
+          "targets": [
+            "balance"
+          ],
+          "length": 7,
+          "write_counts": {
+            "balance": 2
+          },
+          "write_shortfalls": {
+            "balance": 0
+          }
+        },
+        {
+          "id": "l7_w2_004",
+          "file": "min_length_7/min_writes_2/l7_w2_004.json",
+          "seed": 7799012239521892646,
+          "targets": [
+            "holdings"
+          ],
+          "length": 7,
+          "write_counts": {
+            "holdings": 2
+          },
+          "write_shortfalls": {
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l7_w2_005",
+          "file": "min_length_7/min_writes_2/l7_w2_005.json",
+          "seed": 1022111643217338479,
+          "targets": [
+            "watch_list"
+          ],
+          "length": 7,
+          "write_counts": {
+            "watch_list": 2
+          },
+          "write_shortfalls": {
+            "watch_list": 0
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_7/min_writes_3",
+      "min_length": 7,
+      "target_count": 1,
+      "min_writes": 3,
+      "cases": [
+        {
+          "id": "l7_w3_001",
+          "file": "min_length_7/min_writes_3/l7_w3_001.json",
+          "seed": 8005802497615262152,
+          "targets": [
+            "transaction_history"
+          ],
+          "length": 7,
+          "write_counts": {
+            "transaction_history": 3
+          },
+          "write_shortfalls": {
+            "transaction_history": 0
+          }
+        },
+        {
+          "id": "l7_w3_002",
+          "file": "min_length_7/min_writes_3/l7_w3_002.json",
+          "seed": 4687270232392082446,
+          "targets": [
+            "transaction_history"
+          ],
+          "length": 7,
+          "write_counts": {
+            "transaction_history": 3
+          },
+          "write_shortfalls": {
+            "transaction_history": 0
+          }
+        },
+        {
+          "id": "l7_w3_003",
+          "file": "min_length_7/min_writes_3/l7_w3_003.json",
+          "seed": 2412589417757311117,
+          "targets": [
+            "holdings"
+          ],
+          "length": 8,
+          "write_counts": {
+            "holdings": 3
+          },
+          "write_shortfalls": {
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l7_w3_004",
+          "file": "min_length_7/min_writes_3/l7_w3_004.json",
+          "seed": 3743324768669520914,
+          "targets": [
+            "orders"
+          ],
+          "length": 7,
+          "write_counts": {
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "orders": 1
+          }
+        },
+        {
+          "id": "l7_w3_005",
+          "file": "min_length_7/min_writes_3/l7_w3_005.json",
+          "seed": 3488391243066221061,
+          "targets": [
+            "watch_list"
+          ],
+          "length": 7,
+          "write_counts": {
+            "watch_list": 3
+          },
+          "write_shortfalls": {
+            "watch_list": 0
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_7/min_writes_4",
+      "min_length": 7,
+      "target_count": 1,
+      "min_writes": 4,
+      "cases": [
+        {
+          "id": "l7_w4_001",
+          "file": "min_length_7/min_writes_4/l7_w4_001.json",
+          "seed": 6910465363696618517,
+          "targets": [
+            "balance"
+          ],
+          "length": 7,
+          "write_counts": {
+            "balance": 4
+          },
+          "write_shortfalls": {
+            "balance": 0
+          }
+        },
+        {
+          "id": "l7_w4_002",
+          "file": "min_length_7/min_writes_4/l7_w4_002.json",
+          "seed": 4744358822714619524,
+          "targets": [
+            "balance"
+          ],
+          "length": 7,
+          "write_counts": {
+            "balance": 4
+          },
+          "write_shortfalls": {
+            "balance": 0
+          }
+        },
+        {
+          "id": "l7_w4_003",
+          "file": "min_length_7/min_writes_4/l7_w4_003.json",
+          "seed": 4498203802298049071,
+          "targets": [
+            "orders"
+          ],
+          "length": 7,
+          "write_counts": {
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "orders": 2
+          }
+        },
+        {
+          "id": "l7_w4_004",
+          "file": "min_length_7/min_writes_4/l7_w4_004.json",
+          "seed": 8956656569100174558,
+          "targets": [
+            "holdings"
+          ],
+          "length": 10,
+          "write_counts": {
+            "holdings": 4
+          },
+          "write_shortfalls": {
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l7_w4_005",
+          "file": "min_length_7/min_writes_4/l7_w4_005.json",
+          "seed": 261954195591252924,
+          "targets": [
+            "transaction_history"
+          ],
+          "length": 7,
+          "write_counts": {
+            "transaction_history": 4
+          },
+          "write_shortfalls": {
+            "transaction_history": 0
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_14/min_writes_2",
+      "min_length": 14,
+      "target_count": 2,
+      "min_writes": 2,
+      "cases": [
+        {
+          "id": "l14_w2_001",
+          "file": "min_length_14/min_writes_2/l14_w2_001.json",
+          "seed": 1675384636059630514,
+          "targets": [
+            "transaction_history",
+            "orders"
+          ],
+          "length": 14,
+          "write_counts": {
+            "transaction_history": 2,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "orders": 0
+          }
+        },
+        {
+          "id": "l14_w2_002",
+          "file": "min_length_14/min_writes_2/l14_w2_002.json",
+          "seed": 1102966413884285347,
+          "targets": [
+            "balance",
+            "watch_list"
+          ],
+          "length": 14,
+          "write_counts": {
+            "balance": 2,
+            "watch_list": 2
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l14_w2_003",
+          "file": "min_length_14/min_writes_2/l14_w2_003.json",
+          "seed": 3605250536553270031,
+          "targets": [
+            "transaction_history",
+            "holdings"
+          ],
+          "length": 14,
+          "write_counts": {
+            "transaction_history": 2,
+            "holdings": 2
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l14_w2_004",
+          "file": "min_length_14/min_writes_2/l14_w2_004.json",
+          "seed": 7561869491009963616,
+          "targets": [
+            "transaction_history",
+            "orders"
+          ],
+          "length": 14,
+          "write_counts": {
+            "transaction_history": 2,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "orders": 0
+          }
+        },
+        {
+          "id": "l14_w2_005",
+          "file": "min_length_14/min_writes_2/l14_w2_005.json",
+          "seed": 2788344989428499500,
+          "targets": [
+            "orders",
+            "holdings"
+          ],
+          "length": 14,
+          "write_counts": {
+            "orders": 2,
+            "holdings": 2
+          },
+          "write_shortfalls": {
+            "orders": 0,
+            "holdings": 0
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_14/min_writes_3",
+      "min_length": 14,
+      "target_count": 2,
+      "min_writes": 3,
+      "cases": [
+        {
+          "id": "l14_w3_001",
+          "file": "min_length_14/min_writes_3/l14_w3_001.json",
+          "seed": 7889583926656040715,
+          "targets": [
+            "orders",
+            "balance"
+          ],
+          "length": 14,
+          "write_counts": {
+            "orders": 2,
+            "balance": 3
+          },
+          "write_shortfalls": {
+            "orders": 1,
+            "balance": 0
+          }
+        },
+        {
+          "id": "l14_w3_002",
+          "file": "min_length_14/min_writes_3/l14_w3_002.json",
+          "seed": 2757226054887790216,
+          "targets": [
+            "transaction_history",
+            "holdings"
+          ],
+          "length": 14,
+          "write_counts": {
+            "transaction_history": 3,
+            "holdings": 3
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l14_w3_003",
+          "file": "min_length_14/min_writes_3/l14_w3_003.json",
+          "seed": 2301601377833593073,
+          "targets": [
+            "balance",
+            "holdings"
+          ],
+          "length": 14,
+          "write_counts": {
+            "balance": 4,
+            "holdings": 3
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l14_w3_004",
+          "file": "min_length_14/min_writes_3/l14_w3_004.json",
+          "seed": 7747631776255143534,
+          "targets": [
+            "watch_list",
+            "holdings"
+          ],
+          "length": 14,
+          "write_counts": {
+            "watch_list": 3,
+            "holdings": 3
+          },
+          "write_shortfalls": {
+            "watch_list": 0,
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l14_w3_005",
+          "file": "min_length_14/min_writes_3/l14_w3_005.json",
+          "seed": 9039710267958536044,
+          "targets": [
+            "holdings",
+            "transaction_history"
+          ],
+          "length": 14,
+          "write_counts": {
+            "holdings": 3,
+            "transaction_history": 3
+          },
+          "write_shortfalls": {
+            "holdings": 0,
+            "transaction_history": 0
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_14/min_writes_4",
+      "min_length": 14,
+      "target_count": 2,
+      "min_writes": 4,
+      "cases": [
+        {
+          "id": "l14_w4_001",
+          "file": "min_length_14/min_writes_4/l14_w4_001.json",
+          "seed": 1516271656684683106,
+          "targets": [
+            "balance",
+            "watch_list"
+          ],
+          "length": 14,
+          "write_counts": {
+            "balance": 4,
+            "watch_list": 4
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l14_w4_002",
+          "file": "min_length_14/min_writes_4/l14_w4_002.json",
+          "seed": 1312079490626495488,
+          "targets": [
+            "balance",
+            "orders"
+          ],
+          "length": 14,
+          "write_counts": {
+            "balance": 4,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "orders": 2
+          }
+        },
+        {
+          "id": "l14_w4_003",
+          "file": "min_length_14/min_writes_4/l14_w4_003.json",
+          "seed": 5189545286589183348,
+          "targets": [
+            "orders",
+            "watch_list"
+          ],
+          "length": 14,
+          "write_counts": {
+            "orders": 2,
+            "watch_list": 4
+          },
+          "write_shortfalls": {
+            "orders": 2,
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l14_w4_004",
+          "file": "min_length_14/min_writes_4/l14_w4_004.json",
+          "seed": 7924627949880808557,
+          "targets": [
+            "watch_list",
+            "transaction_history"
+          ],
+          "length": 14,
+          "write_counts": {
+            "watch_list": 4,
+            "transaction_history": 4
+          },
+          "write_shortfalls": {
+            "watch_list": 0,
+            "transaction_history": 0
+          }
+        },
+        {
+          "id": "l14_w4_005",
+          "file": "min_length_14/min_writes_4/l14_w4_005.json",
+          "seed": 2824718168443022932,
+          "targets": [
+            "transaction_history",
+            "orders"
+          ],
+          "length": 14,
+          "write_counts": {
+            "transaction_history": 4,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "orders": 2
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_21/min_writes_2",
+      "min_length": 21,
+      "target_count": 3,
+      "min_writes": 2,
+      "cases": [
+        {
+          "id": "l21_w2_001",
+          "file": "min_length_21/min_writes_2/l21_w2_001.json",
+          "seed": 24118449062942015,
+          "targets": [
+            "holdings",
+            "transaction_history",
+            "orders"
+          ],
+          "length": 21,
+          "write_counts": {
+            "holdings": 2,
+            "transaction_history": 2,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "holdings": 0,
+            "transaction_history": 0,
+            "orders": 0
+          }
+        },
+        {
+          "id": "l21_w2_002",
+          "file": "min_length_21/min_writes_2/l21_w2_002.json",
+          "seed": 5470804393215011838,
+          "targets": [
+            "watch_list",
+            "holdings",
+            "balance"
+          ],
+          "length": 21,
+          "write_counts": {
+            "watch_list": 2,
+            "holdings": 2,
+            "balance": 2
+          },
+          "write_shortfalls": {
+            "watch_list": 0,
+            "holdings": 0,
+            "balance": 0
+          }
+        },
+        {
+          "id": "l21_w2_003",
+          "file": "min_length_21/min_writes_2/l21_w2_003.json",
+          "seed": 2905025511103393898,
+          "targets": [
+            "transaction_history",
+            "orders",
+            "watch_list"
+          ],
+          "length": 21,
+          "write_counts": {
+            "transaction_history": 2,
+            "orders": 2,
+            "watch_list": 2
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "orders": 0,
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l21_w2_004",
+          "file": "min_length_21/min_writes_2/l21_w2_004.json",
+          "seed": 4989883958135706685,
+          "targets": [
+            "balance",
+            "transaction_history",
+            "orders"
+          ],
+          "length": 21,
+          "write_counts": {
+            "balance": 2,
+            "transaction_history": 2,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "transaction_history": 0,
+            "orders": 0
+          }
+        },
+        {
+          "id": "l21_w2_005",
+          "file": "min_length_21/min_writes_2/l21_w2_005.json",
+          "seed": 893662039277237714,
+          "targets": [
+            "transaction_history",
+            "balance",
+            "watch_list"
+          ],
+          "length": 21,
+          "write_counts": {
+            "transaction_history": 2,
+            "balance": 2,
+            "watch_list": 2
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "balance": 0,
+            "watch_list": 0
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_21/min_writes_3",
+      "min_length": 21,
+      "target_count": 3,
+      "min_writes": 3,
+      "cases": [
+        {
+          "id": "l21_w3_001",
+          "file": "min_length_21/min_writes_3/l21_w3_001.json",
+          "seed": 8814868972853388683,
+          "targets": [
+            "watch_list",
+            "balance",
+            "orders"
+          ],
+          "length": 21,
+          "write_counts": {
+            "watch_list": 3,
+            "balance": 3,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "watch_list": 0,
+            "balance": 0,
+            "orders": 1
+          }
+        },
+        {
+          "id": "l21_w3_002",
+          "file": "min_length_21/min_writes_3/l21_w3_002.json",
+          "seed": 8893013233174068684,
+          "targets": [
+            "transaction_history",
+            "balance",
+            "watch_list"
+          ],
+          "length": 21,
+          "write_counts": {
+            "transaction_history": 3,
+            "balance": 4,
+            "watch_list": 3
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "balance": 0,
+            "watch_list": 0
+          }
+        },
+        {
+          "id": "l21_w3_003",
+          "file": "min_length_21/min_writes_3/l21_w3_003.json",
+          "seed": 6541467439215420201,
+          "targets": [
+            "holdings",
+            "transaction_history",
+            "orders"
+          ],
+          "length": 21,
+          "write_counts": {
+            "holdings": 3,
+            "transaction_history": 3,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "holdings": 0,
+            "transaction_history": 0,
+            "orders": 1
+          }
+        },
+        {
+          "id": "l21_w3_004",
+          "file": "min_length_21/min_writes_3/l21_w3_004.json",
+          "seed": 652201800612497057,
+          "targets": [
+            "orders",
+            "holdings",
+            "transaction_history"
+          ],
+          "length": 21,
+          "write_counts": {
+            "orders": 2,
+            "holdings": 3,
+            "transaction_history": 3
+          },
+          "write_shortfalls": {
+            "orders": 1,
+            "holdings": 0,
+            "transaction_history": 0
+          }
+        },
+        {
+          "id": "l21_w3_005",
+          "file": "min_length_21/min_writes_3/l21_w3_005.json",
+          "seed": 3407412545977608420,
+          "targets": [
+            "balance",
+            "watch_list",
+            "orders"
+          ],
+          "length": 21,
+          "write_counts": {
+            "balance": 3,
+            "watch_list": 3,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "watch_list": 0,
+            "orders": 1
+          }
+        }
+      ]
+    },
+    {
+      "directory": "min_length_21/min_writes_4",
+      "min_length": 21,
+      "target_count": 3,
+      "min_writes": 4,
+      "cases": [
+        {
+          "id": "l21_w4_001",
+          "file": "min_length_21/min_writes_4/l21_w4_001.json",
+          "seed": 7649529295677562883,
+          "targets": [
+            "balance",
+            "orders",
+            "holdings"
+          ],
+          "length": 21,
+          "write_counts": {
+            "balance": 6,
+            "orders": 2,
+            "holdings": 5
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "orders": 2,
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l21_w4_002",
+          "file": "min_length_21/min_writes_4/l21_w4_002.json",
+          "seed": 2793056686047393318,
+          "targets": [
+            "balance",
+            "transaction_history",
+            "orders"
+          ],
+          "length": 21,
+          "write_counts": {
+            "balance": 4,
+            "transaction_history": 4,
+            "orders": 2
+          },
+          "write_shortfalls": {
+            "balance": 0,
+            "transaction_history": 0,
+            "orders": 2
+          }
+        },
+        {
+          "id": "l21_w4_003",
+          "file": "min_length_21/min_writes_4/l21_w4_003.json",
+          "seed": 8338982271147244461,
+          "targets": [
+            "transaction_history",
+            "watch_list",
+            "holdings"
+          ],
+          "length": 22,
+          "write_counts": {
+            "transaction_history": 4,
+            "watch_list": 4,
+            "holdings": 4
+          },
+          "write_shortfalls": {
+            "transaction_history": 0,
+            "watch_list": 0,
+            "holdings": 0
+          }
+        },
+        {
+          "id": "l21_w4_004",
+          "file": "min_length_21/min_writes_4/l21_w4_004.json",
+          "seed": 3548581005692545500,
+          "targets": [
+            "watch_list",
+            "orders",
+            "balance"
+          ],
+          "length": 21,
+          "write_counts": {
+            "watch_list": 4,
+            "orders": 2,
+            "balance": 4
+          },
+          "write_shortfalls": {
+            "watch_list": 0,
+            "orders": 2,
+            "balance": 0
+          }
+        },
+        {
+          "id": "l21_w4_005",
+          "file": "min_length_21/min_writes_4/l21_w4_005.json",
+          "seed": 2964399310151286753,
+          "targets": [
+            "watch_list",
+            "holdings",
+            "balance"
+          ],
+          "length": 21,
+          "write_counts": {
+            "watch_list": 4,
+            "holdings": 4,
+            "balance": 4
+          },
+          "write_shortfalls": {
+            "watch_list": 0,
+            "holdings": 0,
+            "balance": 0
+          }
+        }
+      ]
+    }
+  ]
+}

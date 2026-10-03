@@ -1,0 +1,101 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 36949.0,
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 10
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 227.16,
+      "GOOG": 2840.34,
+      "__unobserved_stock_12345": 0.001,
+      "__unobserved_stock_12446": 0.001
+    },
+    "initial_orders": {
+      "12345": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2800.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12345": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2800.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 36949.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 10
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {
+      "AAPL": {
+        "price": 227.16,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2840.34,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 1.0939999999827705
+}

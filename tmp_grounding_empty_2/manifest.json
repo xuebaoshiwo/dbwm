@@ -1,0 +1,17 @@
+{
+  "status": "complete",
+  "requested": 0,
+  "accepted": 0,
+  "rejected": 0,
+  "failures": [],
+  "model": "deepseek-v4-pro",
+  "max_debug": 1,
+  "tool_doc": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\data\\multi_turn_func_doc\\trading_bot_hard.json",
+  "backend": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\eval_checker\\multi_turn_eval\\func_source_code\\trading_bot_hard.py",
+  "general_backend_protocol": [
+    "tool methods",
+    "scenario loader",
+    "public state snapshot"
+  ],
+  "cases": []
+}

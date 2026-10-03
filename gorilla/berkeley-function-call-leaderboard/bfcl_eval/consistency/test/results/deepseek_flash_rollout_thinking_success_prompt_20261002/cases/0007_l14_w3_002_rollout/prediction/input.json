@@ -1,0 +1,205 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 30203
+      },
+      "observation": {
+        "id": 30203,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 250.0,
+        "amount": 8,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 25,
+          "AMZN": 12,
+          "GOOG": 5
+        }
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 30203
+      },
+      "observation": {
+        "order_id": 30203,
+        "status": "Completed",
+        "filled_price": 251.2,
+        "amount": 8
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 30201
+      },
+      "observation": {
+        "id": 30201,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 250.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 30202
+      },
+      "observation": {
+        "id": 30202,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 250.0,
+        "amount": 7,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 30202
+      },
+      "observation": {
+        "order_id": 30202,
+        "status": "Completed",
+        "filled_price": 251.2,
+        "amount": 7
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Amazon"
+      },
+      "observation": {
+        "symbol": "AMZN"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 30201
+      },
+      "observation": {
+        "order_id": 30201,
+        "status": "Completed",
+        "filled_price": 251.2,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AMZN": 12,
+          "GOOG": 5
+        }
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 8000.0,
+            "timestamp": "2024-08-01 09:30:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 4500.0,
+            "timestamp": "2024-08-05 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 250.0,
+            "timestamp": "2024-08-09 10:45:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 900.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 8000.0,
+            "timestamp": "2024-08-01 09:30:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 4500.0,
+            "timestamp": "2024-08-05 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 250.0,
+            "timestamp": "2024-08-09 10:45:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.0,
+            "timestamp": "2024-08-12 15:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-08-12 15:31:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 900.0,
+            "timestamp": "2024-08-12 15:32:00"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

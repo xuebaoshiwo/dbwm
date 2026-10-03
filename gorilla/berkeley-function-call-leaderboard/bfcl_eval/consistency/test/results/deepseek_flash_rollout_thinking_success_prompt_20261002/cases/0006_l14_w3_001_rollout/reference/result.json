@@ -1,0 +1,79 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 15000.0,
+    "holdings": {
+      "GOOG": 5,
+      "__unobserved_stock_12446": 1,
+      "__unobserved_stock_12447": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "GOOG": 2840.34,
+      "__unobserved_stock_12446": 0.001,
+      "__unobserved_stock_12447": 2840.34
+    },
+    "initial_orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 15000.0,
+      "account_id": 12345,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "GOOG": 5,
+      "__unobserved_stock_12446": 1,
+      "__unobserved_stock_12447": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {
+      "GOOG": {
+        "price": 2840.34,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 3.89000000001397
+}

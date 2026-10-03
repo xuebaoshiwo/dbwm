@@ -1,0 +1,8 @@
+{
+  "status": "unsat",
+  "first_conflicting_step": 7,
+  "conflicting_steps": [
+    7
+  ],
+  "seconds": 0.5
+}

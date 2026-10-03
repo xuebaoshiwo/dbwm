@@ -1,0 +1,108 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3003
+      },
+      "observation": {
+        "id": 3003,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 2,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3001
+      },
+      "observation": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "MSFT": 5,
+          "NVDA": 0,
+          "AAPL": 0
+        }
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3002
+      },
+      "observation": {
+        "id": 3002,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 230.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3003
+      },
+      "observation": {
+        "order_id": 3003,
+        "status": "Completed",
+        "filled_price": 225.0,
+        "amount": 2
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3002
+      },
+      "observation": {
+        "order_id": 3002,
+        "status": "Completed",
+        "filled_price": 220.0,
+        "amount": 3
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3001
+      },
+      "observation": {
+        "order_id": 3001,
+        "status": "Completed",
+        "filled_price": 310.0,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "NVDA": 3,
+          "AAPL": 2
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

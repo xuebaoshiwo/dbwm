@@ -1,0 +1,129 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {
+      "AAPL": 5,
+      "GOOG": 5,
+      "NVDA": 1,
+      "TSLA": 5,
+      "__unobserved_stock_12447": 5,
+      "__unobserved_stock_12448": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 310.23,
+      "GOOG": 0.001,
+      "NVDA": 220.34,
+      "TSLA": 1.0,
+      "__unobserved_stock_12447": 310.23,
+      "__unobserved_stock_12448": 0.001
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 220.34,
+        "amount": 10,
+        "status": "Pending"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 310.23,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12449,
+    "watchlist": [
+      "NVDA",
+      "AAPL"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 220.34,
+        "amount": 10,
+        "status": "Pending"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 310.23,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 98765,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {
+      "AAPL": 5,
+      "GOOG": 5,
+      "NVDA": 1,
+      "TSLA": 5,
+      "__unobserved_stock_12447": 5,
+      "__unobserved_stock_12448": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12449,
+    "stocks": {
+      "AAPL": {
+        "price": 310.23,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "NVDA": {
+        "price": 220.34,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "TSLA": {
+        "price": 1.0,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "AAPL"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.5619999999762513
+}

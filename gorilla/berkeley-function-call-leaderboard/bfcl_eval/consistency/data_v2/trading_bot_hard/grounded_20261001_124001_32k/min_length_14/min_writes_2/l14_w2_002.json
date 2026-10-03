@@ -1,0 +1,5013 @@
+{
+  "source": "min_length_14\\min_writes_2\\l14_w2_002.json",
+  "status": "accepted",
+  "placeholder_values": {
+    "order_id_1": 41023,
+    "stock_1": "NEPT",
+    "symbol_1": "ALPH",
+    "symbol_2": "OMEG",
+    "symbol_3": "QUAS"
+  },
+  "replay_config": {
+    "long_context": false,
+    "random_seed": 12345
+  },
+  "initial_state": {
+    "orders": {
+      "41019": {
+        "id": 41019,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 312.4,
+        "amount": 18,
+        "status": "Completed",
+        "filled_price": 312.15
+      },
+      "41021": {
+        "id": 41021,
+        "order_type": "Sell",
+        "symbol": "SYNX",
+        "price": 346.25,
+        "amount": 12,
+        "status": "Open"
+      },
+      "41023": {
+        "id": 41023,
+        "order_type": "Buy",
+        "symbol": "NEPT",
+        "price": 87.95,
+        "amount": 25,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 90214,
+      "balance": 32500.75,
+      "binding_card": 4263981620395871
+    },
+    "holdings": {
+      "AAPL": 30,
+      "MSFT": 45,
+      "NEPT": 80,
+      "OMEG": 25,
+      "SYNX": 12
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 41024,
+    "stocks": {
+      "AAPL": {
+        "price": 228.45,
+        "percent_change": 0.21,
+        "volume": 2.647,
+        "MA(5)": 228.14,
+        "MA(20)": 228.32
+      },
+      "MSFT": {
+        "price": 313.67,
+        "percent_change": 0.15,
+        "volume": 3.89,
+        "MA(5)": 312.95,
+        "MA(20)": 313.2
+      },
+      "NVDA": {
+        "price": 219.48,
+        "percent_change": 0.28,
+        "volume": 1.932,
+        "MA(5)": 219.31,
+        "MA(20)": 219.74
+      },
+      "NEPT": {
+        "price": 88.34,
+        "percent_change": 0.19,
+        "volume": 0.654,
+        "MA(5)": 88.21,
+        "MA(20)": 88.67
+      },
+      "ALPH": {
+        "price": 1320.45,
+        "percent_change": -0.08,
+        "volume": 1.567,
+        "MA(5)": 1321.12,
+        "MA(20)": 1325.78
+      },
+      "OMEG": {
+        "price": 457.23,
+        "percent_change": 0.12,
+        "volume": 2.345,
+        "MA(5)": 456.78,
+        "MA(20)": 458.12
+      },
+      "QUAS": {
+        "price": 725.89,
+        "percent_change": -0.03,
+        "volume": 1.789,
+        "MA(5)": 726.45,
+        "MA(20)": 728.0
+      },
+      "SYNX": {
+        "price": 345.67,
+        "percent_change": 0.11,
+        "volume": 2.112,
+        "MA(5)": 345.34,
+        "MA(20)": 346.12
+      },
+      "ZETA": {
+        "price": 22.09,
+        "percent_change": -0.05,
+        "volume": 0.789,
+        "MA(5)": 22.12,
+        "MA(20)": 22.34
+      },
+      "GOOG": {
+        "price": 2838.9,
+        "percent_change": 0.18,
+        "volume": 1.456,
+        "MA(5)": 2834.22,
+        "MA(20)": 2841.55
+      },
+      "TSLA": {
+        "price": 669.14,
+        "percent_change": -0.09,
+        "volume": 1.989,
+        "MA(5)": 671.03,
+        "MA(20)": 668.76
+      }
+    },
+    "watch_list": [
+      "ALPH",
+      "OMEG",
+      "QUAS",
+      "NVDA"
+    ],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 10000.0,
+        "timestamp": "2024-08-20 09:15:44"
+      },
+      {
+        "type": "deposit",
+        "amount": 22500.75,
+        "timestamp": "2024-08-27 14:32:09"
+      }
+    ],
+    "random_seed": 12345,
+    "long_context": false
+  },
+  "tool_chain": [
+    {
+      "step_id": 1,
+      "tool": "get_account_info",
+      "branch": "success_account_info",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 2,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 1200.75
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 3,
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.state_before.authenticated == true and $.state_before.long_context == true"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 4,
+      "tool": "filter_stocks_by_price",
+      "branch": "success_filtered",
+      "args": {
+        "stocks": [
+          "NEPT",
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "SYNX"
+        ],
+        "min_price": 300.0,
+        "max_price": 1500.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 5,
+      "tool": "filter_stocks_by_price",
+      "branch": "success_filtered",
+      "args": {
+        "stocks": [
+          "NEPT",
+          "OMEG",
+          "SYNX",
+          "ZETA"
+        ],
+        "min_price": 20.0,
+        "max_price": 500.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 6,
+      "tool": "remove_stock_from_watchlist",
+      "branch": "success_removed",
+      "args": {
+        "symbol": "ALPH"
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.args.symbol not in $.state_before.watch_list"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 7,
+      "tool": "get_current_time",
+      "branch": "success_get_current_time",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 8,
+      "tool": "add_to_watchlist",
+      "branch": "success_added_stock",
+      "args": {
+        "stock": "NEPT"
+      },
+      "placeholder_bindings": {
+        "args.stock": "stock_1"
+      },
+      "branch_conditions": {
+        "selected": "$.args.stock not in $.state_before.watch_list and $.state_before.stocks['{stock_1}'] exists",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 9,
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated",
+          "$.state_before.authenticated == true and $.state_before.long_context == true"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 10,
+      "tool": "activate_order",
+      "branch": "success_activated",
+      "args": {
+        "order_id": 41023
+      },
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.args.order_id not in $.state_before.orders",
+          "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 11,
+      "tool": "cancel_order",
+      "branch": "success_cancelled",
+      "args": {
+        "order_id": 41023
+      },
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.args.order_id not in $.state_before.orders",
+          "$.state_before.orders['{order_id_1}'].status == \"Completed\"",
+          "$.state_before.orders['{order_id_1}'].status == \"Cancelled\""
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 12,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 850.5
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 13,
+      "tool": "filter_stocks_by_price",
+      "branch": "success_filtered",
+      "args": {
+        "stocks": [
+          "ALPH",
+          "QUAS",
+          "NEPT",
+          "OMEG"
+        ],
+        "min_price": 700.0,
+        "max_price": 1400.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 14,
+      "tool": "get_account_info",
+      "branch": "success_account_info",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    }
+  ],
+  "trace": [
+    {
+      "step_id": 1,
+      "tool": "get_account_info",
+      "expected_branch": "success_account_info",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 32500.75,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "account_id": 90214,
+        "balance": 32500.75,
+        "binding_card": 4263981620395871
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 32500.75,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 2,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 1200.75
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 32500.75,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 3,
+      "tool": "get_watchlist",
+      "expected_branch": "success_standard",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "watchlist": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 4,
+      "tool": "filter_stocks_by_price",
+      "expected_branch": "success_filtered",
+      "is_distractor": true,
+      "args": {
+        "stocks": [
+          "NEPT",
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "SYNX"
+        ],
+        "min_price": 300.0,
+        "max_price": 1500.0
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "filtered_stocks": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "SYNX"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 5,
+      "tool": "filter_stocks_by_price",
+      "expected_branch": "success_filtered",
+      "is_distractor": true,
+      "args": {
+        "stocks": [
+          "NEPT",
+          "OMEG",
+          "SYNX",
+          "ZETA"
+        ],
+        "min_price": 20.0,
+        "max_price": 500.0
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "filtered_stocks": [
+          "NEPT",
+          "OMEG",
+          "SYNX",
+          "ZETA"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 6,
+      "tool": "remove_stock_from_watchlist",
+      "expected_branch": "success_removed",
+      "is_distractor": false,
+      "args": {
+        "symbol": "ALPH"
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Stock ALPH removed from watchlist successfully."
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 7,
+      "tool": "get_current_time",
+      "expected_branch": "success_get_current_time",
+      "is_distractor": true,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "current_time": "10:30 AM"
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 8,
+      "tool": "add_to_watchlist",
+      "expected_branch": "success_added_stock",
+      "is_distractor": false,
+      "args": {
+        "stock": "NEPT"
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Stock NEPT added to watchlist successfully."
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 9,
+      "tool": "get_watchlist",
+      "expected_branch": "success_standard",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "watchlist": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 10,
+      "tool": "activate_order",
+      "expected_branch": "success_activated",
+      "is_distractor": true,
+      "args": {
+        "order_id": 41023
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "order_id": 41023,
+        "status": "Open"
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Open"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 11,
+      "tool": "cancel_order",
+      "expected_branch": "success_cancelled",
+      "is_distractor": true,
+      "args": {
+        "order_id": 41023
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Open"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "order_id": 41023,
+        "status": "Cancelled"
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 12,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 850.5
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 31300.0,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 30449.5,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 850.5,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 13,
+      "tool": "filter_stocks_by_price",
+      "expected_branch": "success_filtered",
+      "is_distractor": true,
+      "args": {
+        "stocks": [
+          "ALPH",
+          "QUAS",
+          "NEPT",
+          "OMEG"
+        ],
+        "min_price": 700.0,
+        "max_price": 1400.0
+      },
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 30449.5,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 850.5,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "filtered_stocks": [
+          "ALPH",
+          "QUAS"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 30449.5,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 850.5,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 14,
+      "tool": "get_account_info",
+      "expected_branch": "success_account_info",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 30449.5,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 850.5,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "account_id": 90214,
+        "balance": 30449.5,
+        "binding_card": 4263981620395871
+      },
+      "state_after": {
+        "orders": {
+          "41019": {
+            "id": 41019,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 312.4,
+            "amount": 18,
+            "status": "Completed",
+            "filled_price": 312.15
+          },
+          "41021": {
+            "id": 41021,
+            "order_type": "Sell",
+            "symbol": "SYNX",
+            "price": 346.25,
+            "amount": 12,
+            "status": "Open"
+          },
+          "41023": {
+            "id": 41023,
+            "order_type": "Buy",
+            "symbol": "NEPT",
+            "price": 87.95,
+            "amount": 25,
+            "status": "Cancelled"
+          }
+        },
+        "account_info": {
+          "account_id": 90214,
+          "balance": 30449.5,
+          "binding_card": 4263981620395871
+        },
+        "holdings": {
+          "AAPL": 30,
+          "MSFT": 45,
+          "NEPT": 80,
+          "OMEG": 25,
+          "SYNX": 12
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 41024,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.647,
+            "MA(5)": 228.14,
+            "MA(20)": 228.32
+          },
+          "MSFT": {
+            "price": 313.67,
+            "percent_change": 0.15,
+            "volume": 3.89,
+            "MA(5)": 312.95,
+            "MA(20)": 313.2
+          },
+          "NVDA": {
+            "price": 219.48,
+            "percent_change": 0.28,
+            "volume": 1.932,
+            "MA(5)": 219.31,
+            "MA(20)": 219.74
+          },
+          "NEPT": {
+            "price": 88.34,
+            "percent_change": 0.19,
+            "volume": 0.654,
+            "MA(5)": 88.21,
+            "MA(20)": 88.67
+          },
+          "ALPH": {
+            "price": 1320.45,
+            "percent_change": -0.08,
+            "volume": 1.567,
+            "MA(5)": 1321.12,
+            "MA(20)": 1325.78
+          },
+          "OMEG": {
+            "price": 457.23,
+            "percent_change": 0.12,
+            "volume": 2.345,
+            "MA(5)": 456.78,
+            "MA(20)": 458.12
+          },
+          "QUAS": {
+            "price": 725.89,
+            "percent_change": -0.03,
+            "volume": 1.789,
+            "MA(5)": 726.45,
+            "MA(20)": 728.0
+          },
+          "SYNX": {
+            "price": 345.67,
+            "percent_change": 0.11,
+            "volume": 2.112,
+            "MA(5)": 345.34,
+            "MA(20)": 346.12
+          },
+          "ZETA": {
+            "price": 22.09,
+            "percent_change": -0.05,
+            "volume": 0.789,
+            "MA(5)": 22.12,
+            "MA(20)": 22.34
+          },
+          "GOOG": {
+            "price": 2838.9,
+            "percent_change": 0.18,
+            "volume": 1.456,
+            "MA(5)": 2834.22,
+            "MA(20)": 2841.55
+          },
+          "TSLA": {
+            "price": 669.14,
+            "percent_change": -0.09,
+            "volume": 1.989,
+            "MA(5)": 671.03,
+            "MA(20)": 668.76
+          }
+        },
+        "watch_list": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-20 09:15:44"
+          },
+          {
+            "type": "deposit",
+            "amount": 22500.75,
+            "timestamp": "2024-08-27 14:32:09"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.75,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 850.5,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ],
+        "long_context": false
+      }
+    }
+  ],
+  "branch_audit": {
+    "valid": true,
+    "steps": [
+      {
+        "step_id": 1,
+        "branch_match": true,
+        "observed_branch": "success_account_info",
+        "reason": "authenticated=true and long_context=false; get_account_info returned account details without error."
+      },
+      {
+        "step_id": 2,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated=true, market_status=Open, amount=1200.75 positive and within balance; withdrawal succeeded and balance decreased accordingly."
+      },
+      {
+        "step_id": 3,
+        "branch_match": true,
+        "observed_branch": "success_standard",
+        "reason": "authenticated=true and long_context=false; get_watchlist returned the standard watchlist."
+      },
+      {
+        "step_id": 4,
+        "branch_match": true,
+        "observed_branch": "success_filtered",
+        "reason": "long_context=false; filter returned a valid filtered_stocks list without error."
+      },
+      {
+        "step_id": 5,
+        "branch_match": true,
+        "observed_branch": "success_filtered",
+        "reason": "long_context=false; filter returned a valid filtered_stocks list without error."
+      },
+      {
+        "step_id": 6,
+        "branch_match": true,
+        "observed_branch": "success_removed",
+        "reason": "authenticated=true, ALPH was present in watch_list; removal succeeded and ALPH was removed."
+      },
+      {
+        "step_id": 7,
+        "branch_match": true,
+        "observed_branch": "success_get_current_time",
+        "reason": "long_context=false; get_current_time returned a valid time string."
+      },
+      {
+        "step_id": 8,
+        "branch_match": true,
+        "observed_branch": "success_added_stock",
+        "reason": "NEPT was not in the watch_list and exists in stocks; add_to_watchlist succeeded and NEPT was added."
+      },
+      {
+        "step_id": 9,
+        "branch_match": true,
+        "observed_branch": "success_standard",
+        "reason": "authenticated=true and long_context=false; get_watchlist returned the updated standard watchlist."
+      },
+      {
+        "step_id": 10,
+        "branch_match": true,
+        "observed_branch": "success_activated",
+        "reason": "order_id=41023 exists and was Pending; activate_order succeeded and status became Open."
+      },
+      {
+        "step_id": 11,
+        "branch_match": true,
+        "observed_branch": "success_cancelled",
+        "reason": "order_id=41023 was Open, not Completed or Cancelled; cancel_order succeeded and status became Cancelled."
+      },
+      {
+        "step_id": 12,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated=true, market_status=Open, amount=850.5 positive and within balance; withdrawal succeeded and balance decreased accordingly."
+      },
+      {
+        "step_id": 13,
+        "branch_match": true,
+        "observed_branch": "success_filtered",
+        "reason": "long_context=false; filter returned a valid filtered_stocks list without error."
+      },
+      {
+        "step_id": 14,
+        "branch_match": true,
+        "observed_branch": "success_account_info",
+        "reason": "authenticated=true and long_context=false; get_account_info returned account details without error."
+      }
+    ],
+    "issues": []
+  },
+  "debug_rounds": 0,
+  "diversity": {
+    "enabled": true,
+    "guide": "",
+    "warning": "Memory retrieval/guide skipped: GroundingError: Empty model response (finish_reason=length, max_tokens=2048)",
+    "update": {
+      "stored": true,
+      "id": "7ef7c7f487602432f3a0d1a73f030c651440063bd5142c3aac03c6b5d3fa8503",
+      "warning": "Summary unchanged: GroundingError: Empty model response (finish_reason=length, max_tokens=2048)"
+    }
+  },
+  "query": "I’m hoping you can sort out a few account and watchlist updates for me this morning. I’d like my account details visible and a withdrawal of $1,200.75 taken care of. For my watchlist cleanup, I need to see what’s on it currently. I’m running a couple of price screens too: among NEPT, ALPH, OMEG, QUAS, and SYNX, which trade between $300 and $1,500; and among NEPT, OMEG, SYNX, and ZETA, which trade between $20 and $500? Based on the results, I want ALPH dropped. I’m trying to finish before a specific time, so please check the current time, then put NEPT on the watchlist and show me the updated list to confirm. Order 41023 also needs to be activated and then cancelled. Could you process another withdrawal for $850.50 after that? And I’d like a final price screen for ALPH, QUAS, NEPT, and OMEG between $700 and $1,400, plus a fresh account info view at the end.",
+  "query_generation": {
+    "model": "deepseek-v4-pro",
+    "language": "English",
+    "prompt_version": "agent-query-v2",
+    "trajectory_sha256": "ea1ca7176ee678598983b7feadd74b6ab680c0ea6856386bfd8ba8be8bbe10dc",
+    "generated_at": "2026-10-02T10:38:32.872865+00:00",
+    "attempts": 3,
+    "audit": {
+      "valid": true,
+      "natural": true,
+      "faithful": true,
+      "no_answer_leakage": true,
+      "issues": [],
+      "coverage": [
+        {
+          "step_id": 1,
+          "supported": true,
+          "query_quote": "I’d like my account details visible",
+          "reason": "Requests the initial account information view."
+        },
+        {
+          "step_id": 2,
+          "supported": true,
+          "query_quote": "a withdrawal of $1,200.75 taken care of",
+          "reason": "Requests the first withdrawal of $1,200.75."
+        },
+        {
+          "step_id": 3,
+          "supported": true,
+          "query_quote": "For my watchlist cleanup, I need to see what’s on it currently.",
+          "reason": "Requests the current watchlist before cleanup changes."
+        },
+        {
+          "step_id": 4,
+          "supported": true,
+          "query_quote": "among NEPT, ALPH, OMEG, QUAS, and SYNX, which trade between $300 and $1,500",
+          "reason": "Requests the first price screen with the exact stock list and price range."
+        },
+        {
+          "step_id": 5,
+          "supported": true,
+          "query_quote": "among NEPT, OMEG, SYNX, and ZETA, which trade between $20 and $500",
+          "reason": "Requests the second price screen with the exact stock list and price range."
+        },
+        {
+          "step_id": 6,
+          "supported": true,
+          "query_quote": "I want ALPH dropped",
+          "reason": "Requests removal of ALPH from the watchlist."
+        },
+        {
+          "step_id": 7,
+          "supported": true,
+          "query_quote": "please check the current time",
+          "reason": "Requests the current time check before adding NEPT."
+        },
+        {
+          "step_id": 8,
+          "supported": true,
+          "query_quote": "put NEPT on the watchlist",
+          "reason": "Requests adding NEPT to the watchlist."
+        },
+        {
+          "step_id": 9,
+          "supported": true,
+          "query_quote": "show me the updated list to confirm",
+          "reason": "Requests a fresh watchlist view to confirm the update."
+        },
+        {
+          "step_id": 10,
+          "supported": true,
+          "query_quote": "Order 41023 also needs to be activated and then cancelled.",
+          "reason": "Requests activation of order 41023 before cancellation."
+        },
+        {
+          "step_id": 11,
+          "supported": true,
+          "query_quote": "Order 41023 also needs to be activated and then cancelled.",
+          "reason": "Requests cancellation of order 41023 after activation."
+        },
+        {
+          "step_id": 12,
+          "supported": true,
+          "query_quote": "another withdrawal for $850.50 after that",
+          "reason": "Requests the second withdrawal of $850.50 after the order is cancelled."
+        },
+        {
+          "step_id": 13,
+          "supported": true,
+          "query_quote": "final price screen for ALPH, QUAS, NEPT, and OMEG between $700 and $1,400",
+          "reason": "Requests the final price screen with the exact stock list and price range."
+        },
+        {
+          "step_id": 14,
+          "supported": true,
+          "query_quote": "plus a fresh account info view at the end",
+          "reason": "Requests a final account information view."
+        }
+      ]
+    },
+    "blind_review": {
+      "natural": true,
+      "naturalness_reason": "The request is polite, cohesive prose with specific amounts, symbols, order IDs, and natural timing/sequencing rather than a bare numbered command list.",
+      "tool_call_counts": {
+        "get_account_info": 2,
+        "withdraw_funds": 2,
+        "get_watchlist": 2,
+        "filter_stocks_by_price": 3,
+        "remove_stock_from_watchlist": 1,
+        "get_current_time": 1,
+        "add_to_watchlist": 1,
+        "activate_order": 1,
+        "cancel_order": 1
+      },
+      "extra_tasks": []
+    },
+    "validation": "LLM semantic review; not an agent execution test"
+  }
+}

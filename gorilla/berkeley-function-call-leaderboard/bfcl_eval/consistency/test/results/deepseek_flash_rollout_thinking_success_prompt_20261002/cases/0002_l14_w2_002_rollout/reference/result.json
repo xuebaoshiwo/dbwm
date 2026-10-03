@@ -1,0 +1,135 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 32500.75,
+    "holdings": {
+      "ALPH": 1,
+      "OMEG": 1,
+      "QUAS": 1,
+      "SYNX": 1,
+      "ZETA": 1,
+      "__unobserved_stock_41023": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "ALPH": 700.001,
+      "NEPT": 299.999,
+      "NVDA": 1399.999,
+      "OMEG": 500.0,
+      "QUAS": 1400.0,
+      "SYNX": 500.0,
+      "ZETA": 500.0,
+      "__unobserved_stock_41023": 1400.0
+    },
+    "initial_orders": {
+      "41023": {
+        "id": 41023,
+        "order_type": "Buy",
+        "symbol": "ALPH",
+        "price": 1.0,
+        "amount": 1,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 41024,
+    "watchlist": [
+      "ALPH",
+      "OMEG",
+      "QUAS",
+      "NVDA"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "41023": {
+        "id": 41023,
+        "order_type": "Buy",
+        "symbol": "ALPH",
+        "price": 1.0,
+        "amount": 1,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "balance": 32500.75,
+      "account_id": 90214,
+      "binding_card": 4263981620395871
+    },
+    "holdings": {
+      "ALPH": 1,
+      "OMEG": 1,
+      "QUAS": 1,
+      "SYNX": 1,
+      "ZETA": 1,
+      "__unobserved_stock_41023": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 41024,
+    "stocks": {
+      "ALPH": {
+        "price": 700.001,
+        "percent_change": 0.0,
+        "volume": 1.567,
+        "MA(5)": 1321.12,
+        "MA(20)": 1325.78
+      },
+      "NEPT": {
+        "price": 299.999,
+        "percent_change": 0.0,
+        "volume": 0.654,
+        "MA(5)": 88.21,
+        "MA(20)": 88.67
+      },
+      "OMEG": {
+        "price": 500.0,
+        "percent_change": 0.0,
+        "volume": 2.345,
+        "MA(5)": 456.78,
+        "MA(20)": 458.12
+      },
+      "QUAS": {
+        "price": 1400.0,
+        "percent_change": 0.0,
+        "volume": 1.789,
+        "MA(5)": 726.45,
+        "MA(20)": 728.0
+      },
+      "SYNX": {
+        "price": 500.0,
+        "percent_change": 0.0,
+        "volume": 2.112,
+        "MA(5)": 345.34,
+        "MA(20)": 346.12
+      },
+      "ZETA": {
+        "price": 500.0,
+        "percent_change": 0.0,
+        "volume": 0.789,
+        "MA(5)": 22.12,
+        "MA(20)": 22.34
+      }
+    },
+    "watch_list": [
+      "ALPH",
+      "OMEG",
+      "QUAS",
+      "NVDA"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 1.2339999999967404
+}

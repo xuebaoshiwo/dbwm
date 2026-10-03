@@ -1,0 +1,209 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 16347.0,
+    "holdings": {
+      "AAPL": 15,
+      "AMZN": 20,
+      "NFLX": 8,
+      "NVDA": 12,
+      "TSLA": 6
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 232.18,
+      "ALPH": 0.001,
+      "AMZN": 182.47,
+      "NFLX": 614.82,
+      "NVDA": 232.18,
+      "OMEG": 0.001,
+      "TSLA": 253.91,
+      "__unobserved_stock_3001": 0.001,
+      "__unobserved_stock_3002": 0.001,
+      "__unobserved_stock_3003": 0.001,
+      "__unobserved_stock_3004": 0.001
+    },
+    "initial_orders": {
+      "3001": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 228.0,
+        "amount": 6,
+        "status": "Open"
+      },
+      "3002": {
+        "id": 3002,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 4,
+        "status": "Open"
+      },
+      "3003": {
+        "id": 3003,
+        "order_type": "Sell",
+        "symbol": "AMZN",
+        "price": 180.0,
+        "amount": 12,
+        "status": "Open"
+      },
+      "3004": {
+        "id": 3004,
+        "order_type": "Sell",
+        "symbol": "NFLX",
+        "price": 610.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 3005,
+    "watchlist": [
+      "NVDA",
+      "AAPL",
+      "TSLA"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-08-13 09:40:00",
+      "2024-08-13 10:05:00",
+      "2024-08-13 10:20:00",
+      "2024-08-13 10:55:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "3001": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 228.0,
+        "amount": 6,
+        "status": "Open"
+      },
+      "3002": {
+        "id": 3002,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 4,
+        "status": "Open"
+      },
+      "3003": {
+        "id": 3003,
+        "order_type": "Sell",
+        "symbol": "AMZN",
+        "price": 180.0,
+        "amount": 12,
+        "status": "Open"
+      },
+      "3004": {
+        "id": 3004,
+        "order_type": "Sell",
+        "symbol": "NFLX",
+        "price": 610.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 16347.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 15,
+      "AMZN": 20,
+      "NFLX": 8,
+      "NVDA": 12,
+      "TSLA": 6
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 3005,
+    "stocks": {
+      "AAPL": {
+        "price": 232.18,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "ALPH": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 1.567,
+        "MA(5)": 1321.12,
+        "MA(20)": 1325.78
+      },
+      "AMZN": {
+        "volume": 0.0,
+        "MA(5)": 182.47,
+        "MA(20)": 182.47,
+        "price": 182.47,
+        "percent_change": 0.0
+      },
+      "NFLX": {
+        "volume": 0.0,
+        "MA(5)": 614.82,
+        "MA(20)": 614.82,
+        "price": 614.82,
+        "percent_change": 0.0
+      },
+      "NVDA": {
+        "price": 232.18,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "OMEG": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 2.345,
+        "MA(5)": 456.78,
+        "MA(20)": 458.12
+      },
+      "TSLA": {
+        "price": 253.91,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "AAPL",
+      "TSLA"
+    ],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 5000.0,
+        "timestamp": "2024-08-01 09:15:00"
+      },
+      {
+        "type": "deposit",
+        "amount": 2500.0,
+        "timestamp": "2024-08-05 10:30:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 300.0,
+        "timestamp": "2024-08-08 14:05:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-08-13 09:40:00",
+      "2024-08-13 10:05:00",
+      "2024-08-13 10:20:00",
+      "2024-08-13 10:55:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.46799999999348074
+}

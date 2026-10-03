@@ -1,0 +1,127 @@
+{
+  "created_at": "2026-10-02T14:33:58.067324+00:00",
+  "fingerprint": "7d68ff5cedb85e4df09e02fb50c51d3cf0c4d45732a4ad5700a0283c95596468",
+  "settings": {
+    "mode": "rollout",
+    "model": "deepseek-flash",
+    "thinking": "disabled",
+    "workers": 7,
+    "max_tokens": 32768,
+    "request_timeout": 300,
+    "checker_timeout": 120,
+    "transport_retries": 1,
+    "base_url": null,
+    "api_key_env": "WM_API_KEY",
+    "api_format": "anthropic",
+    "request_options": {},
+    "config": {
+      "tool_schema": "../../../data/multi_turn_func_doc/trading_bot_hard.json",
+      "task_description": "trading_bot_hard_task.txt",
+      "examples": "trading_bot_hard_examples.json",
+      "checker": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+      "checker_options": {
+        "check_static_tools": false,
+        "timestamp_policy": "symbolic"
+      },
+      "backend": "bfcl_eval.eval_checker.multi_turn_eval.func_source_code.trading_bot_hard:TradingBot",
+      "state_loader": "_load_scenario",
+      "loader_options": {
+        "long_context": false
+      },
+      "example_fixtures": "bfcl_eval.consistency.test.domains.trading_bot_hard:fixtures"
+    },
+    "input_dir": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\data_v2\\trading_bot_hard\\grounded_20261001_124001_32k",
+    "symbolic_dir": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\data_v2\\trading_bot_hard\\raw_tool_chain_linked_20260930",
+    "schema_sha256": "b71d107d863a7c38acd0ee24fd857ebd3941f0ec7a7513be3755b954947ac82e",
+    "examples_sha256": "7c5f7cac7b608dfa1eb14e2d1c23cceacff6a40d46292e7c1123f4b9b065027d",
+    "task_sha256": "2c9f748878916cbbc39197f2fdb41120b0a241d1005e6842acc33c506121cbc1",
+    "jobs_sha256": "2da38cecd66cf6b6763830f7dc9f7e60ab78710dfbce7d40c7dbeeb49aa97b1b",
+    "runner_sha256": "449b6c01fb412af91fd14ef291315cd07eb376d72ceeedbaa6618982b482c827"
+  },
+  "source_count": 45,
+  "requested": 45,
+  "status": "complete",
+  "summary": {
+    "requested": 45,
+    "completed": 45,
+    "counts": {
+      "sat": 21,
+      "unsat": 23,
+      "unknown": 1
+    },
+    "decided": 44,
+    "decision_coverage": 0.9777777777777777,
+    "consistency_rate": 0.4772727272727273,
+    "reference_statuses": {
+      "sat": 45
+    },
+    "exact_reference_matches": 0,
+    "usage": {
+      "prompt_tokens": 3002528,
+      "completion_tokens": 16017,
+      "total_tokens": 3018545
+    },
+    "by_group": {
+      "min_length=14": {
+        "counts": {
+          "sat": 8,
+          "unsat": 7
+        },
+        "decided": 15,
+        "consistency_rate": 0.5333333333333333
+      },
+      "min_length=21": {
+        "counts": {
+          "unsat": 11,
+          "sat": 3,
+          "unknown": 1
+        },
+        "decided": 14,
+        "consistency_rate": 0.21428571428571427
+      },
+      "min_length=7": {
+        "counts": {
+          "sat": 10,
+          "unsat": 5
+        },
+        "decided": 15,
+        "consistency_rate": 0.6666666666666666
+      },
+      "min_writes=2": {
+        "counts": {
+          "sat": 9,
+          "unsat": 6
+        },
+        "decided": 15,
+        "consistency_rate": 0.6
+      },
+      "min_writes=3": {
+        "counts": {
+          "unsat": 9,
+          "sat": 5,
+          "unknown": 1
+        },
+        "decided": 14,
+        "consistency_rate": 0.35714285714285715
+      },
+      "min_writes=4": {
+        "counts": {
+          "sat": 7,
+          "unsat": 8
+        },
+        "decided": 15,
+        "consistency_rate": 0.4666666666666667
+      },
+      "target=all": {
+        "counts": {
+          "sat": 21,
+          "unsat": 23,
+          "unknown": 1
+        },
+        "decided": 44,
+        "consistency_rate": 0.4772727272727273
+      }
+    }
+  },
+  "updated_at": "2026-10-02T14:38:23.630367+00:00"
+}

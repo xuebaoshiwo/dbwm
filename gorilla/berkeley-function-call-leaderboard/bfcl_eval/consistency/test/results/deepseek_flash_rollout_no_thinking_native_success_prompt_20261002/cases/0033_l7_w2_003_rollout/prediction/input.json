@@ -1,0 +1,78 @@
+{
+  "steps": [
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 12000.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 227.16,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 2840.34,
+        "amount": 2
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 6229.72,
+        "binding_card": 730001
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

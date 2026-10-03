@@ -1,0 +1,108 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {
+      "GOOG": 10,
+      "MSFT": 20,
+      "TSLA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 225.5,
+      "GOOG": 2850.0,
+      "MSFT": 1.0,
+      "NVDA": 0.001,
+      "TSLA": 0.001,
+      "__unobserved_stock_12345": 0.001,
+      "__unobserved_stock_12446": 0.001
+    },
+    "initial_orders": {
+      "12345": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2850.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [
+      "NVDA",
+      "MSFT",
+      "TSLA"
+    ],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "12345": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2850.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 12345,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "GOOG": 10,
+      "MSFT": 20,
+      "TSLA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {
+      "AAPL": {
+        "price": 225.5,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2850.0,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "MSFT",
+      "TSLA"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.5160000000032596
+}

@@ -109,17 +109,20 @@ class TargetIdentitySamplingTests(unittest.TestCase):
         self.assertEqual(len(writer["write_source_requirements"]), 1)
         self.assertEqual(writer["write_source_requirements"][0]["target_identity_relations"], [])
 
-    def test_real_holdings_writers_bind_distinct_orders_to_monitored_symbol(self):
+    def test_real_holdings_map_writers_preserve_each_child_identity(self):
         specs, targets, refinements, _ = load_inputs(DEFAULT_CATALOG)
         rules, _ = load_lifecycle_rules(DEFAULT_CATALOG, specs, targets)
         sampler = BackwardSampler(specs, targets, reader_refinements=refinements, lifecycle_rules=rules)
         result = sampler.build(["holdings"], max_writes=3, dependency_max_writes=0, min_length=1, max_length=30)
         chain = result["planning"]["target_chains"]["holdings"]
+        self.assertEqual(chain["path"], "$.state_before.holdings")
         order_ids = set()
         for index in chain["write_steps"]:
             step = result["steps"][index - 1]
             identity = next(r for r in step["write_source_requirements"] if r["target_identity_relations"])
-            self.assertEqual(identity["target_identity_relations"][0]["placeholder"], "symbol_1")
+            placeholder = identity["target_identity_relations"][0]["placeholder"]
+            selected = step["mutations"][step["selected_mutation_index"]]
+            self.assertIn("{" + placeholder + "}", selected["target"])
             order_ids.add(step["placeholder_bindings"]["args.order_id"])
             self.assertEqual(identity["path"], ADDRESS.replace("jobs", "orders").replace("destination", "symbol")
                              .replace("args.job_id", step["placeholder_bindings"]["args.order_id"]))

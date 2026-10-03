@@ -1,0 +1,120 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 5000.0,
+            "timestamp": "2024-08-05 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 250.0,
+            "timestamp": "2024-08-07 14:30:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 1200.0,
+            "timestamp": "2024-08-09 10:05:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Amazon"
+      },
+      "observation": {
+        "symbol": "AMZN"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 2750.5
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 800.25
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 3200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 5000.0,
+            "timestamp": "2024-08-05 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 250.0,
+            "timestamp": "2024-08-07 14:30:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 1200.0,
+            "timestamp": "2024-08-09 10:05:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-08-12 10:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-08-12 10:30:01"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-08-12 10:30:02"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 3200.0,
+            "timestamp": "2024-08-12 10:30:03"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

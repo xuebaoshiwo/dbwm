@@ -1,0 +1,86 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": []
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 300.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 500.0,
+            "timestamp": "2024-09-02 05:40:15"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 200.0,
+            "timestamp": "2024-09-01 12:26:34"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 300.0,
+            "timestamp": "2024-09-02 04:29:48"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

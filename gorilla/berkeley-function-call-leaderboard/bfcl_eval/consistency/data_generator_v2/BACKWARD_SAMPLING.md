@@ -106,8 +106,20 @@ One shared call counts once for every target whose monitoring interval contains
 it; exceeding that target's minimum is allowed. Necessary
 steps may exceed `--min-length`, but never `--max-length`. A shortfall is filled
 in two stages: finite read-only support anchors from already used branches,
-then unrelated read-only success branches.
+then unrelated success branches.
 The output directory must be empty.
+
+`--linked-distractors` optionally uses the remaining slots for independent
+write-to-read distractor chains before ordinary random distractors. It searches
+backward from a state read through matching mutation targets and records the
+longest chain found by a bounded search. A chain reuses its own entity identities
+but starts with identities distinct from the monitored chains. Branch guards,
+all side effects and configured lifecycle transitions must remain compatible.
+This option is off by default; `planning.distractor_chain_lengths` records the
+chains inserted when it is enabled. Linked steps carry `distractor_chain_id`;
+each consumer's `distractor_link_source` names the state path written by its
+predecessor. Paths used by one chain are protected from later filler calls.
+The search does not claim a global optimum or backend feasibility.
 
 The catalog supplies target paths, the specification directory, reader
 refinements and an optional lifecycle-rule path. Its legacy `writer_sequences`
@@ -262,6 +274,11 @@ bind that returned ID to later calls on the monitored order.
   redundant observations are removed before unrelated distractors are added.
   `core_length`, `support_anchor_count`, `necessary_length`, and
   `distractor_count` report these stages.
+- Distractors may write state outside the protected fields and entities of the
+  retained chain. Their branch guards, return sources and mutation sources
+  must also be disjoint from protected state paths. Entity placeholders in
+  mutation targets receive fresh identities, and the complete mutations remain
+  in the output with chronological knowledge status.
 - Apply every retained side effect to symbolic knowledge. If its sources are
   already known or fixed by the same call, propagate its value. Otherwise mark
   its target unknown without adding an anchor. An unknown child makes its full

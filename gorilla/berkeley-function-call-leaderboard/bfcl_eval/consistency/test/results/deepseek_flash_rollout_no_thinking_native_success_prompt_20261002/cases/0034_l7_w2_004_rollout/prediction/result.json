@@ -1,0 +1,95 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 7300.0,
+    "holdings": {
+      "AAPL": 20,
+      "TSLA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 238.75,
+      "TSLA": 252.3,
+      "__unobserved_stock_12447": 0.001,
+      "__unobserved_stock_12448": 0.001
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12449,
+    "watchlist": [],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 7300.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 20,
+      "TSLA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12449,
+    "stocks": {
+      "AAPL": {
+        "price": 238.75,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "TSLA": {
+        "price": 252.3,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.4529999999795109
+}

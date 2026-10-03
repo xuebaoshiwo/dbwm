@@ -1,0 +1,163 @@
+{
+  "steps": [
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 12000.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Microsoft"
+      },
+      "observation": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "MSFT": 20,
+          "AAPL": 15,
+          "NVDA": 8
+        }
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 4103
+      },
+      "observation": {
+        "id": 4103,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 330.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 4102
+      },
+      "observation": {
+        "id": 4102,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 335.0,
+        "amount": 4,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 4101
+      },
+      "observation": {
+        "id": 4101,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 340.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 4103
+      },
+      "observation": {
+        "order_id": 4103,
+        "status": "Completed",
+        "filled_price": 332.5,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 4102
+      },
+      "observation": {
+        "order_id": 4102,
+        "status": "Completed",
+        "filled_price": 336.75,
+        "amount": 4
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 4101
+      },
+      "observation": {
+        "order_id": 4101,
+        "status": "Completed",
+        "filled_price": 341.2,
+        "amount": 3
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Nvidia"
+      },
+      "observation": {
+        "symbol": "NVDA"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 13855.3,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Zeta Corp"
+      },
+      "observation": {
+        "symbol": "ZETA"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "MSFT": 8,
+          "AAPL": 15,
+          "NVDA": 8
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

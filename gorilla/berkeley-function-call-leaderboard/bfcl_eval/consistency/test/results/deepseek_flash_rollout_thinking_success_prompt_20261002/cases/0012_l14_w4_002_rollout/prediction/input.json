@@ -1,0 +1,148 @@
+{
+  "steps": [
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 15000.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 750.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 2000.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 88024
+      },
+      "observation": {
+        "id": 88024,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 13050.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 88024
+      },
+      "observation": {
+        "order_id": 88024,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 88024
+      },
+      "observation": {
+        "order_id": 88024,
+        "status": "Completed",
+        "filled_price": 234.18,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 88024
+      },
+      "observation": {
+        "id": 88024,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 5,
+        "status": "Completed",
+        "filled_price": 234.18
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

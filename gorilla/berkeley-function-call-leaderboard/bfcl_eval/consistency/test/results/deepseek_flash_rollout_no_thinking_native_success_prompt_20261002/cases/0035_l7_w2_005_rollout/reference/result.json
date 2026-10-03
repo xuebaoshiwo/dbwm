@@ -1,0 +1,84 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 28406.0,
+    "holdings": {
+      "AAPL": 5,
+      "MSFT": 5,
+      "NVDA": 1,
+      "__unobserved_stock_12446": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 2840.34,
+      "MSFT": 1.0,
+      "NVDA": 2840.34,
+      "__unobserved_stock_12446": 1.0
+    },
+    "initial_orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [
+      "NVDA",
+      "MSFT",
+      "AAPL"
+    ],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 28406.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 5,
+      "MSFT": 5,
+      "NVDA": 1,
+      "__unobserved_stock_12446": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {
+      "AAPL": {
+        "price": 2840.34,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "MSFT",
+      "AAPL"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.5470000000204891
+}

@@ -1,0 +1,95 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 8410.0,
+    "holdings": {
+      "MSFT": 10,
+      "NVDA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "MSFT": 310.23,
+      "NVDA": 220.34,
+      "__unobserved_stock_12447": 0.001,
+      "__unobserved_stock_12448": 0.001
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 220.34,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12449,
+    "watchlist": [],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 220.34,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 8410.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "MSFT": 10,
+      "NVDA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12449,
+    "stocks": {
+      "MSFT": {
+        "price": 310.23,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "NVDA": {
+        "price": 220.34,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.46799999999348074
+}

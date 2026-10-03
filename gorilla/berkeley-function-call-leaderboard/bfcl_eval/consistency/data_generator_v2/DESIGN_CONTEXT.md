@@ -108,7 +108,7 @@ JSON is generated separately by `generate_tool_state_specs.py`.
    invalidate unknown side effects and reuse redundant read-only anchors.
    Preserve mutating calls and final observations. Recompute target intervals.
 6. Fill a minimum-length shortfall with read-only support observations, reuse
-   anchors again, then add unrelated read-only distractors. Enforce maximum
+   anchors again, then add unrelated distractors. Enforce maximum
    length and emit the symbolic plan plus grounding obligations.
 
 Schema 1.2 adds `state_observation_relations` to every return field, with the
@@ -177,16 +177,17 @@ The catalog includes these targets without a Python entity registry:
 ```json
 {
   "watch_list": {"path": "$.state_before.watch_list"},
-  "holdings": {"path": "$.state_before.holdings['{symbol}']"}
+  "holdings": {"path": "$.state_before.holdings"}
 }
 ```
 
 - `watch_list` has reader, add and remove specifications. Effective
   writes still require valid membership conditions when arguments are grounded.
-- A whole-map `get_holdings` observation can fix one symbol's holding. Its
+- `holdings` monitors the complete map (updated at the user's request on
+  2026-09-29), with whole-map `get_holdings` observations at its endpoints. Its
   writer is `execute_order`; repeated execution on the same order is invalid,
   so repeated holding changes require distinct orders. Parent observations
-  cover children, but a child mutation does not count as a whole-parent write.
+  cover children, and a child mutation counts as a write to the monitored map.
 - Lifecycle state and call counts track every affected bound path independently.
   Holding writers can use fresh orders even when other orders are monitored.
   Their initial state is inferred from the first sampled transition; lifecycle

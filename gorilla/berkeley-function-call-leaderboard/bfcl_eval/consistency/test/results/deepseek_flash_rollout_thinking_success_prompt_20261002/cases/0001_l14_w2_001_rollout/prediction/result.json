@@ -1,0 +1,92 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 10452.0,
+    "holdings": {
+      "GOOG": 1,
+      "__unobserved_stock_21047": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "GOOG": 174.92,
+      "__unobserved_stock_21047": 0.001
+    },
+    "initial_orders": {
+      "21047": {
+        "id": 21047,
+        "order_type": "Buy",
+        "symbol": "GOOG",
+        "price": 175.5,
+        "amount": 20,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 21048,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-08-12 10:30:00",
+      "2024-08-12 10:30:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "21047": {
+        "id": 21047,
+        "order_type": "Buy",
+        "symbol": "GOOG",
+        "price": 175.5,
+        "amount": 20,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 10452.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "GOOG": 1,
+      "__unobserved_stock_21047": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 21048,
+    "stocks": {
+      "GOOG": {
+        "price": 174.92,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 5000.0,
+        "timestamp": "2024-08-05 09:15:00"
+      },
+      {
+        "type": "deposit",
+        "amount": 2500.0,
+        "timestamp": "2024-08-08 14:30:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 300.25,
+        "timestamp": "2024-08-10 10:05:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-08-12 10:30:00",
+      "2024-08-12 10:30:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.45300000003771856
+}

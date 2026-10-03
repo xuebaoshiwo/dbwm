@@ -1,0 +1,86 @@
+{
+  "status": "running",
+  "requested": 45,
+  "accepted": 6,
+  "rejected": 7,
+  "failures": [
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_003.json",
+      "error": "TimeoutError: The read operation timed out"
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_004.json",
+      "error": "TimeoutError: The read operation timed out"
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_001.json",
+      "error": "TimeoutError: The read operation timed out"
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_004.json",
+      "error": "TimeoutError: The read operation timed out"
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_005.json",
+      "error": "TimeoutError: The read operation timed out"
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_001.json",
+      "error": "TimeoutError: The read operation timed out"
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_003.json",
+      "error": "TimeoutError: The read operation timed out"
+    }
+  ],
+  "model": "deepseek-v4-pro",
+  "max_debug": 1,
+  "diversity_memory": {
+    "enabled": true,
+    "path": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\diversity_memory.json",
+    "summary_chars": 100,
+    "guide_chars": 50,
+    "seed": 42,
+    "max_tokens": 2048,
+    "model": "deepseek-v4-pro"
+  },
+  "tool_doc": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\data\\multi_turn_func_doc\\trading_bot_hard.json",
+  "backend": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\eval_checker\\multi_turn_eval\\func_source_code\\trading_bot_hard.py",
+  "general_backend_protocol": [
+    "tool methods",
+    "scenario loader",
+    "public state snapshot"
+  ],
+  "cases": [
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_001.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_003.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    }
+  ]
+}

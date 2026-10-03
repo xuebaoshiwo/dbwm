@@ -385,6 +385,170 @@ class BackwardSamplerTests(unittest.TestCase):
         self.assertEqual(sum(step["role"] == "support_anchor" for step in result["steps"]), 1)
         self.assertEqual(sum(step["role"] == "distractor" for step in result["steps"]), 2)
 
+    def test_unrelated_mutation_can_be_a_distractor(self):
+        entries = [*basic_entries()[:2],
+                   spec("write_y", mutations=[mutation("$.state_after.y", "$.args.value")])]
+        engine = sampler(entries)
+        result = engine.build(max_writes=1, min_length=4, max_length=4)
+        distractor, = (step for step in result["steps"] if step["role"] == "distractor")
+        self.assertEqual(distractor["tool"], "write_y")
+        self.assertEqual(distractor["mutations"][0]["target"], "$.state_after.y")
+        self.assertTrue(distractor["mutation_knowledge"][0]["sources_fixed"])
+        self.assertEqual(distractor["write_targets"], [])
+        assert_forward_sources(self, engine, result)
+
+    def test_distractor_writer_uses_a_fresh_entity(self):
+        path = "$.state_before.orders['{order_id_1}'].status"
+        entries = [spec("read_order", [returned("status", path)]),
+                   spec("write_order", mutations=[mutation(path.replace("state_before", "state_after"),
+                                                            "$.args.status")]),
+                   spec("write_other_order", mutations=[mutation(
+                       "$.state_after.orders['{args.order_id}'].price", "$.args.price")])]
+        engine = sampler(entries, {"order": {"path": path}})
+        result = engine.build(max_writes=1, min_length=4, max_length=4)
+        distractor, = (step for step in result["steps"] if step["role"] == "distractor")
+        self.assertEqual(distractor["tool"], "write_other_order")
+        self.assertEqual(distractor["placeholder_bindings"]["args.order_id"], "order_id_2")
+        self.assertIn("{order_id_2}", distractor["mutations"][0]["target"])
+        assert_forward_sources(self, engine, result)
+
+    def test_distractor_cannot_write_an_existing_entity_or_parent_field(self):
+        path = "$.state_before.orders['{order_id_1}'].status"
+        entries = [spec("read_order", [returned("status", path)]),
+                   spec("write_order", mutations=[mutation(path.replace("state_before", "state_after"),
+                                                            "$.args.status")]),
+                   spec("write_same_order_price", mutations=[mutation(
+                       "$.state_after.orders['{order_id_1}'].price", "$.args.price")]),
+                   spec("write_all_orders", mutations=[mutation("$.state_after.orders", "$.args.orders")])]
+        with self.assertRaisesRegex(SamplingError, "No unrelated branch"):
+            sampler(entries, {"order": {"path": path}}).build(
+                max_writes=1, min_length=4, max_length=4, attempts=2)
+
+    def test_distractor_cannot_change_a_core_branch_condition(self):
+        entries = [*basic_entries()[:2],
+                   spec("change_auth", mutations=[mutation("$.state_after.authenticated", "$.args.value")])]
+        entries[0]["branches"][0]["uses"] = ["$.state_before.authenticated"]
+        with self.assertRaisesRegex(SamplingError, "No unrelated branch"):
+            sampler(entries).build(max_writes=1, min_length=4, max_length=4, attempts=2)
+
+    def test_derived_address_cannot_write_inside_a_protected_mapping(self):
+        monitored = "$.state_before.bins['{key_1}'].quantity"
+        derived = mutation("$.state_after.bins['{job.symbol}'].price", "$.args.price")
+        derived["target_identity_sources"] = [{
+            "placeholder": "job.symbol",
+            "path": "$.state_before.jobs['{args.job_id}'].symbol",
+            "logic": "The bin key comes from the job symbol.",
+        }]
+        entries = [spec("read_bin", [returned("quantity", monitored)]),
+                   spec("write_bin", mutations=[mutation(
+                       monitored.replace("state_before", "state_after"), "$.args.quantity")]),
+                   spec("write_derived_bin", mutations=[derived]),
+                   spec("read_other", [returned("other", "$.state_before.other")])]
+        result = sampler(entries, {"bin": {"path": monitored}}).build(
+            max_writes=1, min_length=4, max_length=4, linked_distractors=True)
+        self.assertEqual([step["tool"] for step in result["steps"]
+                          if step["role"] == "distractor"], ["read_other"])
+
+    def test_linked_distractors_are_opt_in_and_preserve_the_core(self):
+        entries = [*basic_entries()[:2],
+                   spec("read_z", [returned("z", "$.state_before.z")]),
+                   spec("write_z", mutations=[mutation("$.state_after.z", "$.state_before.q")]),
+                   spec("write_q", mutations=[mutation("$.state_after.q", "$.args.value")])]
+        options = {"max_writes": 1, "min_length": 6, "max_length": 6}
+        default = sampler(entries).build(**options)
+        explicit_off = sampler(entries).build(**options, linked_distractors=False)
+        linked = sampler(entries).build(**options, linked_distractors=True)
+        self.assertEqual(default, explicit_off)
+        self.assertEqual(linked["planning"]["distractor_chain_lengths"], [3])
+        chain = [step for step in linked["steps"] if step.get("distractor_chain_id") == 1]
+        self.assertEqual([step["tool"] for step in chain], ["write_q", "write_z", "read_z"])
+        self.assertEqual([step.get("distractor_link_source") for step in chain],
+                         [None, "$.state_before.q", "$.state_before.z"])
+        core = lambda result: [(step["tool"], step["branch"], step["placeholder_bindings"])
+                               for step in result["steps"] if step["role"] != "distractor"]
+        self.assertEqual(core(default), core(linked))
+        assert_forward_sources(self, sampler(entries), linked)
+
+    def test_linked_distractors_respect_a_fresh_entity_lifecycle(self):
+        status = "$.state_before.tasks['{args.task_id}'].status"
+        entries = [*basic_entries()[:2], spec("read_task", [returned("status", status)]),
+                   spec("start_task", mutations=[mutation(status.replace("state_before", "state_after"),
+                                                            "$.args.next_status")]),
+                   spec("create_task", mutations=[mutation(
+                       "$.state_after.tasks['{args.task_id}']", operation="insert")])]
+        entries[3]["branches"][0]["uses"] = [status]
+        rule = LifecycleRule("task", frozenset({"Absent"}), (
+            Transition("create_task", "success_main", "Absent", "Pending", 1),
+            Transition("start_task", "success_main", "Pending", "Open", 1),
+        ), path="$.state_before.tasks['{task_id}'].status")
+        engine = BackwardSampler({entry["tool"]: entry for entry in entries},
+                                 {"x": {"path": "$.state_before.x"}},
+                                 lifecycle_rules={"task": rule})
+        result = engine.build(max_writes=1, min_length=6, max_length=6,
+                              linked_distractors=True)
+        chain = [step for step in result["steps"] if step.get("distractor_chain_id") == 1]
+        self.assertEqual([step["tool"] for step in chain],
+                         ["create_task", "start_task", "read_task"])
+        self.assertEqual({step["placeholder_bindings"]["args.task_id"] for step in chain},
+                         {"task_id_1"})
+        lifecycle = result["planning"]["lifecycle_instances"][
+            "$.state_before.tasks['{task_id_1}'].status"]
+        self.assertEqual(lifecycle["initial_states"], ["Absent"])
+        self.assertEqual([result["steps"][index - 1]["tool"]
+                          for index in lifecycle["transition_steps"]],
+                         ["create_task", "start_task"])
+        assert_forward_sources(self, engine, result)
+
+    def test_lifecycle_link_uses_the_same_entity_not_its_parent_mapping(self):
+        specs, targets, refinements, _ = load_inputs(DEFAULT_CATALOG)
+        rules, _ = load_lifecycle_rules(DEFAULT_CATALOG, specs, targets)
+        engine = BackwardSampler(specs, targets, reader_refinements=refinements,
+                                 lifecycle_rules=rules, seed=2712018334673078314)
+        cancel = next(node for node in engine.nodes
+                      if (node.tool, node.branch["id"]) == ("cancel_order", "success_cancelled"))
+        bound = engine.bind_node(cancel, bindings={"args.order_id": "order_id_1"})
+        sources = engine._distractor_link_sources(bound)
+        self.assertIn("$.state_before.orders['{order_id_1}'].status", sources)
+        self.assertNotIn("$.state_before.orders", sources)
+
+        result = engine.build(["watch_list"], max_writes=2, min_length=7, max_length=60,
+                              linked_distractors=True)
+        chain = [step for step in result["steps"] if step.get("distractor_chain_id") == 1]
+        self.assertEqual([step["tool"] for step in chain], ["activate_order", "cancel_order"])
+        self.assertEqual({step["placeholder_bindings"]["args.order_id"] for step in chain},
+                         {"order_id_1"})
+        self.assertEqual(chain[1]["distractor_link_source"],
+                         "$.state_before.orders['{order_id_1}'].status")
+
+    def test_linked_distractors_use_a_new_entity_in_the_same_mapping(self):
+        monitored = "$.state_before.jobs['{job_id_1}'].status"
+        other = "$.state_before.jobs['{args.job_id}'].price"
+        entries = [spec("read_job", [returned("status", monitored)]),
+                   spec("write_job", mutations=[mutation(
+                       monitored.replace("state_before", "state_after"), "$.args.status")]),
+                   spec("read_price", [returned("price", other)]),
+                   spec("write_price", mutations=[mutation(
+                       other.replace("state_before", "state_after"), "$.args.price")])]
+        result = sampler(entries, {"job": {"path": monitored}}).build(
+            max_writes=1, min_length=6, max_length=6, linked_distractors=True)
+        chain = [step for step in result["steps"] if step.get("distractor_chain_id") == 1]
+        self.assertEqual([step["tool"] for step in chain], ["write_price", "read_price"])
+        self.assertEqual({step["placeholder_bindings"]["args.job_id"] for step in chain},
+                         {"job_id_2"})
+
+    def test_random_padding_does_not_write_a_linked_chain_field(self):
+        entries = [*basic_entries()[:2],
+                   spec("read_z", [returned("z", "$.state_before.z")]),
+                   spec("write_z", mutations=[mutation("$.state_after.z", "$.state_before.q")]),
+                   spec("write_q", mutations=[mutation("$.state_after.q", "$.args.value")]),
+                   spec("read_other", [returned("other", "$.state_before.other")])]
+        result = sampler(entries).build(max_writes=1, min_length=7, max_length=7,
+                                        linked_distractors=True)
+        self.assertEqual(result["planning"]["distractor_chain_lengths"], [3])
+        self.assertEqual([step["tool"] for step in result["steps"]
+                          if step["role"] == "distractor" and "distractor_chain_id" not in step],
+                         ["read_other"])
+
     def test_existing_branch_observes_all_return_fields_without_duplicate_support_call(self):
         balance, account_id = "$.state_before.account.balance", "$.state_before.account.account_id"
         entries = [spec("read_account", [returned("balance", balance), returned("account_id", account_id)]),
@@ -871,6 +1035,7 @@ class BackwardSamplerTests(unittest.TestCase):
             self.assertEqual((manifest["status"], manifest["accepted"]), ("complete", 3))
             self.assertFalse(manifest["writer_sequences_used"])
             self.assertEqual(manifest["filler_strategy"], ["support_anchor", "distractor"])
+            self.assertFalse(manifest["linked_distractors"])
             self.assertEqual(manifest["support_anchor_policy"],
                              "sample_then_forward_anchor_reuse")
             self.assertFalse(manifest["backend_execution"])
@@ -888,6 +1053,18 @@ class BackwardSamplerTests(unittest.TestCase):
                 self.assertFalse(any("args" in step or "observation" in step for step in result["steps"]))
             with patch("sys.stderr", new=StringIO()), self.assertRaises(SystemExit):
                 main(["--output-dir", str(output)])
+
+    def test_cli_can_enable_linked_distractors(self):
+        with TemporaryDirectory() as directory:
+            output = Path(directory) / "linked"
+            main(["--targets", "orders", "--min-writes", "1", "--min-length", "6",
+                  "--max-length", "12", "--count", "1", "--linked-distractors",
+                  "--output-dir", str(output)])
+            manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+            result = json.loads(next(output.glob("backward_*.json")).read_text(encoding="utf-8"))
+            self.assertTrue(manifest["linked_distractors"])
+            self.assertIn("linked_distractor", manifest["filler_strategy"])
+            self.assertTrue(result["planning"]["linked_distractors"])
 
 
 if __name__ == "__main__":

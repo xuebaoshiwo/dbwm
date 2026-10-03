@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 20,
+          "TSLA": 5
+        }
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 252.3,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 238.75,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 30,
+          "TSLA": 0
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

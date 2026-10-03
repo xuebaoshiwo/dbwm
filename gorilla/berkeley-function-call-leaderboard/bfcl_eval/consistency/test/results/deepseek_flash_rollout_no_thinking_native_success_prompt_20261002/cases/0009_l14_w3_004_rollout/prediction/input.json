@@ -1,0 +1,168 @@
+{
+  "steps": [
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 20,
+          "MSFT": 15,
+          "TSLA": 8,
+          "NVDA": 12
+        }
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "AAPL",
+          "MSFT",
+          "NVDA",
+          "AMZN"
+        ]
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "TSLA"
+      },
+      "observation": {
+        "status": "Stock TSLA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 480.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "order_id": 12449,
+        "status": "Completed",
+        "filled_price": 248.75,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 482.3,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "id": 12447,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 235.0,
+        "amount": 6,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 236.4,
+        "amount": 6
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 14,
+          "MSFT": 15,
+          "TSLA": 18,
+          "NVDA": 7
+        }
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "NVDA",
+          "AMZN",
+          "TSLA"
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

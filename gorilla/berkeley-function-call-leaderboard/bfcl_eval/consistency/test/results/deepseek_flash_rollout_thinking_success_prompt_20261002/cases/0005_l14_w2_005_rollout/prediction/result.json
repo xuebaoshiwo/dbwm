@@ -1,0 +1,114 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 3978.0,
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 0.001,
+      "GOOG": 0.001,
+      "MSFT": 298.45,
+      "TSLA": 247.82,
+      "__unobserved_stock_101": 0.001,
+      "__unobserved_stock_102": 0.001,
+      "__unobserved_stock_103": 0.001
+    },
+    "initial_orders": {
+      "101": {
+        "id": 101,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 4,
+        "status": "Pending"
+      },
+      "102": {
+        "id": 102,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      },
+      "103": {
+        "id": 103,
+        "order_type": "Buy",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 2,
+        "status": "Open"
+      }
+    },
+    "order_counter": 104,
+    "watchlist": [],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "101": {
+        "id": 101,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 4,
+        "status": "Pending"
+      },
+      "102": {
+        "id": 102,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      },
+      "103": {
+        "id": 103,
+        "order_type": "Buy",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 2,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 3978.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 104,
+    "stocks": {
+      "MSFT": {
+        "price": 298.45,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "TSLA": {
+        "price": 247.82,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.375
+}

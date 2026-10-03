@@ -1,0 +1,56 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 16504.0,
+    "holdings": {},
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {},
+    "initial_orders": {},
+    "order_counter": 1,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 14:47:39",
+      "2024-09-02 06:56:32",
+      "2024-09-02 00:40:04",
+      "2024-09-01 18:26:22"
+    ]
+  },
+  "witness_state": {
+    "orders": {},
+    "account_info": {
+      "account_id": 12345,
+      "balance": 16504.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {},
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 1,
+    "stocks": {},
+    "watch_list": [],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 10000.0,
+        "timestamp": "2024-08-15 09:30:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 2500.0,
+        "timestamp": "2024-08-20 14:15:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 14:47:39",
+      "2024-09-02 06:56:32",
+      "2024-09-02 00:40:04",
+      "2024-09-01 18:26:22"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.4529999999795109
+}

@@ -1,0 +1,160 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 101
+      },
+      "observation": {
+        "id": 101,
+        "order_type": "Buy",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 10,
+        "status": "Pending"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 5
+        }
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Zeta Corp"
+      },
+      "observation": {
+        "symbol": "ZETA"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 103
+      },
+      "observation": {
+        "id": 103,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 500.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 102
+      },
+      "observation": {
+        "id": 102,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 150.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 103
+      },
+      "observation": {
+        "order_id": 103,
+        "status": "Completed",
+        "filled_price": 500.0,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 101
+      },
+      "observation": {
+        "order_id": 101,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 102
+      },
+      "observation": {
+        "order_id": 102,
+        "status": "Completed",
+        "filled_price": 150.0,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Alpha Tech"
+      },
+      "observation": {
+        "symbol": "ATEC"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 10,
+          "GOOG": 0,
+          "NVDA": 5,
+          "TSLA": 10
+        }
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Omega Industries"
+      },
+      "observation": {
+        "symbol": "OMGI"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 101
+      },
+      "observation": {
+        "order_id": 101,
+        "status": "Cancelled"
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "created_at": "2026-10-02T14:17:01.281229+00:00",
+  "fingerprint": "86b36756a788472c131948e6cdf1ab69c37dcb7e81287c3539837983e801f7f1",
+  "settings": {
+    "mode": "rollout",
+    "model": "deepseek-flash",
+    "thinking": "enabled",
+    "workers": 7,
+    "max_tokens": 32768,
+    "request_timeout": 300,
+    "checker_timeout": 120,
+    "transport_retries": 1,
+    "base_url": null,
+    "api_key_env": "WM_API_KEY",
+    "api_format": "openai",
+    "request_options": {},
+    "config": {
+      "tool_schema": "../../../data/multi_turn_func_doc/trading_bot_hard.json",
+      "task_description": "trading_bot_hard_task.txt",
+      "examples": "trading_bot_hard_examples.json",
+      "checker": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+      "checker_options": {
+        "check_static_tools": false,
+        "timestamp_policy": "symbolic"
+      },
+      "backend": "bfcl_eval.eval_checker.multi_turn_eval.func_source_code.trading_bot_hard:TradingBot",
+      "state_loader": "_load_scenario",
+      "loader_options": {
+        "long_context": false
+      },
+      "example_fixtures": "bfcl_eval.consistency.test.domains.trading_bot_hard:fixtures"
+    },
+    "input_dir": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\data_v2\\trading_bot_hard\\grounded_20261001_124001_32k",
+    "symbolic_dir": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\data_v2\\trading_bot_hard\\raw_tool_chain_linked_20260930",
+    "schema_sha256": "b71d107d863a7c38acd0ee24fd857ebd3941f0ec7a7513be3755b954947ac82e",
+    "examples_sha256": "7c5f7cac7b608dfa1eb14e2d1c23cceacff6a40d46292e7c1123f4b9b065027d",
+    "task_sha256": "2c9f748878916cbbc39197f2fdb41120b0a241d1005e6842acc33c506121cbc1",
+    "jobs_sha256": "2da38cecd66cf6b6763830f7dc9f7e60ab78710dfbce7d40c7dbeeb49aa97b1b",
+    "runner_sha256": "449b6c01fb412af91fd14ef291315cd07eb376d72ceeedbaa6618982b482c827"
+  },
+  "source_count": 45,
+  "requested": 45,
+  "status": "complete",
+  "summary": {
+    "requested": 45,
+    "completed": 45,
+    "counts": {
+      "sat": 33,
+      "unsat": 11,
+      "unknown": 1
+    },
+    "decided": 44,
+    "decision_coverage": 0.9777777777777777,
+    "consistency_rate": 0.75,
+    "reference_statuses": {
+      "sat": 45
+    },
+    "exact_reference_matches": 0,
+    "usage": {
+      "prompt_tokens": 3017343,
+      "completion_tokens": 237191,
+      "total_tokens": 3254534,
+      "prompt_cache_hit_tokens": 2475392,
+      "prompt_cache_miss_tokens": 468239,
+      "input_tokens": 73712,
+      "output_tokens": 0,
+      "claude_cache_creation_5_m_tokens": 0,
+      "claude_cache_creation_1_h_tokens": 0
+    },
+    "by_group": {
+      "min_length=14": {
+        "counts": {
+          "sat": 9,
+          "unsat": 5,
+          "unknown": 1
+        },
+        "decided": 14,
+        "consistency_rate": 0.6428571428571429
+      },
+      "min_length=21": {
+        "counts": {
+          "unsat": 6,
+          "sat": 9
+        },
+        "decided": 15,
+        "consistency_rate": 0.6
+      },
+      "min_length=7": {
+        "counts": {
+          "sat": 15
+        },
+        "decided": 15,
+        "consistency_rate": 1.0
+      },
+      "min_writes=2": {
+        "counts": {
+          "sat": 11,
+          "unsat": 4
+        },
+        "decided": 15,
+        "consistency_rate": 0.7333333333333333
+      },
+      "min_writes=3": {
+        "counts": {
+          "unsat": 5,
+          "sat": 10
+        },
+        "decided": 15,
+        "consistency_rate": 0.6666666666666666
+      },
+      "min_writes=4": {
+        "counts": {
+          "sat": 12,
+          "unsat": 2,
+          "unknown": 1
+        },
+        "decided": 14,
+        "consistency_rate": 0.8571428571428571
+      },
+      "target=all": {
+        "counts": {
+          "sat": 33,
+          "unsat": 11,
+          "unknown": 1
+        },
+        "decided": 44,
+        "consistency_rate": 0.75
+      }
+    }
+  },
+  "updated_at": "2026-10-02T14:22:54.193902+00:00"
+}

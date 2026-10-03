@@ -1,0 +1,80 @@
+{
+  "steps": [
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "MSFT",
+          "AAPL",
+          "NVDA",
+          "TSLA"
+        ]
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Completed",
+        "filled_price": 187.42,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "NVDA",
+          "TSLA"
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

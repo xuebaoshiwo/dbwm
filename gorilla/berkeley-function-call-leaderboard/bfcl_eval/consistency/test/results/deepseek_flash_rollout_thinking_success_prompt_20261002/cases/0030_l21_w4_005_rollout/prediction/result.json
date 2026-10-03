@@ -1,0 +1,142 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 12000.0,
+    "holdings": {
+      "AAPL": 10,
+      "MSFT": 8,
+      "NVDA": 15,
+      "TSLA": 12
+    },
+    "authenticated": true,
+    "market_status": "Closed",
+    "stock_prices": {
+      "AAPL": 1.0,
+      "MSFT": 1.0,
+      "NVDA": 1.0,
+      "TSLA": 1.0,
+      "__unobserved_stock_12446": 1.0,
+      "__unobserved_stock_12447": 1.0,
+      "__unobserved_stock_12448": 1.0,
+      "__unobserved_stock_12449": 1.0
+    },
+    "initial_orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 330.0,
+        "amount": 6,
+        "status": "Pending"
+      },
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 4,
+        "status": "Pending"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 235.0,
+        "amount": 10,
+        "status": "Pending"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 12450,
+    "watchlist": [
+      "AAPL",
+      "MSFT",
+      "NVDA"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 330.0,
+        "amount": 6,
+        "status": "Pending"
+      },
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 4,
+        "status": "Pending"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 235.0,
+        "amount": 10,
+        "status": "Pending"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "balance": 12000.0,
+      "account_id": 601,
+      "binding_card": 730001
+    },
+    "holdings": {
+      "AAPL": 10,
+      "MSFT": 8,
+      "NVDA": 15,
+      "TSLA": 12
+    },
+    "authenticated": true,
+    "market_status": "Closed",
+    "order_counter": 12450,
+    "stocks": {
+      "TSLA": {
+        "price": 1.0,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "AAPL",
+      "MSFT",
+      "NVDA"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.8130000000237487
+}

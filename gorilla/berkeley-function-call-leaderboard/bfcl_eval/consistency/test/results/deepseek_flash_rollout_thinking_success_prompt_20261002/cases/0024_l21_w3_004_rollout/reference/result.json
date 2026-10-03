@@ -1,0 +1,147 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 37051.0,
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5,
+      "MSFT": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 227.16,
+      "GOOG": 2840.34,
+      "MSFT": 310.23,
+      "__unobserved_stock_12447": 0.001,
+      "__unobserved_stock_12448": 0.001,
+      "__unobserved_stock_12449": 0.001,
+      "__unobserved_stock_12450": 0.001
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Pending"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 310.23,
+        "amount": 5,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Open"
+      },
+      "12450": {
+        "id": 12450,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 227.16,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12451,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34",
+      "2024-09-02 04:29:48"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Pending"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 310.23,
+        "amount": 5,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.34,
+        "amount": 5,
+        "status": "Open"
+      },
+      "12450": {
+        "id": 12450,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 227.16,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 37051.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5,
+      "MSFT": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12451,
+    "stocks": {
+      "AAPL": {
+        "price": 227.16,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2840.34,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "MSFT": {
+        "price": 310.23,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34",
+      "2024-09-02 04:29:48"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.7189999999827705
+}

@@ -16,7 +16,7 @@
       "path": "$.state_before.transaction_history"
     },
     "holdings": {
-      "path": "$.state_before.holdings['{symbol}']"
+      "path": "$.state_before.holdings"
     },
     "watch_list": {
       "path": "$.state_before.watch_list"

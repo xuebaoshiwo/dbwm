@@ -1,0 +1,152 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 15062.0,
+    "holdings": {
+      "AAPL": 8,
+      "GOOG": 5,
+      "MSFT": 15,
+      "NVDA": 10,
+      "TSLA": 8
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 225.0,
+      "GOOG": 0.001,
+      "MSFT": 310.0,
+      "NVDA": 220.0,
+      "TSLA": 660.0,
+      "__unobserved_stock_3001": 0.001,
+      "__unobserved_stock_3002": 0.001,
+      "__unobserved_stock_3003": 0.001,
+      "__unobserved_stock_3004": 0.001
+    },
+    "initial_orders": {
+      "3001": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      },
+      "3002": {
+        "id": 3002,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 210.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "3003": {
+        "id": 3003,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 650.0,
+        "amount": 3,
+        "status": "Open"
+      },
+      "3004": {
+        "id": 3004,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 8,
+        "status": "Open"
+      }
+    },
+    "order_counter": 3005,
+    "watchlist": [],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "3001": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "MSFT",
+        "price": 300.0,
+        "amount": 5,
+        "status": "Open"
+      },
+      "3002": {
+        "id": 3002,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 210.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "3003": {
+        "id": 3003,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 650.0,
+        "amount": 3,
+        "status": "Open"
+      },
+      "3004": {
+        "id": 3004,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 8,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 15062.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 8,
+      "GOOG": 5,
+      "MSFT": 15,
+      "NVDA": 10,
+      "TSLA": 8
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 3005,
+    "stocks": {
+      "AAPL": {
+        "price": 225.0,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "MSFT": {
+        "price": 310.0,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "NVDA": {
+        "price": 220.0,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "TSLA": {
+        "price": 660.0,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.4369999999762513
+}

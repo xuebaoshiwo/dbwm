@@ -1,0 +1,71 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {},
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "__unobserved_stock_12447": 225.0
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "__unobserved_stock_12447",
+        "price": 225.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12448,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "__unobserved_stock_12447",
+        "price": 225.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 98765,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {},
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12448,
+    "stocks": {
+      "__unobserved_stock_12447": {
+        "volume": 0.0,
+        "MA(5)": 225.0,
+        "MA(20)": 225.0,
+        "price": 225.0,
+        "percent_change": 0.0
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 9.90700000000652
+}

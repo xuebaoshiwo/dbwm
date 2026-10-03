@@ -1,0 +1,264 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 5000.0,
+            "timestamp": "2024-08-01 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 250.0,
+            "timestamp": "2024-08-03 14:32:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 1500.0,
+            "timestamp": "2024-08-06 10:05:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 420.75,
+            "timestamp": "2024-08-09 16:48:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "place_order",
+      "args": {
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 5
+      },
+      "observation": {
+        "order_id": 802,
+        "order_type": "Buy",
+        "status": "Pending",
+        "price": 220.0,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "id": 12449,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "TSLA": 5,
+          "MSFT": 5
+        }
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 2000.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Microsoft"
+      },
+      "observation": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "id": 12448,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 400.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12449
+      },
+      "observation": {
+        "order_id": 12449,
+        "status": "Completed",
+        "filled_price": 251.2,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "error": "Order with ID 12450 not found."
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Nvidia"
+      },
+      "observation": {
+        "symbol": "NVDA"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12450
+      },
+      "observation": {
+        "error": "Can't cancel order 12450. Order not found."
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12448
+      },
+      "observation": {
+        "order_id": 12448,
+        "status": "Completed",
+        "filled_price": 398.75,
+        "amount": 3
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 5000.0,
+            "timestamp": "2024-08-01 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 250.0,
+            "timestamp": "2024-08-03 14:32:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 1500.0,
+            "timestamp": "2024-08-06 10:05:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 420.75,
+            "timestamp": "2024-08-09 16:48:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-08-12 10:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2000.0,
+            "timestamp": "2024-08-12 10:30:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "MSFT": 8
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

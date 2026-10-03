@@ -1,0 +1,166 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1499.25,
+            "timestamp": "2024-08-27 16:20:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Google"
+      },
+      "observation": {
+        "symbol": "GOOG"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 21047
+      },
+      "observation": {
+        "id": 21047,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 195.0,
+        "amount": 3,
+        "status": "Pending"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1250.5
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 21047
+      },
+      "observation": {
+        "order_id": 21047,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 475.75
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Tesla"
+      },
+      "observation": {
+        "symbol": "TSLA"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Microsoft"
+      },
+      "observation": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Nvidia"
+      },
+      "observation": {
+        "symbol": "NVDA"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1499.25,
+            "timestamp": "2024-08-27 16:20:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1250.5,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 475.75,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 21047
+      },
+      "observation": {
+        "order_id": 21047,
+        "status": "Completed",
+        "filled_price": 201.75,
+        "amount": 3
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

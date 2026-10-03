@@ -1,0 +1,1696 @@
+{
+  "source": "min_length_7\\min_writes_4\\l7_w4_002.json",
+  "status": "accepted",
+  "placeholder_values": {
+    "order.symbol_1": "NVDA",
+    "order_id_1": 12447
+  },
+  "replay_config": {
+    "long_context": false,
+    "random_seed": 12345
+  },
+  "initial_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 220.0,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 230.0,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 98765,
+      "balance": 50000.0,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {
+      "AAPL": 20,
+      "GOOG": 10,
+      "MSFT": 15,
+      "NVDA": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12449,
+    "stocks": {
+      "AAPL": {
+        "price": 225.5,
+        "percent_change": 0.15,
+        "volume": 3.2,
+        "MA(5)": 225.1,
+        "MA(20)": 224.8
+      },
+      "GOOG": {
+        "price": 2800.0,
+        "percent_change": 0.2,
+        "volume": 1.5,
+        "MA(5)": 2795.0,
+        "MA(20)": 2805.0
+      },
+      "MSFT": {
+        "price": 310.0,
+        "percent_change": 0.1,
+        "volume": 2.8,
+        "MA(5)": 309.5,
+        "MA(20)": 310.2
+      },
+      "NVDA": {
+        "price": 220.0,
+        "percent_change": 0.3,
+        "volume": 1.8,
+        "MA(5)": 219.5,
+        "MA(20)": 220.5
+      },
+      "TSLA": {
+        "price": 650.0,
+        "percent_change": -0.1,
+        "volume": 2.0,
+        "MA(5)": 655.0,
+        "MA(20)": 660.0
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "AAPL"
+    ],
+    "transaction_history": [],
+    "random_seed": 42
+  },
+  "tool_chain": [
+    {
+      "step_id": 1,
+      "tool": "get_account_info",
+      "branch": "success_account_info",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 2,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 1000.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 3,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 500.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 4,
+      "tool": "get_available_stocks",
+      "branch": "success_standard_context",
+      "args": {
+        "sector": "Technology"
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "not $.state_before.long_context and $.args.sector in ['Technology','Automobile']",
+        "avoid": [
+          "$.state_before.long_context == true and $.args.sector in ['Technology','Automobile']"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 5,
+      "tool": "execute_order",
+      "branch": "success_buy",
+      "args": {
+        "order_id": 12447
+      },
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_conditions": {
+        "selected": "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and all earlier checks pass",
+        "avoid": [
+          "$.args.order_id not in $.state_before.orders",
+          "$.state_before.orders['{order_id_1}'].status != 'Open'",
+          "$.state_before.market_status != 'Open'",
+          "$.state_before.orders['{order_id_1}'].symbol not in $.state_before.stocks",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and $.state_before.stocks['{order.symbol_1}'].price > $.state_before.orders['{order_id_1}'].price",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.stocks['{order.symbol_1}'].price < $.state_before.orders['{order_id_1}'].price",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Buy' and round($.state_before.stocks['{order.symbol_1}'].price * $.state_before.orders['{order_id_1}'].amount, 2) > $.state_before.account_info.balance",
+          "$.state_before.orders['{order_id_1}'].order_type == 'Sell' and $.state_before.holdings['{order.symbol_1}'] < $.state_before.orders['{order_id_1}'].amount",
+          "$.state_before.orders['{order_id_1}'].order_type not in ['Buy', 'Sell']"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": [
+        {
+          "kind": "target_identity",
+          "placeholder": "order.symbol_1",
+          "binding_aliases": [
+            "order.symbol"
+          ],
+          "path": "$.state_before.orders['12447'].symbol",
+          "logic": "The target holding key is the symbol stored in the selected order.",
+          "meaning": "At this write, the addressed state key must equal the bound identity."
+        }
+      ]
+    },
+    {
+      "step_id": 6,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 2000.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 7,
+      "tool": "get_account_info",
+      "branch": "success_account_info",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "not $.state_before.authenticated"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    }
+  ],
+  "trace": [
+    {
+      "step_id": 1,
+      "tool": "get_account_info",
+      "expected_branch": "success_account_info",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "account_id": 98765,
+        "balance": 50000.0,
+        "binding_card": 4111111111111111
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 2,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 1000.0
+      },
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 49000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 3,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 500.0
+      },
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 49000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 48500.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 4,
+      "tool": "get_available_stocks",
+      "expected_branch": "success_standard_context",
+      "is_distractor": true,
+      "args": {
+        "sector": "Technology"
+      },
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 48500.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "stock_list": [
+          "AAPL",
+          "GOOG",
+          "MSFT",
+          "NVDA"
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 48500.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 5,
+      "tool": "execute_order",
+      "expected_branch": "success_buy",
+      "is_distractor": false,
+      "args": {
+        "order_id": 12447
+      },
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Open"
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 48500.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 220.0,
+        "amount": 10
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Completed",
+            "filled_price": 220.0
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 46300.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 15
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 6,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 2000.0
+      },
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Completed",
+            "filled_price": 220.0
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 46300.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 15
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Completed",
+            "filled_price": 220.0
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 44300.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 15
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2000.0,
+            "timestamp": "2024-09-01 11:24:38"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 7,
+      "tool": "get_account_info",
+      "expected_branch": "success_account_info",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Completed",
+            "filled_price": 220.0
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 44300.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 15
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2000.0,
+            "timestamp": "2024-09-01 11:24:38"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "account_id": 98765,
+        "balance": 44300.0,
+        "binding_card": 4111111111111111
+      },
+      "state_after": {
+        "orders": {
+          "12447": {
+            "id": 12447,
+            "order_type": "Buy",
+            "symbol": "NVDA",
+            "price": 220.0,
+            "amount": 10,
+            "status": "Completed",
+            "filled_price": 220.0
+          },
+          "12448": {
+            "id": 12448,
+            "order_type": "Sell",
+            "symbol": "AAPL",
+            "price": 230.0,
+            "amount": 5,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 98765,
+          "balance": 44300.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 10,
+          "MSFT": 15,
+          "NVDA": 15
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 12449,
+        "stocks": {
+          "AAPL": {
+            "price": 225.5,
+            "percent_change": 0.15,
+            "volume": 3.2,
+            "MA(5)": 225.1,
+            "MA(20)": 224.8
+          },
+          "GOOG": {
+            "price": 2800.0,
+            "percent_change": 0.2,
+            "volume": 1.5,
+            "MA(5)": 2795.0,
+            "MA(20)": 2805.0
+          },
+          "MSFT": {
+            "price": 310.0,
+            "percent_change": 0.1,
+            "volume": 2.8,
+            "MA(5)": 309.5,
+            "MA(20)": 310.2
+          },
+          "NVDA": {
+            "price": 220.0,
+            "percent_change": 0.3,
+            "volume": 1.8,
+            "MA(5)": 219.5,
+            "MA(20)": 220.5
+          },
+          "TSLA": {
+            "price": 650.0,
+            "percent_change": -0.1,
+            "volume": 2.0,
+            "MA(5)": 655.0,
+            "MA(20)": 660.0
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "AAPL"
+        ],
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 09:46:50"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:33:12"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2000.0,
+            "timestamp": "2024-09-01 11:24:38"
+          }
+        ],
+        "long_context": false
+      }
+    }
+  ],
+  "branch_audit": {
+    "valid": true,
+    "steps": [
+      {
+        "step_id": 1,
+        "branch_match": true,
+        "observed_branch": "success_account_info",
+        "reason": "authenticated is true and long_context is false, so the otherwise branch is selected and no avoid condition is violated."
+      },
+      {
+        "step_id": 2,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated true, market_status Open, amount 1000.0 > 0 and <= balance 50000.0, long_context false; no avoid condition violated."
+      },
+      {
+        "step_id": 3,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated true, market_status Open, amount 500.0 > 0 and <= balance 49000.0, long_context false; no avoid condition violated."
+      },
+      {
+        "step_id": 4,
+        "branch_match": true,
+        "observed_branch": "success_standard_context",
+        "reason": "long_context false and sector 'Technology' is in ['Technology','Automobile'], so selected condition holds; avoid condition is false."
+      },
+      {
+        "step_id": 5,
+        "branch_match": true,
+        "observed_branch": "success_buy",
+        "reason": "Order 12447 exists, status Open, market Open, symbol NVDA in stocks, order_type Buy, stock price 220.0 <= limit 220.0, trade value 2200.0 <= balance 48500.0, long_context false; target identity requirement satisfied: order.symbol_1 bound to NVDA matches state_before.orders['12447'].symbol."
+      },
+      {
+        "step_id": 6,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated true, market_status Open, amount 2000.0 > 0 and <= balance 46300.0, long_context false; no avoid condition violated."
+      },
+      {
+        "step_id": 7,
+        "branch_match": true,
+        "observed_branch": "success_account_info",
+        "reason": "authenticated is true and long_context is false, so the otherwise branch is selected and no avoid condition is violated."
+      }
+    ],
+    "issues": []
+  },
+  "debug_rounds": 0,
+  "diversity": {
+    "enabled": true,
+    "guide": "避免重复使用相同订单ID",
+    "retrieved_ids": [
+      "1fc8770c477d44d9d5297c59fb93b4c4cade132a4a72432ee293f68b3c01b6a6",
+      "bd9e8a770e9f00081c7c543ea2048ec9356ec555579de76c379730c2f5f7fe9c",
+      "d1420a939581ac6128d463568674914d9c3501741c3a1e45fef972650cd09fe8",
+      "27c0f5b12c7eafed2b8e40f41d593ed0215a9250aaf2d37552b480ef2f763acc"
+    ],
+    "accepted_in_scope": 41,
+    "update": {
+      "stored": true,
+      "id": "5f35065a19956f2182b595165f986080f3d8dc1db4512654b073d4467108c1aa"
+    }
+  },
+  "query": "I’d like to sort out my trading account today. Please pull up my account information. I need to withdraw $1,000, followed by a separate $500 withdrawal. While I’m deciding on a purchase, can you list the available stocks in the Technology sector? Please fill my existing open order 12447. Once that’s done, I need an additional $2,000 withdrawal, and I’d like to check my account information again to confirm where things stand.",
+  "query_generation": {
+    "model": "deepseek-v4-pro",
+    "language": "English",
+    "prompt_version": "agent-query-v2",
+    "trajectory_sha256": "5b0b10cc53a01bd7e8ca881d52f81004f94857ddd21540d8388ce98be02b319a",
+    "generated_at": "2026-10-02T11:05:42.752399+00:00",
+    "attempts": 1,
+    "audit": {
+      "valid": true,
+      "natural": true,
+      "faithful": true,
+      "no_answer_leakage": true,
+      "issues": [],
+      "coverage": [
+        {
+          "step_id": 1,
+          "supported": true,
+          "query_quote": "Please pull up my account information.",
+          "reason": "Requests the initial account information check."
+        },
+        {
+          "step_id": 2,
+          "supported": true,
+          "query_quote": "I need to withdraw $1,000",
+          "reason": "Requests the first withdrawal of $1,000."
+        },
+        {
+          "step_id": 3,
+          "supported": true,
+          "query_quote": "followed by a separate $500 withdrawal",
+          "reason": "Requests a second, separate withdrawal of $500 after the first."
+        },
+        {
+          "step_id": 4,
+          "supported": true,
+          "query_quote": "can you list the available stocks in the Technology sector?",
+          "reason": "Requests the Technology-sector stock list."
+        },
+        {
+          "step_id": 5,
+          "supported": true,
+          "query_quote": "Please fill my existing open order 12447.",
+          "reason": "Requests filling the specified order by ID."
+        },
+        {
+          "step_id": 6,
+          "supported": true,
+          "query_quote": "Once that’s done, I need an additional $2,000 withdrawal",
+          "reason": "Requests another withdrawal of $2,000 after order execution."
+        },
+        {
+          "step_id": 7,
+          "supported": true,
+          "query_quote": "I’d like to check my account information again to confirm where things stand.",
+          "reason": "Requests a final account information check after the mutations."
+        }
+      ]
+    },
+    "blind_review": {
+      "natural": true,
+      "naturalness_reason": "The request is coherent, conversational, and includes specific inputs and natural timing, even though it lists several sequential account tasks.",
+      "tool_call_counts": {
+        "get_account_info": 2,
+        "withdraw_funds": 3,
+        "get_available_stocks": 1,
+        "execute_order": 1
+      },
+      "extra_tasks": []
+    },
+    "validation": "LLM semantic review; not an agent execution test"
+  }
+}

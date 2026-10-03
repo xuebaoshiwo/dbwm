@@ -1,0 +1,2698 @@
+{
+  "source": "min_length_7\\min_writes_4\\l7_w4_005.json",
+  "status": "accepted",
+  "placeholder_values": {},
+  "replay_config": {
+    "long_context": false,
+    "random_seed": 12345
+  },
+  "initial_state": {
+    "orders": {
+      "9001": {
+        "id": 9001,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 305.12,
+        "amount": 20,
+        "status": "Completed",
+        "filled_price": 304.98
+      },
+      "9002": {
+        "id": 9002,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 225.45,
+        "amount": 15,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 9001,
+      "balance": 50000.0,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {
+      "MSFT": 20,
+      "NVDA": 15,
+      "AAPL": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 9003,
+    "stocks": {
+      "AAPL": {
+        "price": 228.45,
+        "percent_change": 0.21,
+        "volume": 2.612,
+        "MA(5)": 228.12,
+        "MA(20)": 228.34
+      },
+      "GOOG": {
+        "price": 2845.67,
+        "percent_change": 0.31,
+        "volume": 1.234,
+        "MA(5)": 2840.12,
+        "MA(20)": 2848.9
+      },
+      "TSLA": {
+        "price": 670.12,
+        "percent_change": -0.15,
+        "volume": 1.789,
+        "MA(5)": 672.34,
+        "MA(20)": 669.45
+      },
+      "MSFT": {
+        "price": 312.45,
+        "percent_change": 0.12,
+        "volume": 3.456,
+        "MA(5)": 311.23,
+        "MA(20)": 312.78
+      },
+      "NVDA": {
+        "price": 222.34,
+        "percent_change": 0.41,
+        "volume": 1.345,
+        "MA(5)": 221.56,
+        "MA(20)": 222.89
+      },
+      "ALPH": {
+        "price": 1325.67,
+        "percent_change": -0.11,
+        "volume": 1.678,
+        "MA(5)": 1326.45,
+        "MA(20)": 1328.12
+      },
+      "OMEG": {
+        "price": 460.12,
+        "percent_change": 0.15,
+        "volume": 2.456,
+        "MA(5)": 459.34,
+        "MA(20)": 461.23
+      },
+      "QUAS": {
+        "price": 728.45,
+        "percent_change": -0.06,
+        "volume": 1.89,
+        "MA(5)": 729.12,
+        "MA(20)": 730.45
+      },
+      "NEPT": {
+        "price": 89.12,
+        "percent_change": 0.22,
+        "volume": 0.765,
+        "MA(5)": 88.9,
+        "MA(20)": 89.34
+      },
+      "SYNX": {
+        "price": 348.12,
+        "percent_change": 0.14,
+        "volume": 2.234,
+        "MA(5)": 347.56,
+        "MA(20)": 348.9
+      },
+      "ZETA": {
+        "price": 23.45,
+        "percent_change": -0.08,
+        "volume": 0.89,
+        "MA(5)": 23.56,
+        "MA(20)": 23.78
+      },
+      "AMZN": {
+        "price": 145.67,
+        "percent_change": 0.18,
+        "volume": 4.567,
+        "MA(5)": 145.12,
+        "MA(20)": 146.23
+      },
+      "GORI": {
+        "price": 12.34,
+        "percent_change": 0.05,
+        "volume": 0.123,
+        "MA(5)": 12.3,
+        "MA(20)": 12.4
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "MSFT"
+    ],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 10000.0,
+        "timestamp": "2024-08-15 09:30:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 2500.0,
+        "timestamp": "2024-08-20 14:15:00"
+      }
+    ],
+    "random_seed": 987654
+  },
+  "tool_chain": [
+    {
+      "step_id": 1,
+      "tool": "get_transaction_history",
+      "branch": "success_filtered_history",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "$.state_before.authenticated == true and $.state_before.long_context == false",
+        "avoid": [
+          "$.state_before.authenticated == false"
+        ],
+        "additional": [
+          "$.state_before.long_context == false",
+          "Omit both optional date bounds and require long_context to be false; then the filter returns the full ordered history."
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 2,
+      "tool": "get_symbol_by_name",
+      "branch": "success_found",
+      "args": {
+        "name": "Amazon"
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "$.args.name in [\"Apple\", \"Google\", \"Tesla\", \"Microsoft\", \"Nvidia\", \"Zeta Corp\", \"Alpha Tech\", \"Omega Industries\", \"Quasar Ltd.\", \"Neptune Systems\", \"Synex Solutions\", \"Amazon\", \"Gorilla\"]",
+        "avoid": [],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": true,
+      "requirements": []
+    },
+    {
+      "step_id": 3,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 1500.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 4,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 2750.5
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 5,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 800.25
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 6,
+      "tool": "withdraw_funds",
+      "branch": "success_withdrawal",
+      "args": {
+        "amount": 3200.0
+      },
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "otherwise",
+        "avoid": [
+          "$.state_before.authenticated == false",
+          "$.state_before.market_status != \"Open\"",
+          "$.args.amount <= 0",
+          "$.args.amount > $.state_before.account_info.balance"
+        ],
+        "additional": [
+          "$.state_before.long_context == false"
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    },
+    {
+      "step_id": 7,
+      "tool": "get_transaction_history",
+      "branch": "success_filtered_history",
+      "args": {},
+      "placeholder_bindings": {},
+      "branch_conditions": {
+        "selected": "$.state_before.authenticated == true and $.state_before.long_context == false",
+        "avoid": [
+          "$.state_before.authenticated == false"
+        ],
+        "additional": [
+          "$.state_before.long_context == false",
+          "Omit both optional date bounds and require long_context to be false; then the filter returns the full ordered history."
+        ]
+      },
+      "is_distractor": false,
+      "requirements": []
+    }
+  ],
+  "trace": [
+    {
+      "step_id": 1,
+      "tool": "get_transaction_history",
+      "expected_branch": "success_filtered_history",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          }
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 2,
+      "tool": "get_symbol_by_name",
+      "expected_branch": "success_found",
+      "is_distractor": true,
+      "args": {
+        "name": "Amazon"
+      },
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "symbol": "AMZN"
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 3,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 1500.0
+      },
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 50000.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 48500.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 4,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 2750.5
+      },
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 48500.0,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 45749.5,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 5,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 800.25
+      },
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 45749.5,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 44949.25,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-09-02 00:40:04"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 6,
+      "tool": "withdraw_funds",
+      "expected_branch": "success_withdrawal",
+      "is_distractor": false,
+      "args": {
+        "amount": 3200.0
+      },
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 44949.25,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-09-02 00:40:04"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "status": "Withdrawal successful"
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 41749.25,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-09-02 00:40:04"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 3200.0,
+            "timestamp": "2024-09-01 18:26:22"
+          }
+        ],
+        "long_context": false
+      }
+    },
+    {
+      "step_id": 7,
+      "tool": "get_transaction_history",
+      "expected_branch": "success_filtered_history",
+      "is_distractor": false,
+      "args": {},
+      "state_before": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 41749.25,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-09-02 00:40:04"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 3200.0,
+            "timestamp": "2024-09-01 18:26:22"
+          }
+        ],
+        "long_context": false
+      },
+      "result": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-09-02 00:40:04"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 3200.0,
+            "timestamp": "2024-09-01 18:26:22"
+          }
+        ]
+      },
+      "state_after": {
+        "orders": {
+          "9001": {
+            "id": 9001,
+            "order_type": "Buy",
+            "symbol": "MSFT",
+            "price": 305.12,
+            "amount": 20,
+            "status": "Completed",
+            "filled_price": 304.98
+          },
+          "9002": {
+            "id": 9002,
+            "order_type": "Sell",
+            "symbol": "NVDA",
+            "price": 225.45,
+            "amount": 15,
+            "status": "Pending"
+          }
+        },
+        "account_info": {
+          "account_id": 9001,
+          "balance": 41749.25,
+          "binding_card": 4111111111111111
+        },
+        "holdings": {
+          "MSFT": 20,
+          "NVDA": 15,
+          "AAPL": 5
+        },
+        "authenticated": true,
+        "market_status": "Open",
+        "order_counter": 9003,
+        "stocks": {
+          "AAPL": {
+            "price": 228.45,
+            "percent_change": 0.21,
+            "volume": 2.612,
+            "MA(5)": 228.12,
+            "MA(20)": 228.34
+          },
+          "GOOG": {
+            "price": 2845.67,
+            "percent_change": 0.31,
+            "volume": 1.234,
+            "MA(5)": 2840.12,
+            "MA(20)": 2848.9
+          },
+          "TSLA": {
+            "price": 670.12,
+            "percent_change": -0.15,
+            "volume": 1.789,
+            "MA(5)": 672.34,
+            "MA(20)": 669.45
+          },
+          "MSFT": {
+            "price": 312.45,
+            "percent_change": 0.12,
+            "volume": 3.456,
+            "MA(5)": 311.23,
+            "MA(20)": 312.78
+          },
+          "NVDA": {
+            "price": 222.34,
+            "percent_change": 0.41,
+            "volume": 1.345,
+            "MA(5)": 221.56,
+            "MA(20)": 222.89
+          },
+          "ALPH": {
+            "price": 1325.67,
+            "percent_change": -0.11,
+            "volume": 1.678,
+            "MA(5)": 1326.45,
+            "MA(20)": 1328.12
+          },
+          "OMEG": {
+            "price": 460.12,
+            "percent_change": 0.15,
+            "volume": 2.456,
+            "MA(5)": 459.34,
+            "MA(20)": 461.23
+          },
+          "QUAS": {
+            "price": 728.45,
+            "percent_change": -0.06,
+            "volume": 1.89,
+            "MA(5)": 729.12,
+            "MA(20)": 730.45
+          },
+          "NEPT": {
+            "price": 89.12,
+            "percent_change": 0.22,
+            "volume": 0.765,
+            "MA(5)": 88.9,
+            "MA(20)": 89.34
+          },
+          "SYNX": {
+            "price": 348.12,
+            "percent_change": 0.14,
+            "volume": 2.234,
+            "MA(5)": 347.56,
+            "MA(20)": 348.9
+          },
+          "ZETA": {
+            "price": 23.45,
+            "percent_change": -0.08,
+            "volume": 0.89,
+            "MA(5)": 23.56,
+            "MA(20)": 23.78
+          },
+          "AMZN": {
+            "price": 145.67,
+            "percent_change": 0.18,
+            "volume": 4.567,
+            "MA(5)": 145.12,
+            "MA(20)": 146.23
+          },
+          "GORI": {
+            "price": 12.34,
+            "percent_change": 0.05,
+            "volume": 0.123,
+            "MA(5)": 12.3,
+            "MA(20)": 12.4
+          }
+        },
+        "watch_list": [
+          "NVDA",
+          "MSFT"
+        ],
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 10000.0,
+            "timestamp": "2024-08-15 09:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-08-20 14:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2750.5,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 800.25,
+            "timestamp": "2024-09-02 00:40:04"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 3200.0,
+            "timestamp": "2024-09-01 18:26:22"
+          }
+        ],
+        "long_context": false
+      }
+    }
+  ],
+  "branch_audit": {
+    "valid": true,
+    "steps": [
+      {
+        "step_id": 1,
+        "branch_match": true,
+        "observed_branch": "success_filtered_history",
+        "reason": "authenticated=true and long_context=false, so selected condition holds; result contains full transaction history without error."
+      },
+      {
+        "step_id": 2,
+        "branch_match": true,
+        "observed_branch": "success_found",
+        "reason": "args.name='Amazon' is in allowed list; result returns symbol 'AMZN' (not 'Stock not found')."
+      },
+      {
+        "step_id": 3,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated=true, market_status='Open', amount=1500.0 >0 and <= balance 50000.0; result status 'Withdrawal successful'."
+      },
+      {
+        "step_id": 4,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated=true, market_status='Open', amount=2750.5 >0 and <= balance 48500.0; result status 'Withdrawal successful'."
+      },
+      {
+        "step_id": 5,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated=true, market_status='Open', amount=800.25 >0 and <= balance 45749.5; result status 'Withdrawal successful'."
+      },
+      {
+        "step_id": 6,
+        "branch_match": true,
+        "observed_branch": "success_withdrawal",
+        "reason": "authenticated=true, market_status='Open', amount=3200.0 >0 and <= balance 44949.25; result status 'Withdrawal successful'."
+      },
+      {
+        "step_id": 7,
+        "branch_match": true,
+        "observed_branch": "success_filtered_history",
+        "reason": "authenticated=true and long_context=false, so selected condition holds; result contains full transaction history including all withdrawals without error."
+      }
+    ],
+    "issues": []
+  },
+  "debug_rounds": 0,
+  "diversity": {
+    "enabled": true,
+    "guide": "避免重复使用相同股票名称和提现金额",
+    "retrieved_ids": [
+      "709eac6108386267d90750d319754eb0ae14a86303e5bac574d3907f9e6944df",
+      "9e9947cae0c92819e8b36e8c28aca1724a5fa557b4d71066bf159e6532e66ea3",
+      "a673ccb133e3dd672e5867ea6275a33beb111a28bcf5ec5ad39e7a5206cbdcd3",
+      "6d141e145182887e93a1fd21ba48430a01c2bcbdb3285e0fa260b10b9b452be7"
+    ],
+    "accepted_in_scope": 44,
+    "update": {
+      "stored": true,
+      "id": "9b40e0cc5f2cbcc10d861e91853ad44529804a3381339ca4d9f0f2181ca4270a"
+    }
+  },
+  "query": "I’m looking at my account activity and want to make a few cash moves. Could you show me my transaction history? Also, grab the ticker for Amazon. Then I need to withdraw $1,500, $2,750.50, $800.25, and $3,200 from my account. Once those are done, show me the transaction history again so I can see the updated record.",
+  "query_generation": {
+    "model": "deepseek-v4-pro",
+    "language": "English",
+    "prompt_version": "agent-query-v2",
+    "trajectory_sha256": "5b388ba6d8801f0f19b57083144ae871399938a1aa982450167679b723b5b7d7",
+    "generated_at": "2026-10-02T11:06:27.029267+00:00",
+    "attempts": 1,
+    "audit": {
+      "valid": true,
+      "natural": true,
+      "faithful": true,
+      "no_answer_leakage": true,
+      "issues": [],
+      "coverage": [
+        {
+          "step_id": 1,
+          "supported": true,
+          "query_quote": "Could you show me my transaction history?",
+          "reason": "Requests the initial transaction history before the withdrawals."
+        },
+        {
+          "step_id": 2,
+          "supported": true,
+          "query_quote": "grab the ticker for Amazon",
+          "reason": "Requests the Amazon ticker lookup."
+        },
+        {
+          "step_id": 3,
+          "supported": true,
+          "query_quote": "withdraw $1,500, $2,750.50, $800.25, and $3,200 from my account",
+          "reason": "Specifies the first withdrawal amount in the requested order."
+        },
+        {
+          "step_id": 4,
+          "supported": true,
+          "query_quote": "withdraw $1,500, $2,750.50, $800.25, and $3,200 from my account",
+          "reason": "Specifies the second withdrawal amount in the requested order."
+        },
+        {
+          "step_id": 5,
+          "supported": true,
+          "query_quote": "withdraw $1,500, $2,750.50, $800.25, and $3,200 from my account",
+          "reason": "Specifies the third withdrawal amount in the requested order."
+        },
+        {
+          "step_id": 6,
+          "supported": true,
+          "query_quote": "withdraw $1,500, $2,750.50, $800.25, and $3,200 from my account",
+          "reason": "Specifies the fourth withdrawal amount in the requested order."
+        },
+        {
+          "step_id": 7,
+          "supported": true,
+          "query_quote": "Once those are done, show me the transaction history again",
+          "reason": "Requests a fresh transaction history after the withdrawals are complete."
+        }
+      ]
+    },
+    "blind_review": {
+      "natural": true,
+      "naturalness_reason": "The request is conversational and goal-led, with specific amounts and a natural before-and-after check of transaction history.",
+      "tool_call_counts": {
+        "get_transaction_history": 2,
+        "get_symbol_by_name": 1,
+        "withdraw_funds": 4
+      },
+      "extra_tasks": []
+    },
+    "validation": "LLM semantic review; not an agent execution test"
+  }
+}

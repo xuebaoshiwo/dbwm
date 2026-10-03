@@ -1,0 +1,85 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 9089.0,
+    "holdings": {
+      "AAPL": 1,
+      "MSFT": 1,
+      "NVDA": 1,
+      "TSLA": 1,
+      "__unobserved_stock_12447": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 227.16,
+      "MSFT": 0.001,
+      "NVDA": 0.001,
+      "TSLA": 0.001,
+      "__unobserved_stock_12447": 0.001
+    },
+    "initial_orders": {},
+    "order_counter": 12447,
+    "watchlist": [
+      "NVDA"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34"
+    ]
+  },
+  "witness_state": {
+    "orders": {},
+    "account_info": {
+      "account_id": 12345,
+      "balance": 9089.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 1,
+      "MSFT": 1,
+      "NVDA": 1,
+      "TSLA": 1,
+      "__unobserved_stock_12447": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {
+      "AAPL": {
+        "price": 227.16,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "MSFT": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "TSLA": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "NVDA"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.35999999998603016
+}

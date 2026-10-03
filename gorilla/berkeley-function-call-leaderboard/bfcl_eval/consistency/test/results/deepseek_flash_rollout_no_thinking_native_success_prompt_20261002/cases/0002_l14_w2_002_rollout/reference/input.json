@@ -1,0 +1,176 @@
+{
+  "steps": [
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 90214,
+        "balance": 32500.75,
+        "binding_card": 4263981620395871
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1200.75
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "NVDA"
+        ]
+      }
+    },
+    {
+      "tool": "filter_stocks_by_price",
+      "args": {
+        "stocks": [
+          "NEPT",
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "SYNX"
+        ],
+        "min_price": 300.0,
+        "max_price": 1500.0
+      },
+      "observation": {
+        "filtered_stocks": [
+          "ALPH",
+          "OMEG",
+          "QUAS",
+          "SYNX"
+        ]
+      }
+    },
+    {
+      "tool": "filter_stocks_by_price",
+      "args": {
+        "stocks": [
+          "NEPT",
+          "OMEG",
+          "SYNX",
+          "ZETA"
+        ],
+        "min_price": 20.0,
+        "max_price": 500.0
+      },
+      "observation": {
+        "filtered_stocks": [
+          "NEPT",
+          "OMEG",
+          "SYNX",
+          "ZETA"
+        ]
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "ALPH"
+      },
+      "observation": {
+        "status": "Stock ALPH removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "NEPT"
+      },
+      "observation": {
+        "status": "Stock NEPT added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "OMEG",
+          "QUAS",
+          "NVDA",
+          "NEPT"
+        ]
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 41023
+      },
+      "observation": {
+        "order_id": 41023,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 41023
+      },
+      "observation": {
+        "order_id": 41023,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 850.5
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "filter_stocks_by_price",
+      "args": {
+        "stocks": [
+          "ALPH",
+          "QUAS",
+          "NEPT",
+          "OMEG"
+        ],
+        "min_price": 700.0,
+        "max_price": 1400.0
+      },
+      "observation": {
+        "filtered_stocks": [
+          "ALPH",
+          "QUAS"
+        ]
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 90214,
+        "balance": 30449.5,
+        "binding_card": 4263981620395871
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

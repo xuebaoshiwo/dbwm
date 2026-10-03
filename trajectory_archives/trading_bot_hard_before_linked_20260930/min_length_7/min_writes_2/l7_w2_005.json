@@ -1,0 +1,654 @@
+{
+  "targets": [
+    {
+      "name": "watch_list",
+      "path": "$.state_before.watch_list"
+    }
+  ],
+  "state_conditions": {
+    "$.state_before.long_context": false
+  },
+  "steps": [
+    {
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.state_before.authenticated == true and $.state_before.long_context == true"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated"
+      ],
+      "role": "anchor",
+      "roles": [
+        "anchor"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.watchlist",
+          "source_kind": "state_direct",
+          "source": "$.state_before.watch_list",
+          "logic": "Returns the current watchlist state directly under the key 'watchlist'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.watch_list",
+          "depth": 0,
+          "kind": "initial_anchor",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.watchlist",
+            "source": "$.state_before.watch_list",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.watchlist",
+      "selected_return_source": "$.state_before.watch_list",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 1
+    },
+    {
+      "tool": "activate_order",
+      "branch": "success_activated",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+      ],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the input order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Open",
+          "logic": "Returns the literal status string 'Open' after successful activation.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_activated",
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "operation": "set",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Sets the order status to the constant value 'Open'.",
+          "state_source_relations": [],
+          "target_identity_sources": []
+        }
+      ],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 2
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "branch": "success_removed",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.args.symbol not in $.state_before.watch_list"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.args.symbol not in $.state_before.watch_list"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "The success status message is formatted with the supplied stock symbol after removal.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_removed",
+          "target": "$.state_after.watch_list",
+          "operation": "delete",
+          "value_from": [
+            "$.state_before.watch_list",
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "Removes the list element equal to the supplied stock symbol from the watchlist.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "collection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Removing an item loses its original position in the list."
+            }
+          ],
+          "target_identity_sources": []
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "watch_list"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.watch_list",
+          "mutation_target": "$.state_after.watch_list",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.watch_list",
+            "anchor_phase": "before",
+            "anchor_step": 1,
+            "mutation_steps": [],
+            "observation_steps": []
+          },
+          "target_identity_relations": []
+        }
+      ],
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.watch_list",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 3
+    },
+    {
+      "tool": "filter_stocks_by_price",
+      "branch": "success_filtered",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {
+        "symbol": "symbol_1"
+      },
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.filtered_stocks",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.stocks",
+            "$.args.min_price",
+            "$.args.max_price",
+            "$.state_before.stocks['{symbol_1}'].price"
+          ],
+          "external_from": [],
+          "logic": "Filters the input stock list to symbols whose stock price in the backend state is between min_price and max_price inclusive. Unknown symbols are treated as having price 0, so they are included only if 0 falls within the range.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.stocks['{symbol_1}'].price",
+              "transform": "comparison",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Membership reveals only whether each price falls inside the requested interval."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.stocks['{symbol_1}'].price",
+              "transform": "comparison",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. Membership reveals only whether each price falls inside the requested interval."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 4
+    },
+    {
+      "tool": "cancel_order",
+      "branch": "success_cancelled",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_2"
+      },
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_2}'].status == \"Completed\"",
+        "$.state_before.orders['{order_id_2}'].status == \"Cancelled\""
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_2}'].status == \"Completed\"",
+        "$.state_before.orders['{order_id_2}'].status == \"Cancelled\""
+      ],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Cancelled",
+          "logic": "Returns the literal new order status produced by the cancellation operation.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_2}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_cancelled",
+          "target": "$.state_after.orders['{order_id_2}'].status",
+          "operation": "set",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Set the matching order's status field to the literal value 'Cancelled'.",
+          "state_source_relations": [],
+          "target_identity_sources": []
+        }
+      ],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_2}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 5
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "branch": "success_removed",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.args.symbol not in $.state_before.watch_list"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.args.symbol not in $.state_before.watch_list"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.status",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "The success status message is formatted with the supplied stock symbol after removal.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_removed",
+          "target": "$.state_after.watch_list",
+          "operation": "delete",
+          "value_from": [
+            "$.state_before.watch_list",
+            "$.args.symbol"
+          ],
+          "external_from": [],
+          "logic": "Removes the list element equal to the supplied stock symbol from the watchlist.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "collection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "Removing an item loses its original position in the list."
+            }
+          ],
+          "target_identity_sources": []
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "watch_list"
+      ],
+      "write_source_requirements": [
+        {
+          "path": "$.state_before.watch_list",
+          "mutation_target": "$.state_after.watch_list",
+          "resolution": "earlier_chain",
+          "evidence": {
+            "kind": "propagated_state",
+            "source": "$.state_before.watch_list",
+            "anchor_phase": "before",
+            "anchor_step": 1,
+            "mutation_steps": [
+              3
+            ],
+            "observation_steps": []
+          },
+          "target_identity_relations": []
+        }
+      ],
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.watch_list",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 6
+    },
+    {
+      "tool": "get_watchlist",
+      "branch": "success_standard",
+      "placeholder_bindings": {},
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not $.state_before.authenticated",
+        "$.state_before.authenticated == true and $.state_before.long_context == true"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not $.state_before.authenticated"
+      ],
+      "role": "read",
+      "roles": [
+        "read"
+      ],
+      "field": "$.state_before.watch_list",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.watchlist",
+          "source_kind": "state_direct",
+          "source": "$.state_before.watch_list",
+          "logic": "Returns the current watchlist state directly under the key 'watchlist'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.watch_list",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.watch_list",
+          "depth": 0,
+          "kind": "final_read",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.watchlist",
+            "source": "$.state_before.watch_list",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.watchlist",
+      "selected_return_source": "$.state_before.watch_list",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 7
+    }
+  ],
+  "planning": {
+    "direction": "backward",
+    "target_chains": {
+      "watch_list": {
+        "path": "$.state_before.watch_list",
+        "anchor_step": 1,
+        "read_step": 7,
+        "anchor_phase": "before",
+        "read_phase": "before",
+        "write_steps": [
+          3,
+          6
+        ],
+        "write_count": 2,
+        "source_fixed_write_steps": [
+          3,
+          6
+        ],
+        "fully_source_fixed": true,
+        "min_write_count": 2,
+        "write_shortfall": 0,
+        "shortfall_reason": null,
+        "writer_tools": [
+          "remove_stock_from_watchlist"
+        ]
+      }
+    },
+    "dependency_scope": "selected_mutation_and_return_field",
+    "target_min_writes": {
+      "watch_list": 2
+    },
+    "write_count_mode": "at_least_minimum",
+    "lifecycle_targets": [],
+    "lifecycle_instances": {},
+    "dependency_max_writes": 1,
+    "min_length": 7,
+    "max_length": 60,
+    "core_length": 4,
+    "support_anchor_count": 0,
+    "necessary_length": 4,
+    "distractor_count": 3,
+    "redundant_anchors_removed": [],
+    "writer_tools_by_target": {
+      "watch_list": [
+        "remove_stock_from_watchlist"
+      ]
+    },
+    "writer_candidates_by_target": {
+      "watch_list": [
+        {
+          "tool": "add_to_watchlist",
+          "branch": "success_added_stock",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.watch_list",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "remove_stock_from_watchlist",
+          "branch": "success_removed",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.watch_list",
+          "unfixable_write_sources": []
+        }
+      ]
+    },
+    "unresolved_structural_sources": [],
+    "unfixed_side_effects": [],
+    "execution": "not_run",
+    "arguments": "not_instantiated",
+    "initial_state": "not_generated",
+    "grounding_obligations": [
+      "Load the backend with long_context=False and keep that environment mode fixed throughout the trajectory.",
+      "Satisfy each selected branch condition and avoid every earlier branch.",
+      "Assign concrete keys to numbered placeholders, preserving their identities and each lifecycle instance's initial states.",
+      "At each selected write, require every target_identity_relations path's pre-call value to equal the concrete key bound to its placeholder; verify this against observations, not only initial state.",
+      "Ground every retained side effect; unfixed_side_effects does not imply the affected state is derivable from observations.",
+      "Satisfy reversible-domain assumptions and additional reader conditions.",
+      "Instantiate time/random sources consistently with mutations and observations.",
+      "Reject and resample chains whose conditions cannot be jointly instantiated; no backend feasibility is claimed."
+    ],
+    "attempts": 1,
+    "rejected_attempts": {},
+    "seed": 1022111643217338479
+  },
+  "id": "l7_w2_005",
+  "sampling_group": {
+    "min_length": 7,
+    "target_count": 1,
+    "min_writes": 2,
+    "batch_seed": 20260929
+  }
+}

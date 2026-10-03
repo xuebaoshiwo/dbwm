@@ -1,0 +1,82 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 2.0,
+    "holdings": {
+      "AAPL": 1,
+      "NVDA": 1,
+      "TSLA": 1,
+      "__unobserved_stock_12446": 1
+    },
+    "authenticated": true,
+    "market_status": "Closed",
+    "stock_prices": {
+      "AAPL": 0.001,
+      "NVDA": 0.001,
+      "TSLA": 0.001,
+      "__unobserved_stock_12446": 0.001
+    },
+    "initial_orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 1.0,
+        "amount": 1,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [
+      "NVDA",
+      "AAPL"
+    ],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 1.0,
+        "amount": 1,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 2.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 1,
+      "NVDA": 1,
+      "TSLA": 1,
+      "__unobserved_stock_12446": 1
+    },
+    "authenticated": true,
+    "market_status": "Closed",
+    "order_counter": 12447,
+    "stocks": {
+      "TSLA": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "NVDA",
+      "AAPL"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.5
+}

@@ -1,0 +1,189 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 30203
+      },
+      "observation": {
+        "id": 30203,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 350.0,
+        "amount": 4,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 20,
+          "GOOG": 8,
+          "MSFT": 12,
+          "NVDA": 5,
+          "TSLA": 15
+        }
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 30203
+      },
+      "observation": {
+        "order_id": 30203,
+        "status": "Completed",
+        "filled_price": 339.2,
+        "amount": 4
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 30201
+      },
+      "observation": {
+        "id": 30201,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 700.0,
+        "amount": 15,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 30202
+      },
+      "observation": {
+        "id": 30202,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 245.0,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 30202
+      },
+      "observation": {
+        "order_id": 30202,
+        "status": "Completed",
+        "filled_price": 238.4,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Amazon"
+      },
+      "observation": {
+        "symbol": "AMZN"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 30201
+      },
+      "observation": {
+        "order_id": 30201,
+        "status": "Completed",
+        "filled_price": 712.35,
+        "amount": 15
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 30,
+          "GOOG": 8,
+          "MSFT": 16,
+          "NVDA": 5
+        }
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 25000.0,
+            "timestamp": "2024-08-29 09:15:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 900.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 25000.0,
+            "timestamp": "2024-08-29 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1200.0,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-01 10:52:12"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 900.0,
+            "timestamp": "2024-09-01 21:22:23"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

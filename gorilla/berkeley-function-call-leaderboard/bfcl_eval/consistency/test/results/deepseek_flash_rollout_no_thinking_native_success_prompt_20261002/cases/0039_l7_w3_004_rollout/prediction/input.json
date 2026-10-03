@@ -1,0 +1,82 @@
+{
+  "steps": [
+    {
+      "tool": "place_order",
+      "args": {
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 200.0,
+        "amount": 10
+      },
+      "observation": {
+        "order_id": 801,
+        "order_type": "Buy",
+        "status": "Pending",
+        "price": 200.0,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_market_status",
+      "args": {},
+      "observation": {
+        "market_status": "Open"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "get_market_status",
+      "args": {},
+      "observation": {
+        "market_status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 200.0,
+        "amount": 10,
+        "status": "Cancelled"
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

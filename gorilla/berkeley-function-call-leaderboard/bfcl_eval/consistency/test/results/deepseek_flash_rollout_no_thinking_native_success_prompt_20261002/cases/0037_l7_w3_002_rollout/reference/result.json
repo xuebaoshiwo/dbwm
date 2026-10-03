@@ -1,0 +1,67 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 2502.0,
+    "holdings": {
+      "ALPH": 1,
+      "GOOG": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "ALPH": 0.001,
+      "GOOG": 0.001
+    },
+    "initial_orders": {},
+    "order_counter": 1,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 14:47:39",
+      "2024-09-02 06:56:32",
+      "2024-09-02 00:40:04"
+    ]
+  },
+  "witness_state": {
+    "orders": {},
+    "account_info": {
+      "account_id": 12345,
+      "balance": 2502.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "ALPH": 1,
+      "GOOG": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 1,
+    "stocks": {
+      "ALPH": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 1.567,
+        "MA(5)": 1321.12,
+        "MA(20)": 1325.78
+      },
+      "GOOG": {
+        "price": 0.001,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 14:47:39",
+      "2024-09-02 06:56:32",
+      "2024-09-02 00:40:04"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.4059999999590218
+}

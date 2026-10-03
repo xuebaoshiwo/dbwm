@@ -1,0 +1,139 @@
+{
+  "steps": [
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "NVDA",
+          "AAPL",
+          "TSLA"
+        ]
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "place_order",
+      "args": {
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 220.0,
+        "amount": 10
+      },
+      "observation": {
+        "order_id": 802,
+        "order_type": "Buy",
+        "status": "Pending",
+        "price": 220.0,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL is already in the watchlist."
+      }
+    },
+    {
+      "tool": "get_market_status",
+      "args": {},
+      "observation": {
+        "market_status": "Open"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "error": "Order with ID 12447 not found."
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "error": "Order with ID 12447 not found."
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "error": "Order with ID 12447 not found.Here is the list of orders_id: [802]"
+      }
+    },
+    {
+      "tool": "get_current_time",
+      "args": {},
+      "observation": {
+        "current_time": "10:30 AM"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "GOOG"
+      },
+      "observation": {
+        "status": "Stock GOOG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_market_status",
+      "args": {},
+      "observation": {
+        "market_status": "Open"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "AAPL",
+          "TSLA",
+          "GOOG",
+          "MSFT"
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

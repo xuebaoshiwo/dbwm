@@ -1,0 +1,962 @@
+{
+  "targets": [
+    {
+      "name": "orders",
+      "path": "$.state_before.orders['{order_id_1}'].status"
+    }
+  ],
+  "state_conditions": {
+    "$.state_before.long_context": false
+  },
+  "steps": [
+    {
+      "tool": "place_order",
+      "branch": "success_placed_pending_order",
+      "placeholder_bindings": {
+        "args.symbol": "symbol_1",
+        "result.order_id": "order_id_1",
+        "order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.state_before.authenticated == false",
+        "$.args.symbol not in $.state_before.stocks",
+        "$.args.price <= 0 or $.args.amount <= 0",
+        "$.args.order_type.lower() not in {\"buy\", \"sell\"}",
+        "$.args.order_type.lower() == \"buy\" and float($.args.price) * int($.args.amount) > $.state_before.account_info.balance",
+        "$.args.order_type.lower() == \"sell\" and $.state_before.holdings.get('{symbol_1}', 0) < $.args.amount"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.state_before.authenticated == false",
+        "$.args.symbol not in $.state_before.stocks",
+        "$.args.price <= 0 or $.args.amount <= 0",
+        "$.args.order_type.lower() not in {\"buy\", \"sell\"}",
+        "$.args.order_type.lower() == \"buy\" and float($.args.price) * int($.args.amount) > $.state_before.account_info.balance",
+        "$.args.order_type.lower() == \"sell\" and $.state_before.holdings.get('{symbol_1}', 0) < $.args.amount"
+      ],
+      "role": "anchor",
+      "roles": [
+        "anchor"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "derived",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "external_from": [],
+          "logic": "The order_id is generated from the pre-call order counter, skipping any IDs that already exist in orders.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.order_counter",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The first free ID constrains the counter and occupied IDs but cannot reconstruct either source."
+            },
+            {
+              "path": "$.state_before.orders",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The first free ID constrains the counter and occupied IDs but cannot reconstruct either source."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            },
+            {
+              "path": "$.state_after.order_counter",
+              "transform": "arithmetic",
+              "recoverability": "conditional",
+              "given": [],
+              "reason": "The backend sets the post-call counter to returned order_id + 1."
+            }
+          ]
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.order_type"
+          ],
+          "external_from": [],
+          "logic": "The order_type is normalized by capitalizing the caller-provided value, e.g. 'buy' becomes 'Buy'.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Pending",
+          "logic": "Newly placed orders always receive the initial status 'Pending'.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.price"
+          ],
+          "external_from": [],
+          "logic": "The returned price is converted to a float from the caller-provided price argument.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "arg_direct",
+          "source": "$.args.amount",
+          "logic": "The returned amount is the unchanged caller-provided amount argument.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_placed_pending_order",
+          "target": "$.state_after.orders['{order_id_1}']",
+          "operation": "insert",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders",
+            "$.args.order_type",
+            "$.args.symbol",
+            "$.args.price",
+            "$.args.amount"
+          ],
+          "external_from": [],
+          "logic": "Creates a new order entry keyed by a generated order_id. The entry includes id, normalized order_type, symbol, float price, amount, and status 'Pending'.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.order_counter",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            },
+            {
+              "path": "$.state_before.orders",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            }
+          ],
+          "target_identity_sources": []
+        },
+        {
+          "branch": "success_placed_pending_order",
+          "target": "$.state_after.order_counter",
+          "operation": "set",
+          "value_from": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "external_from": [],
+          "logic": "Updates the order counter to one past the generated order_id, skipping any already-used IDs during generation.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.order_counter",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            },
+            {
+              "path": "$.state_before.orders",
+              "transform": "selection",
+              "recoverability": "partial",
+              "given": [],
+              "reason": "The generated ID/new order constrains but does not uniquely reveal prior counter and order contents."
+            }
+          ],
+          "target_identity_sources": []
+        }
+      ],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.orders['{order_id_1}'].status",
+          "depth": 0,
+          "kind": "initial_anchor",
+          "phase": "after",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.status",
+            "source": "$.state_after.orders['{order_id_1}'].status",
+            "requires": [],
+            "condition": null,
+            "reason": "The returned value equals this stored post-call field when present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.status",
+      "selected_return_source": "$.state_after.orders['{order_id_1}'].status",
+      "fix_dependencies": [],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_1}'].status": {
+          "from": "Absent",
+          "to": "Pending"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_1}']",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "missing_target_identities": [],
+          "post_state_known": false
+        },
+        {
+          "mutation_index": 1,
+          "target": "$.state_after.order_counter",
+          "sources_fixed": false,
+          "missing_sources": [
+            "$.state_before.order_counter",
+            "$.state_before.orders"
+          ],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 1
+    },
+    {
+      "tool": "activate_order",
+      "branch": "success_activated",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status != 'Pending'"
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the input order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Open",
+          "logic": "Returns the literal status string 'Open' after successful activation.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_activated",
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "operation": "set",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Sets the order status to the constant value 'Open'.",
+          "state_source_relations": [],
+          "target_identity_sources": []
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "orders"
+      ],
+      "write_source_requirements": [],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_1}'].status": {
+          "from": "Pending",
+          "to": "Open"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 2
+    },
+    {
+      "tool": "get_market_status",
+      "branch": "success_get_market_status",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {},
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.market_status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.market_status",
+          "logic": "The returned market_status is the unchanged value of the backend market_status field read before any modification, and no state is modified by this tool.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.market_status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 3
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "branch": "success_found",
+      "branch_condition": "$.args.name in [\"Apple\", \"Google\", \"Tesla\", \"Microsoft\", \"Nvidia\", \"Zeta Corp\", \"Alpha Tech\", \"Omega Industries\", \"Quasar Ltd.\", \"Neptune Systems\", \"Synex Solutions\", \"Amazon\", \"Gorilla\"]",
+      "placeholder_bindings": {},
+      "branch_uses": [
+        "$.args.name"
+      ],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.symbol",
+          "source_kind": "derived",
+          "value_from": [
+            "$.args.name"
+          ],
+          "external_from": [],
+          "logic": "Symbol selected from the hardcoded company-name-to-symbol map based on the provided company name.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 4
+    },
+    {
+      "tool": "cancel_order",
+      "branch": "success_cancelled",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status == \"Completed\"",
+        "$.state_before.orders['{order_id_1}'].status == \"Cancelled\""
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "$.args.order_id not in $.state_before.orders",
+        "$.state_before.orders['{order_id_1}'].status == \"Completed\"",
+        "$.state_before.orders['{order_id_1}'].status == \"Cancelled\""
+      ],
+      "role": "write",
+      "roles": [
+        "write"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.order_id",
+          "source_kind": "arg_direct",
+          "source": "$.args.order_id",
+          "logic": "Returns the requested order ID unchanged.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "constant",
+          "value": "Cancelled",
+          "logic": "Returns the literal new order status produced by the cancellation operation.",
+          "state_source_relations": [],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The returned value equals this stored post-call field when present."
+            }
+          ]
+        }
+      ],
+      "mutations": [
+        {
+          "branch": "success_cancelled",
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "operation": "set",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Set the matching order's status field to the literal value 'Cancelled'.",
+          "state_source_relations": [],
+          "target_identity_sources": []
+        }
+      ],
+      "selected_mutation_index": 0,
+      "fixes": [],
+      "write_targets": [
+        "orders"
+      ],
+      "write_source_requirements": [],
+      "lifecycle_transitions": {
+        "$.state_before.orders['{order_id_1}'].status": {
+          "from": "Open",
+          "to": "Cancelled"
+        }
+      },
+      "mutation_knowledge": [
+        {
+          "mutation_index": 0,
+          "target": "$.state_after.orders['{order_id_1}'].status",
+          "sources_fixed": true,
+          "missing_sources": [],
+          "missing_target_identities": [],
+          "post_state_known": true
+        }
+      ],
+      "index": 5
+    },
+    {
+      "tool": "get_current_time",
+      "branch": "success_get_current_time",
+      "branch_condition": "otherwise",
+      "placeholder_bindings": {},
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [],
+      "earlier_error_conditions_to_avoid": [],
+      "role": "distractor",
+      "roles": [
+        "distractor"
+      ],
+      "dependency_depth": null,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.current_time",
+          "source_kind": "derived",
+          "value_from": [],
+          "external_from": [],
+          "logic": "Formatted from the fixed module-level datetime constant CURRENT_TIME using '%I:%M %p', producing 10:30 AM.",
+          "state_source_relations": [],
+          "state_observation_relations": []
+        }
+      ],
+      "mutations": [],
+      "fixes": [],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_mutation_index": null,
+      "mutation_knowledge": [],
+      "index": 6
+    },
+    {
+      "tool": "get_order_details",
+      "branch": "success_standard",
+      "placeholder_bindings": {
+        "args.order_id": "order_id_1"
+      },
+      "branch_condition": "otherwise",
+      "branch_uses": [],
+      "earlier_branch_conditions_to_avoid": [
+        "not exists $.state_before.orders['{order_id_1}']",
+        "$.state_before.long_context == true and KeyError occurs when formatting ORDER_DETAIL_EXTENSION values using $.state_before.orders['{order_id_1}'].symbol",
+        "$.state_before.orders['{order_id_1}'] exists and $.state_before.long_context == true and no KeyError occurs while formatting ORDER_DETAIL_EXTENSION"
+      ],
+      "earlier_error_conditions_to_avoid": [
+        "not exists $.state_before.orders['{order_id_1}']",
+        "$.state_before.long_context == true and KeyError occurs when formatting ORDER_DETAIL_EXTENSION values using $.state_before.orders['{order_id_1}'].symbol"
+      ],
+      "role": "read",
+      "roles": [
+        "read"
+      ],
+      "field": "$.state_before.orders['{order_id_1}'].status",
+      "dependency_depth": 0,
+      "additional_conditions": [
+        "$.state_before.long_context == false"
+      ],
+      "return_fields": [
+        {
+          "path": "$.result.id",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].id",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].id",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.order_type",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].order_type",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].order_type",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.symbol",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].symbol",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].symbol",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].symbol",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].price",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.amount",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].amount",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].amount",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.status",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].status",
+          "logic": "Read directly from the stored order object.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].status",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        },
+        {
+          "path": "$.result.filled_price",
+          "source_kind": "state_direct",
+          "source": "$.state_before.orders['{order_id_1}'].filled_price",
+          "logic": "Read directly from the stored order object when the stored order includes a filled_price; otherwise this field is absent.",
+          "state_source_relations": [
+            {
+              "path": "$.state_before.orders['{order_id_1}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "The complete source value is returned unchanged when this field is present."
+            }
+          ],
+          "state_observation_relations": [
+            {
+              "path": "$.state_after.orders['{order_id_1}'].filled_price",
+              "transform": "copy",
+              "recoverability": "exact",
+              "given": [],
+              "reason": "This state region is unchanged on this branch. The complete source value is returned unchanged when this field is present."
+            }
+          ]
+        }
+      ],
+      "mutations": [],
+      "selected_mutation_index": null,
+      "fixes": [
+        {
+          "path": "$.state_before.orders['{order_id_1}'].status",
+          "depth": 0,
+          "kind": "final_read",
+          "phase": "before",
+          "evidence": {
+            "kind": "return",
+            "result_field": "$.result.status",
+            "source": "$.state_before.orders['{order_id_1}'].status",
+            "requires": [],
+            "condition": null,
+            "reason": "The complete source value is returned unchanged when this field is present."
+          }
+        }
+      ],
+      "write_targets": [],
+      "write_source_requirements": [],
+      "selected_return_field": "$.result.status",
+      "selected_return_source": "$.state_before.orders['{order_id_1}'].status",
+      "fix_dependencies": [],
+      "mutation_knowledge": [],
+      "index": 7
+    }
+  ],
+  "planning": {
+    "direction": "backward",
+    "target_chains": {
+      "orders": {
+        "path": "$.state_before.orders['{order_id_1}'].status",
+        "anchor_step": 1,
+        "read_step": 7,
+        "anchor_phase": "after",
+        "read_phase": "before",
+        "write_steps": [
+          2,
+          5
+        ],
+        "write_count": 2,
+        "source_fixed_write_steps": [
+          2,
+          5
+        ],
+        "fully_source_fixed": true,
+        "min_write_count": 3,
+        "write_shortfall": 1,
+        "shortfall_reason": "lifecycle_writers_exhausted",
+        "writer_tools": [
+          "activate_order",
+          "cancel_order"
+        ]
+      }
+    },
+    "dependency_scope": "selected_mutation_and_return_field",
+    "target_min_writes": {
+      "orders": 3
+    },
+    "write_count_mode": "best_effort_lifecycle",
+    "lifecycle_targets": [
+      "orders"
+    ],
+    "lifecycle_instances": {
+      "$.state_before.orders['{order_id_1}'].status": {
+        "rule": "orders",
+        "initial_states": [
+          "Absent"
+        ],
+        "transition_steps": [
+          1,
+          2,
+          5
+        ]
+      }
+    },
+    "dependency_max_writes": 1,
+    "min_length": 7,
+    "max_length": 60,
+    "core_length": 4,
+    "support_anchor_count": 0,
+    "necessary_length": 4,
+    "distractor_count": 3,
+    "redundant_anchors_removed": [],
+    "writer_tools_by_target": {
+      "orders": [
+        "activate_order",
+        "cancel_order"
+      ]
+    },
+    "writer_candidates_by_target": {
+      "orders": [
+        {
+          "tool": "activate_order",
+          "branch": "success_activated",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "cancel_order",
+          "branch": "success_cancelled",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_buy",
+          "mutation_index": 2,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_sell_with_remaining_shares",
+          "mutation_index": 2,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "execute_order",
+          "branch": "success_sell_position_closed",
+          "mutation_index": 2,
+          "mutation_target": "$.state_after.orders['{args.order_id}'].status",
+          "unfixable_write_sources": []
+        },
+        {
+          "tool": "place_order",
+          "branch": "success_placed_pending_order",
+          "mutation_index": 0,
+          "mutation_target": "$.state_after.orders['{order_id}']",
+          "unfixable_write_sources": [
+            "$.state_before.orders"
+          ]
+        }
+      ]
+    },
+    "unresolved_structural_sources": [],
+    "unfixed_side_effects": [
+      {
+        "step": 1,
+        "mutation_index": 0,
+        "target": "$.state_after.orders['{order_id_1}']",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.order_counter",
+          "$.state_before.orders"
+        ],
+        "missing_target_identities": [],
+        "post_state_known": false
+      },
+      {
+        "step": 1,
+        "mutation_index": 1,
+        "target": "$.state_after.order_counter",
+        "sources_fixed": false,
+        "missing_sources": [
+          "$.state_before.order_counter",
+          "$.state_before.orders"
+        ],
+        "missing_target_identities": [],
+        "post_state_known": true
+      }
+    ],
+    "execution": "not_run",
+    "arguments": "not_instantiated",
+    "initial_state": "not_generated",
+    "grounding_obligations": [
+      "Load the backend with long_context=False and keep that environment mode fixed throughout the trajectory.",
+      "Satisfy each selected branch condition and avoid every earlier branch.",
+      "Assign concrete keys to numbered placeholders, preserving their identities and each lifecycle instance's initial states.",
+      "At each selected write, require every target_identity_relations path's pre-call value to equal the concrete key bound to its placeholder; verify this against observations, not only initial state.",
+      "Ground every retained side effect; unfixed_side_effects does not imply the affected state is derivable from observations.",
+      "Satisfy reversible-domain assumptions and additional reader conditions.",
+      "Instantiate time/random sources consistently with mutations and observations.",
+      "Reject and resample chains whose conditions cannot be jointly instantiated; no backend feasibility is claimed."
+    ],
+    "attempts": 1,
+    "rejected_attempts": {},
+    "seed": 3743324768669520914
+  },
+  "id": "l7_w3_004",
+  "sampling_group": {
+    "min_length": 7,
+    "target_count": 1,
+    "min_writes": 3,
+    "batch_seed": 20260929
+  }
+}

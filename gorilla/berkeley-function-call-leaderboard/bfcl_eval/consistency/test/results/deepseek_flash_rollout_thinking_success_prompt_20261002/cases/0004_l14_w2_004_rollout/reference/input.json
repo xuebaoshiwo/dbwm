@@ -1,0 +1,160 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.56,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 50000.0,
+            "timestamp": "2024-08-15 09:00:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 2500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "QUAS"
+      },
+      "observation": {
+        "status": "Stock QUAS added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "OMEG"
+      },
+      "observation": {
+        "status": "Stock OMEG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "ALPH"
+      },
+      "observation": {
+        "status": "Stock ALPH added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "TSLA"
+      },
+      "observation": {
+        "status": "Stock TSLA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "GOOG"
+      },
+      "observation": {
+        "status": "Stock GOOG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 50000.0,
+            "timestamp": "2024-08-15 09:00:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 1500.0,
+            "timestamp": "2024-09-02 01:40:07"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 2500.0,
+            "timestamp": "2024-09-01 10:52:12"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

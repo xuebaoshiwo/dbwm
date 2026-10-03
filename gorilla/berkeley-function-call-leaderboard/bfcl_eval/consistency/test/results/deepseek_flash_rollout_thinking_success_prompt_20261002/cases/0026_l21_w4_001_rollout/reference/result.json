@@ -1,0 +1,176 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 3,
+      "TSLA": 2
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 225.0,
+      "GOOG": 2850.0,
+      "MSFT": 315.0,
+      "NVDA": 225.0,
+      "TSLA": 660.0,
+      "__unobserved_stock_12446": 1.0,
+      "__unobserved_stock_12447": 1.0,
+      "__unobserved_stock_12448": 225.0,
+      "__unobserved_stock_12449": 315.0,
+      "__unobserved_stock_12450": 315.0
+    },
+    "initial_orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 5,
+        "status": "Pending"
+      },
+      "12447": {
+        "id": 12447,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2850.0,
+        "amount": 3,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 650.0,
+        "amount": 2,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 320.0,
+        "amount": 4,
+        "status": "Open"
+      },
+      "12450": {
+        "id": 12450,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 230.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12451,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 5,
+        "status": "Pending"
+      },
+      "12447": {
+        "id": 12447,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2850.0,
+        "amount": 3,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 650.0,
+        "amount": 2,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "MSFT",
+        "price": 320.0,
+        "amount": 4,
+        "status": "Open"
+      },
+      "12450": {
+        "id": 12450,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 230.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 98765,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 3,
+      "TSLA": 2
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12451,
+    "stocks": {
+      "AAPL": {
+        "price": 225.0,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2850.0,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "MSFT": {
+        "price": 315.0,
+        "percent_change": 0.0,
+        "volume": 3.234,
+        "MA(5)": 309.88,
+        "MA(20)": 310.11
+      },
+      "NVDA": {
+        "price": 225.0,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "TSLA": {
+        "price": 660.0,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.6410000000032596
+}

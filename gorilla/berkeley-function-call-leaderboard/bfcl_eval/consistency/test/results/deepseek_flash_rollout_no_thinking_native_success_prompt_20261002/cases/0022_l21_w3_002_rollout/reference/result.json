@@ -1,0 +1,99 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {
+      "GOOG": 1,
+      "TSLA": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 310.23,
+      "GOOG": 310.23,
+      "NVDA": 310.23,
+      "TSLA": 310.23,
+      "__unobserved_stock_12447": 1.0
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12448,
+    "watchlist": [
+      "NVDA"
+    ],
+    "generated_transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34",
+      "2024-09-02 04:29:48"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 98765,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "GOOG": 1,
+      "TSLA": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12448,
+    "stocks": {
+      "AAPL": {
+        "price": 310.23,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 310.23,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      },
+      "TSLA": {
+        "price": 310.23,
+        "percent_change": 0.0,
+        "volume": 1.654,
+        "MA(5)": 671.15,
+        "MA(20)": 668.2
+      }
+    },
+    "watch_list": [
+      "NVDA"
+    ],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 05:40:15",
+      "2024-09-01 12:26:34",
+      "2024-09-02 04:29:48"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.4059999999590218
+}

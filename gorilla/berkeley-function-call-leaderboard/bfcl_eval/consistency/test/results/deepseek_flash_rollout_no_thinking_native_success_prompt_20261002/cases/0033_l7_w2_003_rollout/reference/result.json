@@ -1,0 +1,93 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 50000.0,
+    "holdings": {
+      "__unobserved_stock_12447": 1,
+      "__unobserved_stock_12448": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "__unobserved_stock_12447": 310.23,
+      "__unobserved_stock_12448": 220.34
+    },
+    "initial_orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "__unobserved_stock_12447",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Buy",
+        "symbol": "__unobserved_stock_12448",
+        "price": 220.34,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12449,
+    "watchlist": [],
+    "generated_transaction_timestamps": []
+  },
+  "witness_state": {
+    "orders": {
+      "12447": {
+        "id": 12447,
+        "order_type": "Buy",
+        "symbol": "__unobserved_stock_12447",
+        "price": 310.23,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12448": {
+        "id": 12448,
+        "order_type": "Buy",
+        "symbol": "__unobserved_stock_12448",
+        "price": 220.34,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "balance": 50000.0,
+      "account_id": 98765,
+      "binding_card": 4111111111111111
+    },
+    "holdings": {
+      "__unobserved_stock_12447": 1,
+      "__unobserved_stock_12448": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12449,
+    "stocks": {
+      "__unobserved_stock_12447": {
+        "volume": 0.0,
+        "MA(5)": 310.23,
+        "MA(20)": 310.23,
+        "price": 310.23,
+        "percent_change": 0.0
+      },
+      "__unobserved_stock_12448": {
+        "volume": 0.0,
+        "MA(5)": 220.34,
+        "MA(20)": 220.34,
+        "price": 220.34,
+        "percent_change": 0.0
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": []
+  },
+  "replay_verified": true,
+  "seconds": 0.40600000001722947
+}

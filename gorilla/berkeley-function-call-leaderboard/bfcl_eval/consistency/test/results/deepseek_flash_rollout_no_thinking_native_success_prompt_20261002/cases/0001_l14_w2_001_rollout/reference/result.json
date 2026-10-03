@@ -1,0 +1,87 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 4665.0,
+    "holdings": {
+      "AAPL": 3,
+      "__unobserved_stock_21047": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 201.75,
+      "__unobserved_stock_21047": 0.001
+    },
+    "initial_orders": {
+      "21047": {
+        "id": 21047,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 195.0,
+        "amount": 3,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 21048,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-02 01:40:07",
+      "2024-09-01 10:52:12"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "21047": {
+        "id": 21047,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 195.0,
+        "amount": 3,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 4665.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 3,
+      "__unobserved_stock_21047": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 21048,
+    "stocks": {
+      "AAPL": {
+        "price": 201.75,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 10000.0,
+        "timestamp": "2024-08-15 09:30:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 1499.25,
+        "timestamp": "2024-08-27 16:20:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 01:40:07",
+      "2024-09-01 10:52:12"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.8589999999967404
+}

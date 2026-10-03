@@ -158,11 +158,12 @@ class BackwardSampler:
         self._option_cache = {}
         self._pool = None
 
-    def bind_node(self, node, source=None, path=None, *, bindings=None):
+    def bind_node(self, node, source=None, path=None, *, bindings=None, pool=None):
         if bindings is None:
-            if self._pool is None:
+            pool = pool or self._pool
+            if pool is None:
                 return node
-            bindings = self._pool.bindings(
+            bindings = pool.bindings(
                 [node.branch, node.earlier, node.returns, node.mutations,
                  [vars(rule) for rule in node.rules]], source, path,
             )
@@ -485,8 +486,134 @@ class BackwardSampler:
             "selected_mutation_index": None, "mutation_knowledge": [],
         }
 
+    @staticmethod
+    def _distractor_sources(node):
+        branch_sources = (source for branch in (node.branch, *node.earlier)
+                          for source in branch["uses"])
+        return_sources = (relation["path"] for returned in node.returns
+                          for relation in (*returned["state_source_relations"],
+                                           *returned.get("state_observation_relations", [])))
+        mutation_inputs = (source for mutation in node.mutations
+                           for source in mutation_sources(mutation))
+        return tuple(dict.fromkeys((*branch_sources, *return_sources, *mutation_inputs)))
+
+    def _distractor_safe(self, node, protected, reserved_entities):
+        if any(overlaps(source, path) for source in self._distractor_sources(node)
+               if state_path(source) for path in protected):
+            return False
+        if any(overlaps(mutation["target"], path)
+               for mutation in node.mutations for path in protected):
+            return False
+        for mutation in node.mutations:
+            target = mutation["target"]
+            for identity in mutation.get("target_identity_sources", []):
+                position = target.find("{" + identity["placeholder"] + "}")
+                if position >= 0:
+                    parent = target[:target.rfind("[", 0, position)]
+                    if any(overlaps(parent, path) for path in protected):
+                        return False
+        return not any(reserved_entities.intersection(PLACEHOLDER.findall(mutation["target"]))
+                       for mutation in node.mutations)
+
+    def _distractor_link_sources(self, node):
+        sources = [relation["path"] for returned in node.returns
+                   for relation in (*returned["state_source_relations"],
+                                    *returned.get("state_observation_relations", []))]
+        sources.extend(source for mutation in node.mutations for source in mutation_sources(mutation))
+        effects = self._distractor_lifecycle_effects(node)
+        if effects:
+            sources.extend(source for branch in (node.branch, *node.earlier)
+                           for source in branch["uses"]
+                           if source in effects)
+        return tuple(dict.fromkeys(source for source in sources
+                                   if source.startswith("$.state_before")))
+
+    def _distractor_lifecycle_effects(self, node):
+        effects = {}
+        for rule in self.lifecycle_rules.values():
+            template = before(rule.path or self.targets[rule.target]["path"])
+            for mutation in node.mutations:
+                if not mutation_writes_path(mutation, template):
+                    continue
+                path = substitute(template, path_bindings(template, mutation["target"]))
+                if all(re.fullmatch(r".+_[1-9][0-9]*", token)
+                       for token in PLACEHOLDER.findall(path)):
+                    transition = rule.transition(node.tool, node.branch["id"])
+                    if transition is None:
+                        return None
+                    effects[path] = (rule, transition)
+        return effects
+
+    def _valid_distractor_chain(self, newest_first):
+        states = {}
+        calls = Counter()
+        for node in reversed(newest_first):
+            effects = self._distractor_lifecycle_effects(node)
+            if effects is None:
+                return False
+            for path, (_, transition) in effects.items():
+                key = (path, node.tool, node.branch["id"])
+                if (path in states and states[path] != transition.before) or (
+                    transition.max_calls is not None and calls[key] >= transition.max_calls
+                ):
+                    return False
+                states[path] = transition.after
+                calls[key] += 1
+        return True
+
+    def _linked_distractor_chain(self, limit, protected, reserved_entities):
+        """Find a long independent write-to-read chain within a bounded search."""
+        if limit < 2:
+            return (), ()
+        templates = list(self.nodes)
+        self.rng.shuffle(templates)
+        best_nodes, best_links = (), ()
+        for template in templates:
+            for _ in range(2):
+                pool = PlaceholderPool()
+                pool.counts = self._pool.counts.copy()
+                sink = self.bind_node(template, pool=pool)
+                if (not self._distractor_safe(sink, protected, reserved_entities)
+                        or reserved_entities.intersection(sink.bindings.values())
+                        or not self._valid_distractor_chain((sink,))):
+                    continue
+                pool.commit(sink.bindings)
+                nodes, links = [sink], []
+                while len(nodes) < limit:
+                    options = []
+                    used_tools = {node.tool for node in nodes}
+                    for source in self._distractor_link_sources(nodes[-1]):
+                        for writer in templates:
+                            for index in writer.matching_mutation_indices(source):
+                                predecessor = self.bind_node(writer, writer.mutations[index]["target"],
+                                                             source, pool=pool)
+                                if (not mutation_writes_path(predecessor.mutations[index], source)
+                                        or not self._distractor_safe(predecessor, protected, reserved_entities)
+                                        or reserved_entities.intersection(predecessor.bindings.values())
+                                        or not self._valid_distractor_chain((*nodes, predecessor))):
+                                    continue
+                                options.append((predecessor, source))
+                    if not options:
+                        break
+                    self.rng.shuffle(options)
+                    options.sort(key=lambda option: (
+                        bool(self._distractor_link_sources(option[0])),
+                        option[0].tool not in used_tools,
+                    ), reverse=True)
+                    predecessor, source = options[0]
+                    pool.commit(predecessor.bindings)
+                    nodes.append(predecessor)
+                    links.append(source)
+                if len(nodes) > len(best_nodes):
+                    best_nodes, best_links = tuple(nodes), tuple(links)
+                if len(best_nodes) == limit:
+                    return tuple(reversed(best_nodes)), (None, *reversed(best_links))
+        if not best_nodes:
+            return (), ()
+        return tuple(reversed(best_nodes)), (None, *reversed(best_links))
+
     def build(self, names=None, *, max_writes=3, target_max_writes=None, dependency_max_writes=1,
-              min_length=20, max_length=60, attempts=200):
+              min_length=20, max_length=60, attempts=200, linked_distractors=False):
         """Legacy max_writes keywords now specify minimum target write counts."""
         selected = select_targets(self.targets, list(self.targets) if names is None else list(names))
         names = list(selected)
@@ -501,7 +628,8 @@ class BackwardSampler:
         failures = Counter()
         for attempt in range(1, attempts + 1):
             try:
-                result = self._build_once(selected, limits, dependency_max_writes, min_length, max_length)
+                result = self._build_once(selected, limits, dependency_max_writes, min_length, max_length,
+                                          linked_distractors)
                 result["planning"]["attempts"] = attempt
                 result["planning"]["rejected_attempts"] = dict(failures)
                 return result
@@ -509,7 +637,8 @@ class BackwardSampler:
                 failures[str(exc)] += 1
         raise SamplingError(f"No chain after {attempts} attempts: {dict(failures)}")
 
-    def _build_once(self, selected, limits, dependency_max_writes, min_length, max_length):
+    def _build_once(self, selected, limits, dependency_max_writes, min_length, max_length,
+                    linked_distractors):
         self._pool = PlaceholderPool()
         self._option_cache.clear()
         names = list(selected)
@@ -791,23 +920,23 @@ class BackwardSampler:
             step["field"], *step.get("fix_dependencies", []),
             *(entry["path"] for entry in step["write_source_requirements"]),
         ]}
-        distractors = []
-        for node in self.nodes:
-            if node.mutations:
-                continue
-            sources = [*node.branch["uses"], *(source for branch in node.earlier for source in branch["uses"]),
-                       *(relation["path"] for returned in node.returns
-                         for relation in (*returned["state_source_relations"],
-                                          *returned.get("state_observation_relations", [])))]
-            if not any(overlaps(source, path) for source in sources if state_path(source) for path in protected):
-                distractors.append((node,))
-        filler_count = max(0, min_length - necessary_length)
-        if filler_count and not distractors:
-            raise SamplingError("No unrelated read-only branch can fill min-length")
-        for _ in range(filler_count):
-            node = self.bind_node(self._pick(distractors)[0])
-            self._pool.commit(node.bindings)
-            steps.insert(self.rng.randrange(1, len(steps)), {
+        for step in steps:
+            node = self.step_node(step)
+            protected.update(source for branch in (node.branch, *node.earlier)
+                             for source in branch["uses"] if state_path(source))
+        used_entities = {identity for step in steps
+                         for identity in step["placeholder_bindings"].values()}
+        used_entities.update(identity for path in protected for identity in PLACEHOLDER.findall(path))
+
+        def distractor_options():
+            for template in self.nodes:
+                node = self.bind_node(template)
+                if (self._distractor_safe(node, protected, used_entities)
+                        and self._valid_distractor_chain((node,))):
+                    yield (node,)
+
+        def distractor_step(node, chain_id=None, link_source=None):
+            step = {
                 "tool": node.tool, "branch": node.branch["id"], "branch_condition": node.branch["if"],
                 "placeholder_bindings": dict(node.bindings),
                 "branch_uses": node.branch["uses"],
@@ -815,9 +944,61 @@ class BackwardSampler:
                 "earlier_error_conditions_to_avoid": [branch["if"] for branch in node.earlier if branch["id"].startswith("error_")],
                 "role": "distractor", "roles": ["distractor"], "dependency_depth": None,
                 "additional_conditions": [LONG_CONTEXT_DISABLED], "return_fields": copy.deepcopy(node.returns),
-                "mutations": [], "fixes": [], "write_targets": [], "write_source_requirements": [],
+                "mutations": copy.deepcopy(node.mutations), "fixes": [], "write_targets": [], "write_source_requirements": [],
                 "selected_mutation_index": None, "mutation_knowledge": [],
-            })
+            }
+            if chain_id is not None:
+                step["distractor_chain_id"] = chain_id
+                if link_source is not None:
+                    step["distractor_link_source"] = link_source
+            for path, (rule, transition) in self._distractor_lifecycle_effects(node).items():
+                lifecycle_paths[path] = rule
+                step.setdefault("lifecycle_transitions", {})[path] = {
+                    "from": transition.before, "to": transition.after,
+                }
+            return step
+
+        filler_count = max(0, min_length - necessary_length)
+        chain_lengths = []
+        if linked_distractors:
+            remaining = filler_count
+            while remaining >= 2:
+                chain_nodes, link_sources = self._linked_distractor_chain(
+                    remaining, protected, used_entities,
+                )
+                if len(chain_nodes) < 2:
+                    break
+                chain_lengths.append(len(chain_nodes))
+                block = []
+                for node, source in zip(chain_nodes, link_sources):
+                    self._pool.commit(node.bindings)
+                    used_entities.update(node.bindings.values())
+                    block.append(distractor_step(node, len(chain_lengths), source))
+                insert_at = self.rng.randrange(1, len(steps))
+                steps[insert_at:insert_at] = block
+                protected.update(source for node in chain_nodes
+                                 for source in self._distractor_sources(node) if state_path(source))
+                protected.update(mutation["target"] for node in chain_nodes
+                                 for mutation in node.mutations)
+                remaining -= len(block)
+        for _ in range(filler_count - sum(chain_lengths)):
+            options = list(distractor_options())
+            if not options:
+                raise SamplingError("No unrelated branch can fill min-length")
+            node = self._pick(options)[0]
+            self._pool.commit(node.bindings)
+            used_entities.update(node.bindings.values())
+            steps.insert(self.rng.randrange(1, len(steps)), distractor_step(node))
+        if any(step["role"] == "distractor" and step["mutations"] for step in steps):
+            knowledge = StateKnowledge()
+            for index, step in enumerate(steps):
+                node = self.step_node(step)
+                referenced = node.referenced_paths() | {fixed["path"] for fixed in step["fixes"]}
+                proofs = self.closure(node, knowledge.known_paths(referenced))
+                knowledge.observe(proofs, index)
+                statuses = knowledge.apply_mutations(node.mutations, proofs, index)
+                if step["role"] == "distractor":
+                    step["mutation_knowledge"] = statuses
         positions = {step["_id"]: index for index, step in enumerate(steps, 1) if "_id" in step}
         # The second knowledge pass can remove an origin retained by the first.
         redirects = {item["original_step_id"]: item["reused_from_ids"] for item in removed_anchors}
@@ -921,6 +1102,7 @@ class BackwardSampler:
                 "min_length": min_length, "max_length": max_length,
                 "core_length": core_length, "support_anchor_count": support_count,
                 "necessary_length": necessary_length, "distractor_count": filler_count,
+                "linked_distractors": linked_distractors, "distractor_chain_lengths": chain_lengths,
                 "redundant_anchors_removed": removed_anchors,
                 "writer_tools_by_target": {name: value["writer_tools"] for name, value in chains.items()},
                 "writer_candidates_by_target": writer_candidates,
@@ -936,6 +1118,8 @@ class BackwardSampler:
                     "Assign concrete keys to numbered placeholders, preserving their identities and each lifecycle instance's initial states.",
                     "At each selected write, require every target_identity_relations path's pre-call value to equal the concrete key bound to its placeholder; verify this against observations, not only initial state.",
                     "Ground every retained side effect; unfixed_side_effects does not imply the affected state is derivable from observations.",
+                    *(["Ground linked distractor entity placeholders to concrete keys distinct from the monitored chains and other distractor chains."]
+                      if linked_distractors else []),
                     "Satisfy reversible-domain assumptions and additional reader conditions.",
                     "Instantiate time/random sources consistently with mutations and observations.",
                     "Reject and resample chains whose conditions cannot be jointly instantiated; no backend feasibility is claimed.",
@@ -987,6 +1171,8 @@ def main(argv=None):
     parser.add_argument("--dependency-max-writes", type=int, default=1)
     parser.add_argument("--min-length", type=int, default=20)
     parser.add_argument("--max-length", type=int, default=60)
+    parser.add_argument("--linked-distractors", action="store_true",
+                        help="Fill shortfalls with independent backward-linked distractor chains")
     parser.add_argument("--count", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--attempts", type=int, default=200)
@@ -1035,7 +1221,9 @@ def main(argv=None):
         "catalog_fields_used": ["targets", "state_specs", "reader_refinements"] + (
             ["lifecycle_rules"] if lifecycle_path and not args.lifecycle_rules else []),
         "writer_sequences_used": False,
-        "filler_strategy": ["support_anchor", "distractor"],
+        "filler_strategy": (["support_anchor", "linked_distractor", "distractor"]
+                            if args.linked_distractors else ["support_anchor", "distractor"]),
+        "linked_distractors": args.linked_distractors,
         "support_anchor_policy": "sample_then_forward_anchor_reuse",
     }
     _write_json_atomic(output / "manifest.json", manifest)
@@ -1046,7 +1234,8 @@ def main(argv=None):
                                    target_max_writes=overrides,
                                    dependency_max_writes=args.dependency_max_writes,
                                    min_length=args.min_length, max_length=args.max_length,
-                                   attempts=args.attempts)
+                                   attempts=args.attempts,
+                                   linked_distractors=args.linked_distractors)
             result["id"] = trajectory_id
             result["planning"]["seed"] = args.seed
             _write_json_atomic(output / f"{trajectory_id}.json", result)

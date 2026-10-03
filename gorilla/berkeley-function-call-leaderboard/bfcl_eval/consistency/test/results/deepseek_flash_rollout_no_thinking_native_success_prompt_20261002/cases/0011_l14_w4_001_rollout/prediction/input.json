@@ -1,0 +1,140 @@
+{
+  "steps": [
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "AAPL",
+          "GOOGL",
+          "MSFT"
+        ]
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 12000.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Apple"
+      },
+      "observation": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 12447
+      },
+      "observation": {
+        "order_id": 12447,
+        "status": "Completed",
+        "filled_price": 182.63,
+        "amount": 10
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "GOOG"
+      },
+      "observation": {
+        "status": "Stock GOOG removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_symbol_by_name",
+      "args": {
+        "name": "Microsoft"
+      },
+      "observation": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "TSLA"
+      },
+      "observation": {
+        "status": "Stock TSLA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_account_info",
+      "args": {},
+      "observation": {
+        "account_id": 601,
+        "balance": 10300.0,
+        "binding_card": 730001
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "TSLA"
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

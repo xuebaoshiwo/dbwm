@@ -1,0 +1,243 @@
+{
+  "status": "running",
+  "requested": 45,
+  "accepted": 38,
+  "rejected": 1,
+  "failures": [
+    {
+      "source": "min_length_21\\min_writes_4\\l21_w4_001.json",
+      "error": "GroundingError: Model did not return valid JSON: {\n  \"valid\": true,\n  \"steps\": [\n    {\n      \"step_id\": 1,\n      \"branch_match\": true,\n      \"observed_branch\": \"success_account_info\",\n      \"reason\": \"authenticated is true, so get_account_info returns account info without error.\"\n    },\n    {\n      \"step_id\": 2,\n      \"branch_match\": true,\n      \"observed_branch\": \"success_get_holdings\",\n      \"reason\": \"authenticated is true, so get_holdings returns holdings without error.\"\n    },\n    {\n      \"step_id\": 3,\n      \"branch_match\": true,\n      \"o"
+    }
+  ],
+  "model": "deepseek-v4-pro",
+  "max_debug": 1,
+  "max_tokens": 32768,
+  "request_timeout": 300,
+  "resume": {
+    "enabled": true,
+    "retained_accepted": 6,
+    "scheduled": 39,
+    "retry_failed_sources": [
+      "min_length_14\\min_writes_2\\l14_w2_003.json",
+      "min_length_14\\min_writes_2\\l14_w2_004.json",
+      "min_length_14\\min_writes_3\\l14_w3_001.json",
+      "min_length_14\\min_writes_3\\l14_w3_004.json",
+      "min_length_14\\min_writes_3\\l14_w3_005.json",
+      "min_length_14\\min_writes_4\\l14_w4_001.json",
+      "min_length_14\\min_writes_4\\l14_w4_003.json"
+    ],
+    "previous_manifest": "_run_history\\20261001_133447_404805\\manifest.json"
+  },
+  "diversity_memory": {
+    "enabled": true,
+    "path": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\diversity_memory.json",
+    "summary_chars": 100,
+    "guide_chars": 50,
+    "seed": 42,
+    "max_tokens": 2048,
+    "model": "deepseek-v4-pro"
+  },
+  "tool_doc": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\data\\multi_turn_func_doc\\trading_bot_hard.json",
+  "backend": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\eval_checker\\multi_turn_eval\\func_source_code\\trading_bot_hard.py",
+  "backend_class": null,
+  "input_dir": "D:\\dbwm\\gorilla\\berkeley-function-call-leaderboard\\bfcl_eval\\consistency\\data_v2\\trading_bot_hard\\raw_tool_chain_linked_20260930",
+  "trajectory": null,
+  "general_backend_protocol": [
+    "tool methods",
+    "scenario loader",
+    "public state snapshot"
+  ],
+  "cases": [
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_001.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_003.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_003.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_14\\min_writes_2\\l14_w2_004.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_001.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_004.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_3\\l14_w3_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_001.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_003.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_004.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_14\\min_writes_4\\l14_w4_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_2\\l21_w2_001.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_21\\min_writes_2\\l21_w2_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_2\\l21_w2_003.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_21\\min_writes_2\\l21_w2_004.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_21\\min_writes_2\\l21_w2_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_3\\l21_w3_001.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_3\\l21_w3_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_3\\l21_w3_003.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_3\\l21_w3_004.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_3\\l21_w3_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_4\\l21_w4_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_21\\min_writes_4\\l21_w4_003.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_21\\min_writes_4\\l21_w4_004.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_21\\min_writes_4\\l21_w4_005.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_2\\l7_w2_001.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_2\\l7_w2_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_2\\l7_w2_003.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_2\\l7_w2_004.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_2\\l7_w2_005.json",
+      "status": "accepted",
+      "debug_rounds": 1
+    },
+    {
+      "source": "min_length_7\\min_writes_3\\l7_w3_001.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_3\\l7_w3_002.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_3\\l7_w3_003.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    },
+    {
+      "source": "min_length_7\\min_writes_3\\l7_w3_004.json",
+      "status": "accepted",
+      "debug_rounds": 0
+    }
+  ],
+  "current_source": "min_length_7\\min_writes_3\\l7_w3_004.json"
+}

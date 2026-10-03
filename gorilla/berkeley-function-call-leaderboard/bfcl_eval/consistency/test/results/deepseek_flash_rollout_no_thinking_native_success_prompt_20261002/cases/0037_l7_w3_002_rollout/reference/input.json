@@ -1,0 +1,84 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": []
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "ALPH"
+      },
+      "observation": {
+        "status": "Stock ALPH added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "GOOG"
+      },
+      "observation": {
+        "status": "Stock GOOG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 750.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-09-01 14:47:39"
+          },
+          {
+            "type": "deposit",
+            "amount": 1000.0,
+            "timestamp": "2024-09-02 06:56:32"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 750.0,
+            "timestamp": "2024-09-02 00:40:04"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

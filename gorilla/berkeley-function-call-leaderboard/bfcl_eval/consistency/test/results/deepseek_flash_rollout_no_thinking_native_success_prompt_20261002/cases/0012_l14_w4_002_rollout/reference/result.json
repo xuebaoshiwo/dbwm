@@ -1,0 +1,80 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 25000.0,
+    "holdings": {
+      "NVDA": 12,
+      "__unobserved_stock_88024": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "NVDA": 150.4,
+      "__unobserved_stock_88024": 0.001
+    },
+    "initial_orders": {
+      "88024": {
+        "id": 88024,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 148.25,
+        "amount": 12,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 88025,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "88024": {
+        "id": 88024,
+        "order_type": "Sell",
+        "symbol": "NVDA",
+        "price": 148.25,
+        "amount": 12,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "balance": 25000.0,
+      "account_id": 88421,
+      "binding_card": 4111222233334444
+    },
+    "holdings": {
+      "NVDA": 12,
+      "__unobserved_stock_88024": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 88025,
+    "stocks": {
+      "NVDA": {
+        "price": 150.4,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00",
+      "2024-09-01 00:00:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.6870000000344589
+}

@@ -1,0 +1,108 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 20952.0,
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5,
+      "MSFT": 8,
+      "NVDA": 12
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 225.0,
+      "GOOG": 2850.0,
+      "MSFT": 0.001,
+      "NVDA": 0.001,
+      "__unobserved_stock_12448": 0.001,
+      "__unobserved_stock_12449": 0.001,
+      "__unobserved_stock_12450": 0.001
+    },
+    "initial_orders": {
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2800.0,
+        "amount": 2,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    "order_counter": 12450,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-09-02 09:46:50",
+      "2024-09-01 14:33:12"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2800.0,
+        "amount": 2,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 220.0,
+        "amount": 3,
+        "status": "Open"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 20952.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5,
+      "MSFT": 8,
+      "NVDA": 12
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12450,
+    "stocks": {
+      "AAPL": {
+        "price": 225.0,
+        "percent_change": 0.0,
+        "volume": 2.552,
+        "MA(5)": 227.11,
+        "MA(20)": 227.09
+      },
+      "GOOG": {
+        "price": 2850.0,
+        "percent_change": 0.0,
+        "volume": 1.123,
+        "MA(5)": 2835.67,
+        "MA(20)": 2842.15
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-09-02 09:46:50",
+      "2024-09-01 14:33:12"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.39000000001396984
+}

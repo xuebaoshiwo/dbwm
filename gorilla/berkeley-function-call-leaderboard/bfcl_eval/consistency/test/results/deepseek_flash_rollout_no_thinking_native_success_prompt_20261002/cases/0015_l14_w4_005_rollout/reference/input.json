@@ -1,0 +1,159 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": []
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "TSLA"
+      },
+      "observation": {
+        "status": "Stock TSLA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "GOOG"
+      },
+      "observation": {
+        "status": "Stock GOOG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 100.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 2840.56,
+        "amount": 5,
+        "status": "Pending"
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 200.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 150.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "withdrawal",
+            "amount": 100.0,
+            "timestamp": "2024-09-02 05:40:15"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 200.0,
+            "timestamp": "2024-09-01 12:26:34"
+          },
+          {
+            "type": "deposit",
+            "amount": 500.0,
+            "timestamp": "2024-09-02 04:29:48"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 150.0,
+            "timestamp": "2024-09-02 09:45:15"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

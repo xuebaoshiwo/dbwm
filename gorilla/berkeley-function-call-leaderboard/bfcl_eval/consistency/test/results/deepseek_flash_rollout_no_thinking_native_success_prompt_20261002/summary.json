@@ -1,0 +1,82 @@
+{
+  "requested": 45,
+  "completed": 45,
+  "counts": {
+    "sat": 21,
+    "unsat": 23,
+    "unknown": 1
+  },
+  "decided": 44,
+  "decision_coverage": 0.9777777777777777,
+  "consistency_rate": 0.4772727272727273,
+  "reference_statuses": {
+    "sat": 45
+  },
+  "exact_reference_matches": 0,
+  "usage": {
+    "prompt_tokens": 3002528,
+    "completion_tokens": 16017,
+    "total_tokens": 3018545
+  },
+  "by_group": {
+    "min_length=14": {
+      "counts": {
+        "sat": 8,
+        "unsat": 7
+      },
+      "decided": 15,
+      "consistency_rate": 0.5333333333333333
+    },
+    "min_length=21": {
+      "counts": {
+        "unsat": 11,
+        "sat": 3,
+        "unknown": 1
+      },
+      "decided": 14,
+      "consistency_rate": 0.21428571428571427
+    },
+    "min_length=7": {
+      "counts": {
+        "sat": 10,
+        "unsat": 5
+      },
+      "decided": 15,
+      "consistency_rate": 0.6666666666666666
+    },
+    "min_writes=2": {
+      "counts": {
+        "sat": 9,
+        "unsat": 6
+      },
+      "decided": 15,
+      "consistency_rate": 0.6
+    },
+    "min_writes=3": {
+      "counts": {
+        "unsat": 9,
+        "sat": 5,
+        "unknown": 1
+      },
+      "decided": 14,
+      "consistency_rate": 0.35714285714285715
+    },
+    "min_writes=4": {
+      "counts": {
+        "sat": 7,
+        "unsat": 8
+      },
+      "decided": 15,
+      "consistency_rate": 0.4666666666666667
+    },
+    "target=all": {
+      "counts": {
+        "sat": 21,
+        "unsat": 23,
+        "unknown": 1
+      },
+      "decided": 44,
+      "consistency_rate": 0.4772727272727273
+    }
+  }
+}

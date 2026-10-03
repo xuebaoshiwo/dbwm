@@ -1,0 +1,102 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 0.0,
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "AAPL": 1.0,
+      "GOOG": 1.0,
+      "__unobserved_stock_12345": 1.0,
+      "__unobserved_stock_12446": 1.0
+    },
+    "initial_orders": {
+      "12345": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 5,
+        "status": "Pending"
+      },
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 150.0,
+        "amount": 10,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 12447,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-08-13 10:30:00",
+      "2024-08-13 10:30:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12345": {
+        "id": 12345,
+        "order_type": "Buy",
+        "symbol": "AAPL",
+        "price": 240.0,
+        "amount": 5,
+        "status": "Pending"
+      },
+      "12446": {
+        "id": 12446,
+        "order_type": "Sell",
+        "symbol": "GOOG",
+        "price": 150.0,
+        "amount": 10,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "account_id": 12345,
+      "balance": 0.0,
+      "binding_card": 1974202140965533
+    },
+    "holdings": {
+      "AAPL": 10,
+      "GOOG": 5
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 12447,
+    "stocks": {},
+    "watch_list": [],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 10000.0,
+        "timestamp": "2024-08-05 09:15:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 1500.0,
+        "timestamp": "2024-08-07 14:30:00"
+      },
+      {
+        "type": "deposit",
+        "amount": 2500.0,
+        "timestamp": "2024-08-09 10:05:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-08-13 10:30:00",
+      "2024-08-13 10:30:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 0.6560000000172295
+}

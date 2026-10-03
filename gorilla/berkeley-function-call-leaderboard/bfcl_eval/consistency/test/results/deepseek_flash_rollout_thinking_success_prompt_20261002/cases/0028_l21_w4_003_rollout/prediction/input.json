@@ -1,0 +1,301 @@
+{
+  "steps": [
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3004
+      },
+      "observation": {
+        "id": 3004,
+        "order_type": "Sell",
+        "symbol": "NFLX",
+        "price": 610.0,
+        "amount": 5,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3003
+      },
+      "observation": {
+        "id": 3003,
+        "order_type": "Sell",
+        "symbol": "AMZN",
+        "price": 180.0,
+        "amount": 12,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 15,
+          "AMZN": 20,
+          "NFLX": 8,
+          "NVDA": 12,
+          "TSLA": 6
+        }
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3004
+      },
+      "observation": {
+        "order_id": 3004,
+        "status": "Completed",
+        "filled_price": 614.82,
+        "amount": 5
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3002
+      },
+      "observation": {
+        "id": 3002,
+        "order_type": "Sell",
+        "symbol": "TSLA",
+        "price": 250.0,
+        "amount": 4,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "NVDA",
+          "AAPL",
+          "TSLA"
+        ]
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3003
+      },
+      "observation": {
+        "order_id": 3003,
+        "status": "Completed",
+        "filled_price": 182.47,
+        "amount": 12
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3002
+      },
+      "observation": {
+        "order_id": 3002,
+        "status": "Completed",
+        "filled_price": 253.91,
+        "amount": 4
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 5000.0,
+            "timestamp": "2024-08-01 09:15:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 2500.0,
+            "timestamp": "2024-08-05 10:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 300.0,
+            "timestamp": "2024-08-08 14:05:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 1000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "OMEG"
+      },
+      "observation": {
+        "status": "Stock OMEG added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_order_details",
+      "args": {
+        "order_id": 3001
+      },
+      "observation": {
+        "id": 3001,
+        "order_type": "Sell",
+        "symbol": "AAPL",
+        "price": 228.0,
+        "amount": 6,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 2000.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "execute_order",
+      "args": {
+        "order_id": 3001
+      },
+      "observation": {
+        "order_id": 3001,
+        "status": "Completed",
+        "filled_price": 232.18,
+        "amount": 6
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "ALPH"
+      },
+      "observation": {
+        "status": "Stock ALPH added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "fund_account",
+      "args": {
+        "amount": 1500.0
+      },
+      "observation": {
+        "status": "Account funded successfully"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "AAPL",
+          "TSLA",
+          "OMEG",
+          "ALPH",
+          "NVDA"
+        ]
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 5000.0,
+            "timestamp": "2024-08-01 09:15:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 2500.0,
+            "timestamp": "2024-08-05 10:30:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 300.0,
+            "timestamp": "2024-08-08 14:05:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 1000.0,
+            "timestamp": "2024-08-13 09:40:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-08-13 10:05:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 2000.0,
+            "timestamp": "2024-08-13 10:20:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 1500.0,
+            "timestamp": "2024-08-13 10:55:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_holdings",
+      "args": {},
+      "observation": {
+        "holdings": {
+          "AAPL": 9,
+          "AMZN": 8,
+          "NFLX": 3,
+          "NVDA": 12,
+          "TSLA": 2
+        }
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

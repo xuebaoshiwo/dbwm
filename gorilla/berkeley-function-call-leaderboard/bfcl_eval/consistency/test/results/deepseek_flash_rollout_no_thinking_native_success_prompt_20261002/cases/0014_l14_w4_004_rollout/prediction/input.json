@@ -1,0 +1,197 @@
+{
+  "steps": [
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 1000.0,
+            "timestamp": "2024-08-05 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 200.0,
+            "timestamp": "2024-08-07 14:30:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 500.0,
+            "timestamp": "2024-08-09 10:05:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 150.0,
+            "timestamp": "2024-08-12 16:45:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 500.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 750.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "MSFT",
+          "TSLA",
+          "NVDA"
+        ]
+      }
+    },
+    {
+      "tool": "activate_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Open"
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": 12446
+      },
+      "observation": {
+        "order_id": 12446,
+        "status": "Cancelled"
+      }
+    },
+    {
+      "tool": "add_to_watchlist",
+      "args": {
+        "stock": "AAPL"
+      },
+      "observation": {
+        "status": "Stock AAPL added to watchlist successfully."
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 300.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "withdraw_funds",
+      "args": {
+        "amount": 450.0
+      },
+      "observation": {
+        "status": "Withdrawal successful"
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "MSFT"
+      },
+      "observation": {
+        "status": "Stock MSFT removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "TSLA"
+      },
+      "observation": {
+        "status": "Stock TSLA removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "remove_stock_from_watchlist",
+      "args": {
+        "symbol": "NVDA"
+      },
+      "observation": {
+        "status": "Stock NVDA removed from watchlist successfully."
+      }
+    },
+    {
+      "tool": "get_watchlist",
+      "args": {},
+      "observation": {
+        "watchlist": [
+          "AAPL"
+        ]
+      }
+    },
+    {
+      "tool": "get_transaction_history",
+      "args": {},
+      "observation": {
+        "transaction_history": [
+          {
+            "type": "deposit",
+            "amount": 1000.0,
+            "timestamp": "2024-08-05 09:15:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 200.0,
+            "timestamp": "2024-08-07 14:30:00"
+          },
+          {
+            "type": "deposit",
+            "amount": 500.0,
+            "timestamp": "2024-08-09 10:05:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 150.0,
+            "timestamp": "2024-08-12 16:45:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 500.0,
+            "timestamp": "2024-08-13 10:20:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 750.0,
+            "timestamp": "2024-08-13 10:21:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 300.0,
+            "timestamp": "2024-08-13 10:25:00"
+          },
+          {
+            "type": "withdrawal",
+            "amount": 450.0,
+            "timestamp": "2024-08-13 10:26:00"
+          }
+        ]
+      }
+    }
+  ],
+  "plugin": "bfcl_eval.consistency.trading_solver_hard:check_trace",
+  "options": {
+    "check_static_tools": false,
+    "timestamp_policy": "symbolic"
+  }
+}

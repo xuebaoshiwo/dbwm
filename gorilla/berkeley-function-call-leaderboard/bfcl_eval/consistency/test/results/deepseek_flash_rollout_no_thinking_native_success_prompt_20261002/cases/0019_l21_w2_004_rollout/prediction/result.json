@@ -1,0 +1,133 @@
+{
+  "status": "sat",
+  "initial_state": {
+    "balance": 12000.0,
+    "holdings": {
+      "NVDA": 1,
+      "__unobserved_stock_802": 10,
+      "__unobserved_stock_12448": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "stock_prices": {
+      "NVDA": 219.87,
+      "__unobserved_stock_802": 219.87,
+      "__unobserved_stock_12448": 1.0,
+      "__unobserved_stock_12449": 219.87
+    },
+    "initial_orders": {
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "__unobserved_stock_802",
+        "price": 219.87,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 220.0,
+        "amount": 10,
+        "status": "Pending"
+      }
+    },
+    "order_counter": 802,
+    "watchlist": [],
+    "generated_transaction_timestamps": [
+      "2024-08-13 10:30:00",
+      "2024-08-13 10:30:00"
+    ]
+  },
+  "witness_state": {
+    "orders": {
+      "12448": {
+        "id": 12448,
+        "order_type": "Sell",
+        "symbol": "__unobserved_stock_802",
+        "price": 219.87,
+        "amount": 10,
+        "status": "Open"
+      },
+      "12449": {
+        "id": 12449,
+        "order_type": "Buy",
+        "symbol": "NVDA",
+        "price": 220.0,
+        "amount": 10,
+        "status": "Pending"
+      }
+    },
+    "account_info": {
+      "balance": 12000.0,
+      "account_id": 601,
+      "binding_card": 730001
+    },
+    "holdings": {
+      "NVDA": 1,
+      "__unobserved_stock_802": 10,
+      "__unobserved_stock_12448": 1
+    },
+    "authenticated": true,
+    "market_status": "Open",
+    "order_counter": 802,
+    "stocks": {
+      "NVDA": {
+        "price": 219.87,
+        "percent_change": 0.0,
+        "volume": 1.234,
+        "MA(5)": 220.45,
+        "MA(20)": 220.67
+      },
+      "__unobserved_stock_802": {
+        "volume": 0.0,
+        "MA(5)": 219.87,
+        "MA(20)": 219.87,
+        "price": 219.87,
+        "percent_change": 0.0
+      },
+      "__unobserved_stock_12448": {
+        "volume": 0.0,
+        "MA(5)": 1.0,
+        "MA(20)": 1.0,
+        "price": 1.0,
+        "percent_change": 0.0
+      },
+      "__unobserved_stock_12449": {
+        "volume": 0.0,
+        "MA(5)": 219.87,
+        "MA(20)": 219.87,
+        "price": 219.87,
+        "percent_change": 0.0
+      }
+    },
+    "watch_list": [],
+    "transaction_history": [
+      {
+        "type": "deposit",
+        "amount": 5000.0,
+        "timestamp": "2024-08-05 09:15:00"
+      },
+      {
+        "type": "withdrawal",
+        "amount": 1200.0,
+        "timestamp": "2024-08-07 14:30:00"
+      },
+      {
+        "type": "deposit",
+        "amount": 2500.0,
+        "timestamp": "2024-08-09 10:05:00"
+      }
+    ],
+    "random_seed": 1053520
+  },
+  "random_choices": {
+    "transaction_timestamps": [
+      "2024-08-13 10:30:00",
+      "2024-08-13 10:30:00"
+    ]
+  },
+  "replay_verified": true,
+  "seconds": 1.1410000000032596
+}
